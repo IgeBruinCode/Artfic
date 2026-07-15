@@ -2,21 +2,23 @@
 
 `brand.json` is de enige geldige bron voor kleuren en logo's van de vijf landingspagina-varianten. Varianten mogen geen kleur of logo gebruiken dat hier niet in staat.
 
-## Herkomst van de huidige waarden (`status: verified`)
+## Huidige status: `pdf-verificatie-vereist`
 
-Alle waarden komen uit **door Artific zelf gepubliceerde merkassets** op de drie voorgeschreven bronpagina's, opgehaald op 2026-07-15:
+De opdracht wijst twee documenten aan als definitieve referentie voor goedgekeurde kleuren en logo's:
 
-- **Logo's** — `artific-logo-blauw.svg` is byte-gelijk aan `https://vision.artific.nl/clients/artific/logo.svg` (identiek geserveerd door product.artific.nl); `artific-logo-wit.svg` is byte-gelijk aan `https://artific.nl/inhoud/uploads/Logo.svg` (de uitvoering in de donkere header/footer van artific.nl). Beide zijn zelfstandige SVG's: alleen paden, geen fonts, scripts of externe URL's. Exportmethode: ongewijzigde download van het origineel.
-- **Kleuren** — het Artific-klantthema (CSS-designtokens `--pres-*`) dat vision.artific.nl en product.artific.nl identiek definiëren, plus de fills van de logo-SVG's zelf. De logokleur `#287CEB` is exact gelijk aan het `--pres-primary`-token, wat de waarden onderling bevestigt. Er is géén kleur visueel afgelezen of gegokt.
+- `260506 Artific brand manual v1.0.pdf`
+- `260506 Voorbeelden creative materials.pdf`
 
-## Relatie tot de twee referentie-PDF's
+Beide staan in `.gitignore`, worden **nooit gecommit** en zijn **geen runtime-afhankelijkheid**. Ze waren echter tijdens alle drie de bouwpogingen (laatst 2026-07-15) aantoonbaar afwezig in de buildomgeving: niet op het bestandssysteem (volledige schijfscan), niet in de Git-historie of op enige remote-branch, niet in de openbare WordPress-mediabibliotheek van artific.nl en niet op een andere officiële locatie; ook de planningsfase trof ze niet aan. **Ze moeten door de opdrachtgever buiten Git in de repository-root worden geplaatst.**
 
-De opdracht wijst `260506 Artific brand manual v1.0.pdf` en `260506 Voorbeelden creative materials.pdf` aan als definitieve referentie. Beide staan in `.gitignore`, worden **nooit gecommit** en zijn **geen runtime-afhankelijkheid**. Op 2026-07-15 waren ze echter nergens beschikbaar: niet op het bestandssysteem van de buildomgeving, niet in de Git-historie of remote-branches van deze repository en niet op een officiële downloadlocatie (alles exhaustief doorzocht). Daarom is teruggevallen op de hierboven beschreven, door Artific gepubliceerde assets; die afwijking en de exacte herkomst per waarde staan in `brand.json` (`pdfCrossCheck`).
+Daarom bevat `brand.json` nu uitsluitend **kandidaatwaarden** met volledige, controleerbare webherkomst: het officiële Artific-logo-SVG (byte-gelijk overgenomen van vision.artific.nl/product.artific.nl en artific.nl) en het Artific-klantthema (CSS-designtokens, identiek op vision én product). Er is géén kleur visueel afgelezen of gegokt. Deze kandidaten zijn **niet goedgekeurd voor definitief gebruik** totdat ze tegen de PDF's zijn geverifieerd; `scripts/validate-content.mjs` faalt bewust zolang die verificatie ontbreekt en accepteert `verified` niet zonder per-waarde PDF-provenance.
 
-### Kruisverificatie zodra de PDF's beschikbaar zijn
+## Afrondingsprocedure (zodra de PDF's beschikbaar zijn)
 
-1. Plaats de PDF's in de repository-root (de `.gitignore`-regels houden ze buiten Git).
+1. Plaats de twee PDF's in de repository-root (de `.gitignore`-regels houden ze buiten Git).
 2. Inspecteer beide documenten visueel én met PDF-extractietooling.
-3. Vergelijk elke kleur en elk logo in `brand.json` met het document; vul per waarde de provenance aan met documentnaam en paginanummer, en corrigeer of verwijder afwijkende waarden.
-4. Vergelijk de SVG's visueel met de logopagina's van de brand manual; vervang ze alleen door PDF-exports als de manual een andere uitvoering voorschrijft (tekst naar paden, geen externe URL's).
-5. Draai `node scripts/validate-content.mjs`; die eist status `verified`, complete provenance en lokaal aanwezige, zelfstandige SVG's.
+3. Vergelijk elke kleur en elk logo in `brand.json` met het document. Corrigeer of verwijder afwijkende waarden; voeg ontbrekende goedgekeurde waarden toe.
+4. Vul per kleur en per logo `pdfProvenance` in: `{ "documentId": "brand-manual" | "creative-materials", "page": <paginanummer> }`.
+5. Vergelijk de SVG's visueel met de logopagina's van de brand manual; vervang ze alleen door PDF-exports als de manual een andere uitvoering voorschrijft (tekst naar paden, zelfstandig, geen externe URL's).
+6. Zet per referentiedocument `available` op `true` en de `status` op `verified`.
+7. Draai `node scripts/validate-content.mjs`; die eist status `verified`, beide documenten `available`, per waarde `pdfProvenance` met geldig documentId en paginanummer, en lokaal aanwezige, zelfstandige SVG's.

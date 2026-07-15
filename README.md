@@ -26,7 +26,7 @@ De routes zijn in dit baseticket minimale `noindex`-statuspagina's; de variantti
 - `content/artific-content.nl.json` — **de enige canonieke inhouds- en CTA-bron.** Compacte Nederlandse claims per themagroep, elk met `sourceRefs` naar de originele passage; plus de canonieke CTA-kaart (labels, bestemmingen, gedrag, demo-fallbackmotivering).
 - `content/sources/*.md` — gedateerde snapshots van de oorspronkelijke SEO-/paginatekst van artific.nl, vision.artific.nl/nl en product.artific.nl/nl, met stabiele ankers (`<a id="..."></a>`).
 - `content/sources/demo-trigger-observation.md` — geobserveerd live clientgedrag van "Vraag een demo aan" en het vastgelegde fallbackbesluit.
-- `assets/brand/brand.json` + `assets/brand/README.md` + `assets/brand/*.svg` — huisstijlbron: goedgekeurde kleuren en zelfstandige logo-assets met volledige herkomst per waarde (door Artific gepubliceerde merkassets; kruisverificatie tegen de referentie-PDF's staat daar gedocumenteerd).
+- `assets/brand/brand.json` + `assets/brand/README.md` + `assets/brand/*.svg` — huisstijlbron: kandidaatkleuren en zelfstandige logo-assets met volledige herkomst per waarde. **Status: `pdf-verificatie-vereist`** — definitieve goedkeuring vereist kruisverificatie tegen de twee referentie-PDF's met document- en paginaverwijzing per waarde; de validator faalt bewust zolang die ontbreekt (procedure: `assets/brand/README.md`).
 
 ### Redactionele regels voor varianten
 
@@ -42,6 +42,8 @@ node scripts/validate-content.mjs
 ```
 
 Controleert JSON-syntax, unieke claim-IDs, oplosbaarheid van alle bronankers, de verplichte themagroepen, exact drie benoemde modules, de volledige CTA-kaart met veilige bestemmingen, het demo-besluit, de huisstijlbron en de vijf routebestanden. Dependency-vrij (Node-standaardbibliotheek).
+
+De huisstijlgate accepteert alleen `status: "verified"` mét per kleur/logo een `pdfProvenance` (documentId + paginanummer) en beide referentiedocumenten op `available: true`. Zolang de twee referentie-PDF's niet zijn aangeleverd en verwerkt, eindigt de validator dus met een fout op uitsluitend de huisstijlonderdelen — dat is de bedoelde bewaking, geen defect; de content-, CTA- en routecontroles slagen onafhankelijk daarvan.
 
 ## Referentiemateriaal en secrets
 
