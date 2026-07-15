@@ -4,13 +4,13 @@ Statische HTML-website met vijf onafhankelijk bekijkbare, klantgerichte landings
 
 ## Routecontract (vast, wijzigt niet)
 
-| Variant | Adres |
-| --- | --- |
-| Minimalistisch | `/minimalistisch/` |
-| Brutalistisch A | `/brutalistisch-a/` |
-| Brutalistisch B | `/brutalistisch-b/` |
-| Conventioneel (SaaS) | `/conventioneel/` |
-| Premium | `/premium/` |
+| Variant | Adres | Status |
+| --- | --- | --- |
+| Minimalistisch | `/minimalistisch/` | **Opgeleverd** — volledige landingspagina met eigen stijlgids (`minimalistisch/DESIGN.md`) |
+| Brutalistisch A | `/brutalistisch-a/` | gereserveerde statuspagina |
+| Brutalistisch B | `/brutalistisch-b/` | gereserveerde statuspagina |
+| Conventioneel (SaaS) | `/conventioneel/` | gereserveerde statuspagina |
+| Premium | `/premium/` | gereserveerde statuspagina |
 
 Lokaal bekijken:
 
@@ -19,7 +19,7 @@ python3 -m http.server 4173
 # daarna bijv. http://localhost:4173/minimalistisch/
 ```
 
-De routes zijn in dit baseticket minimale `noindex`-statuspagina's; de varianttickets vervangen telkens alleen de inhoud, nooit het pad. De root-keuzepagina (`/`) komt pas in het premium-/afrondingsticket.
+Nog niet opgeleverde routes zijn minimale `noindex`-statuspagina's; de varianttickets vervangen telkens alleen de inhoud, nooit het pad. De root-keuzepagina (`/`) komt pas in het premium-/afrondingsticket.
 
 ## Gedeelde bronnen
 
@@ -39,11 +39,14 @@ De routes zijn in dit baseticket minimale `noindex`-statuspagina's; de variantti
 
 ```sh
 node scripts/validate-content.mjs
+node scripts/validate-minimalistisch.mjs
 ```
 
 Controleert JSON-syntax, unieke claim-IDs, oplosbaarheid van alle bronankers, de verplichte themagroepen, exact drie benoemde modules, de volledige CTA-kaart met veilige bestemmingen, het demo-besluit, de huisstijlbron en de vijf routebestanden. Dependency-vrij (Node-standaardbibliotheek).
 
-De huisstijlgate accepteert alleen `status: "verified"` mét per kleur/logo een `pdfProvenance` (documentId + paginanummer) en beide referentiedocumenten op `available: true`. Zolang de twee referentie-PDF's niet zijn aangeleverd en verwerkt, eindigt de validator dus met een fout op uitsluitend de huisstijlonderdelen — dat is de bedoelde bewaking, geen defect; de content-, CTA- en routecontroles slagen onafhankelijk daarvan.
+`validate-minimalistisch.mjs` bewaakt de opgeleverde minimalistische variant: Nederlandse metadata, exact één H1, sectievolgorde, geldige `data-claim-id`'s (incl. de drie modules), uitsluitend CTA's/links uit de canonieke kaart, alleen goedgekeurde lokale logo's, alleen hexkleuren uit `brand.json`, gepinde GSAP/ScrollTrigger-CDN met reduced-motion-guards en de verplichte hoofdstukken in `minimalistisch/DESIGN.md`.
+
+De huisstijlgate in `validate-content.mjs` accepteert alleen `status: "verified"` mét per kleur/logo een `pdfProvenance` (documentId + paginanummer) en beide referentiedocumenten op `available: true`. Zolang de twee referentie-PDF's niet zijn aangeleverd en verwerkt, eindigt de validator dus met een fout op uitsluitend de huisstijlonderdelen — dat is de bedoelde bewaking, geen defect; de content-, CTA- en routecontroles slagen onafhankelijk daarvan.
 
 ## Referentiemateriaal en secrets
 
