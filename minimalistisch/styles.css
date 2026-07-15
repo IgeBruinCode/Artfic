@@ -1,10 +1,9 @@
 /* Kleuren uitsluitend uit assets/brand/brand.json — geen afgeleide tinten of transparante merkkleuren. */
 :root {
   --artific-blauw: #287CEB;
-  --artific-donkerblauw: #042244;
-  --artific-lichtblauw: #C9DAF2;
+  --artific-donkerblauw: #0A213D;
+  --artific-lichtblauw: #E5EDF8;
   --artific-oranjegeel: #ECA414;
-  --artific-blauwgrijs: #7790AE;
   --wit: #FFFFFF;
 
   --ruimte-1: 8px;
@@ -371,7 +370,7 @@ section[id] {
   font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
   font-weight: 600;
   line-height: 1.15;
-  color: var(--artific-blauwgrijs);
+  color: var(--artific-blauw);
   min-width: 2.2ch;
 }
 
@@ -443,7 +442,7 @@ section[id] {
   display: grid;
   gap: 4px;
   padding: var(--ruimte-3);
-  border: 1px solid var(--artific-blauwgrijs);
+  border: 1px solid var(--artific-blauw);
   text-align: center;
   align-content: center;
 }
@@ -555,7 +554,7 @@ section[id] {
 .site-footer {
   background: var(--artific-donkerblauw);
   color: var(--wit);
-  border-top: 1px solid var(--artific-blauwgrijs);
+  border-top: 1px solid var(--artific-blauw);
 }
 
 .site-footer__binnen {

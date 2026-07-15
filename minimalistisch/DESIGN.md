@@ -10,18 +10,17 @@ Rustig en doelbewust: de inhoud draagt de aandacht. Eén kolom leestekst met rui
 
 ## Kleurgebruik
 
-Uitsluitend de waarden uit `assets/brand/brand.json` (herkomststatus: kandidaatwaarden uit officiële Artific-assets, PDF-kruisverificatie nog open — zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
+Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified`, per waarde geverifieerd tegen officiële Artific-PDF-documenten — zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
 
 | Kleur | Hex | Rol op deze pagina |
 | --- | --- | --- |
 | Wit | `#FFFFFF` | hoofdcanvas, tekst op donkere vlakken |
-| Artific-donkerblauw | `#042244` | alle lopende tekst en koppen, primaire CTA-vulling, donkere contactsectie en footer |
-| Artific-blauw | `#287CEB` | herkenbaar maar beperkt accent: eyebrow-streep, onderstrepingen, stapnummers, flow-pijlen, focusring op licht |
-| Artific-lichtblauw | `#C9DAF2` | rustige scheidingslijnen, badge-randen, decoratieve modulenummers, selectie-achtergrond |
+| Artific-donkerblauw | `#0A213D` | alle lopende tekst en koppen, primaire CTA-vulling, donkere contactsectie en footer |
+| Artific-blauw | `#287CEB` | herkenbaar maar beperkt accent: eyebrow-streep, onderstrepingen, stap- en fasenummers, flow-pijlen, rand van flow-blokken, focusring op licht |
+| Artific-lichtblauw | `#E5EDF8` | rustige scheidingslijnen, badge-randen, decoratieve modulenummers, selectie-achtergrond |
 | Artific-oranjegeel | `#ECA414` | spaarzaam: accentregels, primaire CTA en focusring op de donkere sectie (daar AA-contrastveilig) |
-| Gedempt blauwgrijs | `#7790AE` | decoratieve fasenummers en de rand van flow-blokken |
 
-Contrastregels: kleine lopende tekst is altijd `#042244` op wit/lichtblauw of `#FFFFFF` op donkerblauw (ruim boven WCAG AA). `#287CEB` en `#7790AE` halen op wit géén 4,5:1 en worden daarom alleen decoratief of op grote cijfers gebruikt, nooit voor kleine informatieve tekst. `#ECA414` wordt nooit als tekstkleur op wit gebruikt; op `#042244` haalt het ± 7,5:1.
+Contrastregels: kleine lopende tekst is altijd `#0A213D` op wit/lichtblauw of `#FFFFFF` op donkerblauw (ruim boven WCAG AA). `#287CEB` haalt op wit géén 4,5:1 en wordt daarom alleen decoratief of op grote cijfers gebruikt, nooit voor kleine informatieve tekst. `#ECA414` wordt nooit als tekstkleur op wit gebruikt; op `#0A213D` haalt het ruim WCAG AA.
 
 ## Spacing
 
@@ -33,7 +32,7 @@ Contrastregels: kleine lopende tekst is altijd `#042244` op wit/lichtblauw of `#
 - Typografische schaal via `clamp()`: H1 `2.25–4rem`, H2 `1.75–2.75rem`, H3 `1.25–1.5rem`, H4 `1.05–1.2rem`, body `1–1.125rem` (regelafstand 1.6), alle koppen gewicht 600 met licht negatieve letterspatiëring.
 - Exact één H1 (de merkbelofte); H2 per hoofdsectie, H3 voor vragen/fasen/modules/sublagen, H4 binnen rijen. Eyebrow-labels (kapitaal, gespatieerd, blauwe streep links) markeren secties zonder de koppenhiërarchie te belasten.
 - Asymmetrie op desktop: hero in 7/4-grid, modules met breed nummer-kanaal links; op mobiel valt alles terug naar één kolom.
-- Grote decoratieve nummers (`01 02 03` in lichtblauw/blauwgrijs, `aria-hidden`) geven ritme zonder iconografie.
+- Grote decoratieve nummers (`01 02 03` in lichtblauw/blauw, `aria-hidden`) geven ritme zonder iconografie.
 
 ## Componentstijlen
 

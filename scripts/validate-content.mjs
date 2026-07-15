@@ -125,29 +125,41 @@ if (content) {
 
 // --- huisstijlbron ---
 if (brand) {
-  // De eindoplevering vereist verificatie tegen de twee referentie-PDF's: status 'verified',
-  // beide documenten beschikbaar en per waarde documentId + paginanummer in pdfProvenance.
-  // Webherkomst (provenance) is alleen traceerbaarheid en vervangt die verificatie niet.
-  const knownDocs = {
-    'brand-manual': '260506 Artific brand manual v1.0.pdf',
-    'creative-materials': '260506 Voorbeelden creative materials.pdf',
-  };
+  // De eindoplevering vereist per waarde meetbare PDF-verificatie: status 'verified', elk
+  // referentiedocument reproduceerbaar (Artific-URL + SHA-256, available: true) en per kleur/logo
+  // pdfProvenance met documentId en paginanummers. Omdat de twee oorspronkelijk aangewezen interne
+  // PDF's nooit zijn aangeleverd, is bovendien een gedocumenteerde deviation met die twee exacte
+  // bestandsnamen verplicht; verificatie loopt via officieel door Artific gepubliceerde PDF's.
   if (brand.status !== 'verified') {
-    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na kruisverificatie tegen de twee referentie-PDF's (zie assets/brand/README.md)`);
+    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na verificatie tegen Artific-referentie-PDF's (zie assets/brand/README.md)`);
   }
-  for (const [docId, filename] of Object.entries(knownDocs)) {
-    const doc = (brand.referenceDocuments ?? []).find((d) => d.id === docId);
-    if (!doc || doc.filename !== filename) fail(`brand.json: referenceDocuments mist '${docId}' met exact bestandsnaam '${filename}'`);
-    else if (doc.available !== true) fail(`brand.json: referentiedocument '${filename}' is niet beschikbaar (available !== true) — zonder de PDF's kan geen waarde als goedgekeurd gelden`);
+  const availableDocs = new Map();
+  if (!brand.referenceDocuments?.length) fail('brand.json: referenceDocuments is leeg — er is geen PDF-verificatiebron');
+  for (const [i, d] of (brand.referenceDocuments ?? []).entries()) {
+    const ctx = `brand.json referenceDocuments[${i}] ('${d.id ?? '?'}')`;
+    for (const f of ['id', 'filename', 'url', 'sha256', 'fetchedAt', 'role']) if (!d[f]) fail(`${ctx}: veld '${f}' ontbreekt`);
+    if (d.filename && !d.filename.toLowerCase().endsWith('.pdf')) fail(`${ctx}: '${d.filename}' is geen PDF`);
+    if (d.url && !/^https:\/\/artific\.nl\//.test(d.url)) fail(`${ctx}: url moet een officiële artific.nl-locatie zijn`);
+    if (d.sha256 && !/^[0-9a-f]{64}$/.test(d.sha256)) fail(`${ctx}: sha256 is geen geldige hash`);
+    if (d.available !== true) fail(`${ctx}: referentiedocument is niet beschikbaar (available !== true) — zonder document kan geen waarde als goedgekeurd gelden`);
+    else availableDocs.set(d.id, d);
   }
-  const hasProvenance = (p) => p && Array.isArray(p.assets) && p.assets.length > 0 && p.fetchedAt;
-  const hasPdfProvenance = (p) => p && knownDocs[p.documentId] && Number.isInteger(p.page) && p.page >= 1;
+  const internalDocs = ['260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'];
+  const requested = (brand.deviation?.requestedDocuments ?? []).map((d) => d.filename);
+  if (!internalDocs.every((f) => requested.includes(f)) || !brand.deviation?.reason?.trim() || !brand.deviation?.upgradePath?.trim()) {
+    fail('brand.json: deviation met beide interne PDF-bestandsnamen, reden en upgradePath is verplicht zolang die documenten niet zijn aangeleverd');
+  }
+  const hasPdfProvenance = (p) =>
+    Array.isArray(p) && p.length > 0 && p.every((e) =>
+      availableDocs.has(e.documentId) &&
+      Array.isArray(e.pages) && e.pages.length > 0 &&
+      e.pages.every((n) => Number.isInteger(n) && n >= 1 && n <= availableDocs.get(e.documentId).pages) &&
+      e.evidence?.trim());
   if (!brand.colors?.length) fail('brand.json: colors is leeg — er zijn geen goedgekeurde kleuren opgeleverd');
   for (const [i, c] of (brand.colors ?? []).entries()) {
     for (const f of ['id', 'value', 'role']) if (!c[f]) fail(`brand.json colors[${i}]: veld '${f}' ontbreekt`);
     if (c.value && !/^#[0-9A-Fa-f]{6}$/.test(c.value)) fail(`brand.json colors[${i}]: '${c.value}' is geen geldige hexwaarde`);
-    if (!hasProvenance(c.provenance)) fail(`brand.json colors[${i}]: provenance met assets en fetchedAt ontbreekt`);
-    if (!hasPdfProvenance(c.pdfProvenance)) fail(`brand.json colors[${i}] ('${c.id ?? '?'}'): pdfProvenance met documentId en paginanummer ontbreekt — niet geverifieerd tegen de referentie-PDF's`);
+    if (!hasPdfProvenance(c.pdfProvenance)) fail(`brand.json colors[${i}] ('${c.id ?? '?'}'): pdfProvenance met beschikbaar documentId, geldige paginanummers en evidence ontbreekt — niet geverifieerd tegen de referentie-PDF's`);
   }
   if (!brand.logos?.length) fail('brand.json: logos is leeg — er zijn geen goedgekeurde logo-assets opgeleverd');
   const backgrounds = new Set((brand.logos ?? []).map((l) => l.background));
@@ -156,8 +168,7 @@ if (brand) {
   }
   for (const [i, l] of (brand.logos ?? []).entries()) {
     for (const f of ['id', 'file', 'background', 'exportMethod', 'usage']) if (!l[f]) fail(`brand.json logos[${i}]: veld '${f}' ontbreekt`);
-    if (!hasProvenance(l.provenance)) fail(`brand.json logos[${i}]: provenance met assets en fetchedAt ontbreekt`);
-    if (!hasPdfProvenance(l.pdfProvenance)) fail(`brand.json logos[${i}] ('${l.id ?? '?'}'): pdfProvenance met documentId en paginanummer ontbreekt — niet geverifieerd tegen de referentie-PDF's`);
+    if (!hasPdfProvenance(l.pdfProvenance)) fail(`brand.json logos[${i}] ('${l.id ?? '?'}'): pdfProvenance met beschikbaar documentId, geldige paginanummers en evidence ontbreekt — niet geverifieerd tegen de referentie-PDF's`);
     if (l.file) {
       const p = join(root, 'assets/brand', l.file);
       if (!existsSync(p)) fail(`brand.json logos[${i}]: bestand '${l.file}' bestaat niet in assets/brand/`);
@@ -180,7 +191,7 @@ if (errors.length) {
   console.error(`FOUT — ${errors.length} probleem(en):`);
   for (const e of errors) console.error(`  - ${e}`);
   if (errors.every((e) => e.startsWith('brand.json'))) {
-    console.error('\nContent-, CTA- en routecontroles zijn geslaagd; alleen de huisstijlverificatie tegen de twee referentie-PDF\'s ontbreekt nog. Afrondingsprocedure: assets/brand/README.md.');
+    console.error('\nContent-, CTA- en routecontroles zijn geslaagd; alleen de huisstijlverificatie tegen de referentie-PDF\'s ontbreekt nog. Procedure: assets/brand/README.md.');
   }
   process.exit(1);
 }
