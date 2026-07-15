@@ -195,6 +195,11 @@ if (!existsSync(join(root, designPath))) {
   }
 }
 
+// --- oplevergate: de variant is pas opleverbaar met een geverifieerde huisstijlbron ---
+if (brand.status !== 'verified') {
+  fail(`brand.json: status is '${brand.status}' — de minimalistische variant kan niet als opgeleverd gelden zolang de huisstijl niet tegen de twee aangewezen interne referentie-PDF's is geverifieerd (zie assets/brand/README.md); de oplevering is GEBLOKKEERD`);
+}
+
 if (errors.length) {
   console.error(`FOUT — ${errors.length} probleem(en):`);
   for (const e of errors) console.error(`  - ${e}`);
