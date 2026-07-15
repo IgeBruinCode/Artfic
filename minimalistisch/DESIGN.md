@@ -10,7 +10,7 @@ Rustig en doelbewust: de inhoud draagt de aandacht. Eén kolom leestekst met rui
 
 ## Kleurgebruik
 
-Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified`, per waarde geverifieerd tegen officiële Artific-PDF-documenten — zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
+Uitsluitend de waarden uit `assets/brand/brand.json` (status: `unverified` — per waarde gedocumenteerd tegen openbare Artific-PDF-documenten; definitieve goedkeuring wacht op de interne brand manual, zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
 
 | Kleur | Hex | Rol op deze pagina |
 | --- | --- | --- |

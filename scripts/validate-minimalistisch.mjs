@@ -152,6 +152,9 @@ if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
 if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/gsap\.min\.js/.test(html)) fail('index.html: gepinde GSAP-CDN ontbreekt');
 if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/ScrollTrigger\.min\.js/.test(html)) fail('index.html: gepinde ScrollTrigger-CDN ontbreekt');
 if ((html.match(/<script[^>]*\sdefer/g) ?? []).length < 3) fail('index.html: scripts moeten met defer laden');
+if (/data-reveal/.test(js) && !/\sdata-reveal[\s>]/.test(html)) {
+  fail('index.html: main.js implementeert data-reveal-scrollreveals maar de pagina bevat geen enkel data-reveal-doel');
+}
 if (!/prefers-reduced-motion/.test(js)) fail('main.js: reduced-motion-guard ontbreekt');
 if (!/window\.gsap\s*&&\s*window\.ScrollTrigger|!window\.gsap\s*\|\|\s*!window\.ScrollTrigger/.test(js)) {
   fail('main.js: guard op ontbrekende GSAP/ScrollTrigger ontbreekt');

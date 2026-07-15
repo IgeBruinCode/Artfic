@@ -76,7 +76,8 @@ if (content) {
 
   // --- CTA-kaart ---
   const ctas = content.ctas?.canonical ?? {};
-  const requiredCtas = ['vraag-een-demo-aan', 'maak-een-afspraak', 'informatie-aanvragen', 'over-onze-partners', 'meer-lezen', 'klantbeoordelingen', 'registreren', 'inloggen'];
+  // Volledige CTA-inventaris uit de bronsnapshots: geen enkel canoniek item mag stilzwijgend verdwijnen.
+  const requiredCtas = ['vraag-een-demo-aan', 'maak-een-afspraak', 'informatie-aanvragen', 'over-onze-partners', 'meer-lezen', 'klantbeoordelingen', 'award-blog', 'bulpe-video', 'registreren', 'inloggen'];
   for (const key of requiredCtas) if (!ctas[key]) fail(`ctas.canonical: verplicht CTA-item '${key}' ontbreekt`);
 
   const validDest = (d) => /^(https?:|mailto:|tel:)/.test(d);
@@ -111,6 +112,10 @@ if (content) {
     fail('content/sources/demo-trigger-observation.md ontbreekt');
   }
 
+  const requiredNavGroups = ['artific.nl-header', 'artific.nl-footer', 'vision-inpage', 'product-inpage'];
+  for (const g of requiredNavGroups) {
+    if (!Object.keys(content.ctas?.navigation?.[g]?.links ?? {}).length) fail(`ctas.navigation: verplichte navigatiegroep '${g}' ontbreekt of heeft geen links`);
+  }
   for (const [navId, nav] of Object.entries(content.ctas?.navigation ?? {})) {
     resolveRef(nav.sourceRef, `ctas.navigation.${navId}`);
     for (const [label, dest] of Object.entries(nav.links ?? {})) {
@@ -125,13 +130,17 @@ if (content) {
 
 // --- huisstijlbron ---
 if (brand) {
-  // De eindoplevering vereist per waarde meetbare PDF-verificatie: status 'verified', elk
-  // referentiedocument reproduceerbaar (Artific-URL + SHA-256, available: true) en per kleur/logo
-  // pdfProvenance met documentId en paginanummers. Omdat de twee oorspronkelijk aangewezen interne
-  // PDF's nooit zijn aangeleverd, is bovendien een gedocumenteerde deviation met die twee exacte
-  // bestandsnamen verplicht; verificatie loopt via officieel door Artific gepubliceerde PDF's.
-  if (brand.status !== 'verified') {
-    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na verificatie tegen Artific-referentie-PDF's (zie assets/brand/README.md)`);
+  // Status 'verified' vereist dat de twee aangewezen interne PDF's zelf als beschikbaar
+  // referentiedocument zijn opgenomen — openbare Artific-collateral documenteert gebruik, maar
+  // bewijst geen merk-goedkeuring en kan deze gate dus nooit zelfverklaard passeren. Zolang de
+  // interne documenten ontbreken is 'unverified' de enige toegestane status, mét deviation-blok.
+  const internalDocs = ['260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'];
+  const internalAvailable = internalDocs.every((f) =>
+    (brand.referenceDocuments ?? []).some((d) => d.filename === f && d.available === true));
+  if (brand.status === 'verified') {
+    if (!internalAvailable) fail("brand.json: status 'verified' is alleen toegestaan wanneer beide interne PDF's ('260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf') als beschikbaar referentiedocument zijn opgenomen — openbare collateral volstaat niet als merk-goedkeuring");
+  } else if (brand.status !== 'unverified') {
+    fail(`brand.json: onbekende status '${brand.status}' (toegestaan: 'unverified' zolang de interne PDF's ontbreken, 'verified' pas daarna)`);
   }
   const availableDocs = new Map();
   if (!brand.referenceDocuments?.length) fail('brand.json: referenceDocuments is leeg — er is geen PDF-verificatiebron');
@@ -144,9 +153,8 @@ if (brand) {
     if (d.available !== true) fail(`${ctx}: referentiedocument is niet beschikbaar (available !== true) — zonder document kan geen waarde als goedgekeurd gelden`);
     else availableDocs.set(d.id, d);
   }
-  const internalDocs = ['260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'];
   const requested = (brand.deviation?.requestedDocuments ?? []).map((d) => d.filename);
-  if (!internalDocs.every((f) => requested.includes(f)) || !brand.deviation?.reason?.trim() || !brand.deviation?.upgradePath?.trim()) {
+  if (!internalAvailable && (!internalDocs.every((f) => requested.includes(f)) || !brand.deviation?.reason?.trim() || !brand.deviation?.upgradePath?.trim())) {
     fail('brand.json: deviation met beide interne PDF-bestandsnamen, reden en upgradePath is verplicht zolang die documenten niet zijn aangeleverd');
   }
   const hasPdfProvenance = (p) =>
