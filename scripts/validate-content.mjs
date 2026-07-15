@@ -130,17 +130,18 @@ if (content) {
 
 // --- huisstijlbron ---
 if (brand) {
-  // Status 'verified' vereist dat de twee aangewezen interne PDF's zelf als beschikbaar
-  // referentiedocument zijn opgenomen — openbare Artific-collateral documenteert gebruik, maar
-  // bewijst geen merk-goedkeuring en kan deze gate dus nooit zelfverklaard passeren. Zolang de
-  // interne documenten ontbreken is 'unverified' de enige toegestane status, mét deviation-blok.
+  // Harde oplevergate: de eindoplevering vereist status 'verified', en 'verified' is uitsluitend
+  // toegestaan wanneer de twee aangewezen interne PDF's zelf als beschikbaar referentiedocument
+  // zijn opgenomen — openbare Artific-collateral documenteert gebruik, maar bewijst geen
+  // merk-goedkeuring en kan deze gate dus nooit zelfverklaard passeren. Zolang de interne
+  // documenten ontbreken faalt deze check bewust: de oplevering is dan geblokkeerd.
   const internalDocs = ['260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'];
   const internalAvailable = internalDocs.every((f) =>
     (brand.referenceDocuments ?? []).some((d) => d.filename === f && d.available === true));
-  if (brand.status === 'verified') {
-    if (!internalAvailable) fail("brand.json: status 'verified' is alleen toegestaan wanneer beide interne PDF's ('260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf') als beschikbaar referentiedocument zijn opgenomen — openbare collateral volstaat niet als merk-goedkeuring");
-  } else if (brand.status !== 'unverified') {
-    fail(`brand.json: onbekende status '${brand.status}' (toegestaan: 'unverified' zolang de interne PDF's ontbreken, 'verified' pas daarna)`);
+  if (brand.status !== 'verified') {
+    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na verificatie tegen de twee aangewezen interne referentie-PDF's ('260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'); zolang die niet zijn aangeleverd is de oplevering GEBLOKKEERD (zie assets/brand/README.md)`);
+  } else if (!internalAvailable) {
+    fail("brand.json: status 'verified' is alleen toegestaan wanneer beide interne PDF's ('260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf') als beschikbaar referentiedocument zijn opgenomen — openbare collateral volstaat niet als merk-goedkeuring");
   }
   const availableDocs = new Map();
   if (!brand.referenceDocuments?.length) fail('brand.json: referenceDocuments is leeg — er is geen PDF-verificatiebron');

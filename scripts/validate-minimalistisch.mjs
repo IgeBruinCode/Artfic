@@ -56,8 +56,28 @@ for (const id of usedClaims) {
 
 // Strikte claims: de zichtbare varianttekst ligt hier vast, zodat inhoudelijke drift
 // (cijfers, compliance, letterlijke citaten) de check laat falen in plaats van alleen het claim-ID.
-const normalize = (s) => s.replace(/&amp;/g, '&').replace(/&nbsp;|\s+/g, ' ').trim();
-const pageText = normalize(html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' '));
+// De vergelijking gebeurt per element dat het claim-ID draagt, niet tegen de hele pagina —
+// dezelfde tekst elders op de pagina kan een gewijzigd claimelement dus niet maskeren.
+const normalize = (s) => s.replace(/<!--[\s\S]*?-->/g, ' ').replace(/&amp;/g, '&').replace(/&nbsp;|\s+/g, ' ').trim();
+const claimScopes = new Map();
+for (const m of html.matchAll(/<([a-z0-9]+)\b[^>]*\sdata-claim-id="([^"]+)"[^>]*>/g)) {
+  const [openTag, tag, ids] = m;
+  const start = m.index + openTag.length;
+  const tokenRe = new RegExp(`<${tag}\\b[^>]*>|</${tag}>`, 'g');
+  tokenRe.lastIndex = start;
+  let depth = 1;
+  let end = html.length;
+  let t;
+  while ((t = tokenRe.exec(html))) {
+    depth += t[0].startsWith('</') ? -1 : 1;
+    if (depth === 0) { end = t.index; break; }
+  }
+  if (depth !== 0) fail(`index.html: sluittag voor <${tag} data-claim-id="${ids}"> niet gevonden`);
+  const inner = normalize(html.slice(start, end).replace(/<[^>]+>/g, ' '));
+  for (const id of ids.split(/\s+/).filter(Boolean)) {
+    claimScopes.set(id, `${claimScopes.get(id) ?? ''} ${inner}`);
+  }
+}
 const strictVariantTexts = {
   'pos-besparing-30': ['bespaar 30% van je tijd met één AI-platform'],
   'pos-nederlands': ['Gebouwd door Nederlandse AI-professionals. NL-gehost, AVG-proof en snel inzetbaar.'],
@@ -78,8 +98,9 @@ for (const id of usedClaims) {
   if (!knownClaims.get(id)?.strict) continue;
   const snippets = strictVariantTexts[id];
   if (!snippets) { fail(`index.html: strikte claim '${id}' heeft geen vastgelegde varianttekst in deze validator`); continue; }
+  const scope = normalize(claimScopes.get(id) ?? '');
   for (const snippet of snippets) {
-    if (!pageText.includes(normalize(snippet))) fail(`index.html: zichtbare tekst voor strikte claim '${id}' wijkt af van de vastgelegde varianttekst: '${snippet}'`);
+    if (!scope.includes(normalize(snippet))) fail(`index.html: zichtbare tekst binnen het element met strikte claim '${id}' wijkt af van de vastgelegde varianttekst: '${snippet}'`);
   }
 }
 const requiredClaims = [
