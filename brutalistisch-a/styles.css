@@ -132,9 +132,9 @@ a { color: inherit; }
   min-height: 44px;
   padding: 4px var(--r-2);
   font-size: 0.85rem;
-  background: var(--blauw);
-  color: var(--wit);
-  border-color: var(--wit);
+  background: var(--oranjegeel);
+  color: var(--donkerblauw);
+  border-color: var(--oranjegeel);
 }
 .cta--primair {
   background: var(--donkerblauw);
@@ -183,11 +183,15 @@ a { color: inherit; }
   font-weight: 800;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--blauw);
-  border: 3px solid var(--blauw);
+  color: var(--donkerblauw);
+  border: 3px solid var(--donkerblauw);
   display: inline-block;
   padding: 4px 12px;
   margin-bottom: var(--r-3);
+}
+.blok--donker .sectiecode {
+  color: var(--oranjegeel);
+  border-color: var(--oranjegeel);
 }
 
 .label {
@@ -350,7 +354,7 @@ a { color: inherit; }
   min-width: min(100%, 340px);
 }
 .pipeline__station--artific {
-  background: var(--blauw);
+  background: var(--donkerblauw);
   border-color: var(--oranjegeel);
 }
 .pipeline__kop {
@@ -472,7 +476,6 @@ a { color: inherit; }
   font-weight: 900;
   color: var(--oranjegeel);
 }
-.blok:not(.blok--donker) .strakke-lijst li::before { color: var(--blauw); }
 
 .stappen {
   list-style: none;

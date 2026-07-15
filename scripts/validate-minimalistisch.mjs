@@ -75,7 +75,8 @@ for (const m of html.matchAll(/<([a-z0-9]+)\b[^>]*\sdata-claim-id="([^"]+)"[^>]*
   if (depth !== 0) fail(`index.html: sluittag voor <${tag} data-claim-id="${ids}"> niet gevonden`);
   const inner = normalize(html.slice(start, end).replace(/<[^>]+>/g, ' '));
   for (const id of ids.split(/\s+/).filter(Boolean)) {
-    claimScopes.set(id, `${claimScopes.get(id) ?? ''} ${inner}`);
+    if (!claimScopes.has(id)) claimScopes.set(id, []);
+    claimScopes.get(id).push(inner);
   }
 }
 const strictVariantTexts = {
@@ -98,9 +99,18 @@ for (const id of usedClaims) {
   if (!knownClaims.get(id)?.strict) continue;
   const snippets = strictVariantTexts[id];
   if (!snippets) { fail(`index.html: strikte claim '${id}' heeft geen vastgelegde varianttekst in deze validator`); continue; }
-  const scope = normalize(claimScopes.get(id) ?? '');
+  const scopes = (claimScopes.get(id) ?? []).map(normalize);
+  // Ieder voorkomen wordt afzonderlijk gecontroleerd: één geldig voorkomen mag
+  // een tweede, afwijkend voorkomen van dezelfde strikte claim niet maskeren.
+  for (const scope of scopes) {
+    if (!snippets.some((snippet) => scope.includes(normalize(snippet)))) {
+      fail(`index.html: een voorkomen van strikte claim '${id}' bevat geen van de vastgelegde variantteksten: '${scope.slice(0, 80)}…'`);
+    }
+  }
   for (const snippet of snippets) {
-    if (!scope.includes(normalize(snippet))) fail(`index.html: zichtbare tekst binnen het element met strikte claim '${id}' wijkt af van de vastgelegde varianttekst: '${snippet}'`);
+    if (!scopes.some((scope) => scope.includes(normalize(snippet)))) {
+      fail(`index.html: zichtbare tekst binnen het element met strikte claim '${id}' wijkt af van de vastgelegde varianttekst: '${snippet}'`);
+    }
   }
 }
 const requiredClaims = [

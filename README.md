@@ -45,6 +45,8 @@ node scripts/validate-brutalistisch-a.mjs
 
 Controleert JSON-syntax, unieke claim-IDs, oplosbaarheid van alle bronankers, de verplichte themagroepen, exact drie benoemde modules, de volledige CTA-kaart met veilige bestemmingen, het demo-besluit, de huisstijlbron en de vijf routebestanden. Dependency-vrij (Node-standaardbibliotheek).
 
+Handmatige browser-QA is reproduceerbaar via `python3 -m http.server 4173` vanuit de root; de uitgevoerde matrix (320/768/1440 px, toetsenbord, reduced motion, JS/CDN-uitval, regressie op `/minimalistisch/`) staat vastgelegd in `brutalistisch-a/QA.md`.
+
 `validate-brutalistisch-a.mjs` bewaakt variant Brutalistisch A op dezelfde manier, aangevuld met de brutalistische structuurkenmerken (zichtbare sectiecodes, exact drie moduleplaten, geen afronding/gradients/blur, uitsluitend transform-animaties) en de verplichte hoofdstukken in `brutalistisch-a/DESIGN.md`. Ook deze validator faalt bewust zolang `brand.json` niet `verified` is.
 
 `validate-minimalistisch.mjs` bewaakt de opgeleverde minimalistische variant: Nederlandse metadata, exact één H1, sectievolgorde, geldige `data-claim-id`'s (incl. de drie modules), uitsluitend CTA's/links uit de canonieke kaart, alleen goedgekeurde lokale logo's, alleen hexkleuren uit `brand.json`, gepinde GSAP/ScrollTrigger-CDN met reduced-motion-guards en de verplichte hoofdstukken in `minimalistisch/DESIGN.md`. Ook deze validator faalt bewust zolang `brand.json` niet `verified` is: de variant kan niet als opgeleverd gelden op een ongeverifieerde huisstijl.
