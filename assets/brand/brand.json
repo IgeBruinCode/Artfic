@@ -1,0 +1,17 @@
+{
+  "status": "pending-source-material",
+  "checkedAt": "2026-07-15",
+  "referenceDocuments": [
+    { "id": "brand-manual", "filename": "260506 Artific brand manual v1.0.pdf", "role": "definitieve kleurwaarden, typografie en logo-gebruiksregels", "available": false },
+    { "id": "creative-materials", "filename": "260506 Voorbeelden creative materials.pdf", "role": "voorbeelden van toegestane creatieve uitingen", "available": false }
+  ],
+  "note": "De twee referentie-PDF's staan in .gitignore maar waren op 2026-07-15 nergens op de buildomgeving aanwezig (volledige schijfzoekactie uitgevoerd). Conform de opdracht mag geen enkele kleur- of logowaarde van de live websites of uit aannames worden afgeleid. Daarom zijn colors en logos leeg totdat de PDF's buiten Git beschikbaar zijn gemaakt en elke waarde met documentnaam en paginanummer is geverifieerd.",
+  "rules": [
+    "Elke kleur vereist: documentId, paginanummer, kleurmodus/waarde (hex/CMYK/PMS zoals in het document), rol en eventuele gebruiksbeperking.",
+    "Elk logo vereist: documentId, paginanummer, toegestane achtergrond (licht/donker), exportmethode en een lokaal SVG-pad onder assets/brand/ zonder externe URL's of ontbrekende fonts.",
+    "De PDF's zelf worden nooit gecommit en zijn geen runtime-afhankelijkheid; alleen de hieruit geverifieerde waarden en geëxporteerde assets komen in de repository.",
+    "Kleuren waargenomen op artific.nl, vision.artific.nl of product.artific.nl zijn geen geldige bron en mogen dit bestand niet vullen."
+  ],
+  "colors": [],
+  "logos": []
+}

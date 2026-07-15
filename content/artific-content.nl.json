@@ -1,0 +1,361 @@
+{
+  "meta": {
+    "language": "nl",
+    "capturedAt": "2026-07-15",
+    "purpose": "Enige canonieke Nederlandse inhouds- en CTA-bron voor de vijf Artific-landingspagina-varianten. Varianten kiezen claims uit dit bestand op claim-ID en schrijven de gekozen tekst statisch als semantische HTML uit; er is geen runtime-afhankelijkheid van dit bestand.",
+    "editorialRules": [
+      "Elke claim verwijst via sourceRefs (bron-ID#anker) naar de exacte oorspronkelijke passage in content/sources/*.md.",
+      "Claims met strict=true bevatten cijfers of complianceformuleringen; varianten mogen deze verkorten maar nooit aanscherpen, combineren of sterker beloven dan de bron.",
+      "Varianten mogen claims weglaten of korter herformuleren, maar mogen geen nieuwe feiten, cijfers of complianceclaims toevoegen die niet in de bronnen staan.",
+      "CTA-labels, -bestemmingen en -gedrag komen uitsluitend uit de ctas-map; geen kale '#', geen verzonnen bestemmingen.",
+      "Huisstijl (kleuren, logo's) komt uitsluitend uit assets/brand/brand.json; kleuren van de live sites zijn geen geldige vervanging."
+    ]
+  },
+  "sources": {
+    "artific.nl": {
+      "url": "https://artific.nl/",
+      "title": "AI-oplossingen om Slimmer en Efficiënter te Werken - Artific | Innoveer met AI en laat je bedrijf groeien",
+      "metaDescription": "Artific biedt AI-oplossingen voor bedrijven en non-profit om slimmer en efficiënter te werken. AI-Assistenten, Prompt bibliotheken, AI-Tools.",
+      "fetchedAt": "2026-07-15",
+      "snapshot": "content/sources/artific.nl.md"
+    },
+    "vision.artific.nl-nl": {
+      "url": "https://vision.artific.nl/nl/",
+      "title": "Artific Productvisie — De Operationele Laag voor AI",
+      "metaDescription": null,
+      "fetchedAt": "2026-07-15",
+      "snapshot": "content/sources/vision.artific.nl-nl.md"
+    },
+    "product.artific.nl-nl": {
+      "url": "https://product.artific.nl/nl/",
+      "title": "Productinfo Artific AI Platform",
+      "metaDescription": null,
+      "fetchedAt": "2026-07-15",
+      "snapshot": "content/sources/product.artific.nl-nl.md"
+    }
+  },
+  "topics": {
+    "positionering": {
+      "title": "Wat Artific is — positionering",
+      "claims": [
+        { "id": "pos-belofte", "text": "Wij maken AI die werkt en blijft werken.", "sourceRefs": ["artific.nl#h-hero-h1"] },
+        { "id": "pos-slimmer-werken", "text": "Werk slimmer, sneller en efficiënter met AI.", "sourceRefs": ["artific.nl#h-hero-h2"] },
+        { "id": "pos-besparing-30", "text": "Bespaar 30% van je tijd met één AI-platform.", "strict": true, "sourceRefs": ["artific.nl#h-hero-intro"] },
+        { "id": "pos-nederlands", "text": "Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.", "strict": true, "sourceRefs": ["artific.nl#h-hero-intro", "artific.nl#h-hero-usps"] },
+        { "id": "pos-usps", "text": "AVG-proof & NL-gehost, taalmodel- en tool-onafhankelijk, mensgericht.", "strict": true, "sourceRefs": ["artific.nl#h-hero-usps"] },
+        { "id": "pos-award", "text": "Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.", "strict": true, "sourceRefs": ["artific.nl#h-award", "artific.nl#h-blog-artiliance"] },
+        { "id": "pos-agentic-platform", "text": "Veilig en gecontroleerd agentic AI-platform: één beheersbaar fundament voor IT om generatieve AI te bouwen, uit te rollen en te beheren — één platform, geen dozijn losse tools.", "sourceRefs": ["product.artific.nl-nl#p-hero-h2", "product.artific.nl-nl#p-hero-intro"] },
+        { "id": "pos-badges", "text": "EU-gehost, ISO 27001 gecertificeerd, API-first en model-agnostisch.", "strict": true, "sourceRefs": ["product.artific.nl-nl#p-hero-badges"] }
+      ]
+    },
+    "digitale-medewerker": {
+      "title": "De digitale medewerker",
+      "claims": [
+        { "id": "dm-kop", "text": "Je volgende medewerker is digitaal. Veilig. Voorspelbaar. Transparant.", "sourceRefs": ["artific.nl#h-digitaal-h2", "vision.artific.nl-nl#v-hero"] },
+        { "id": "dm-potentieel-risico", "text": "Elke organisatie ziet het potentieel — lagere kosten, hogere productiviteit, snellere uitvoering — maar hoe meer AI doet, hoe hoger de risico's.", "sourceRefs": ["artific.nl#h-digitaal-intro", "vision.artific.nl-nl#v-spanning-intro"] },
+        { "id": "dm-medewerker-lagen", "text": "Wat een medewerker effectief maakt zijn lagen: intelligentie (ruwe capaciteit), expertise (domeintraining) en context (inwerken in jouw bedrijf). Voor AI werkt het precies zo.", "sourceRefs": ["vision.artific.nl-nl#v-medewerker-intro", "vision.artific.nl-nl#v-intelligentie", "vision.artific.nl-nl#v-expertise", "vision.artific.nl-nl#v-context", "vision.artific.nl-nl#v-medewerker-slot"] }
+      ]
+    },
+    "visie-reis": {
+      "title": "Visie: de reis van assistent naar autonome collega",
+      "claims": [
+        { "id": "reis-overzicht", "text": "AI begint met ondersteunen, wordt onderdeel van je processen en opereert uiteindelijk zelfstandig. Elke fase levert meer waarde — en vereist een sterker fundament.", "sourceRefs": ["vision.artific.nl-nl#v-reis-h2", "vision.artific.nl-nl#v-reis-intro"] },
+        { "id": "reis-fase-1", "text": "Fase 1 — AI als Assistent: AI ondersteunt je teams met interne kennis, contentgeneratie en dagelijkse taken. De mens beslist, AI helpt.", "sourceRefs": ["vision.artific.nl-nl#v-fase-1"] },
+        { "id": "reis-fase-2", "text": "Fase 2 — AI in je processen: geïntegreerd in producten en workflows; context en regels bepalen de output. De mens keurt goed, AI voert uit.", "sourceRefs": ["vision.artific.nl-nl#v-fase-2"] },
+        { "id": "reis-fase-3", "text": "Fase 3 — AI als autonome collega: AI voert taken zelfstandig uit, neemt beslissingen binnen kaders en draait processen end-to-end. De virtuele collega in je team.", "sourceRefs": ["vision.artific.nl-nl#v-fase-3"] },
+        { "id": "reis-overtuiging", "text": "Waarde is het doel, controle is het fundament: organisaties adopteren AI voor resultaat — AI neemt het saaie werk over zodat mensen zich richten op creativiteit en strategie.", "sourceRefs": ["vision.artific.nl-nl#v-overtuiging-h2", "vision.artific.nl-nl#v-overtuiging-tekst"] },
+        { "id": "reis-regisseur", "text": "De transitie is van gebruiker naar regisseur: niet alleen human-in-the-loop, maar human in control.", "sourceRefs": ["vision.artific.nl-nl#v-transitie", "vision.artific.nl-nl#v-overtuiging-punten"] }
+      ]
+    },
+    "veilig-voorspelbaar-transparant": {
+      "title": "Veilig, voorspelbaar, transparant — de drie vragen",
+      "claims": [
+        { "id": "vvt-veilig", "text": "Is het veilig? AI heeft toegang tot gevoelige data — klantgegevens, financiële rapporten, interne documenten. Wie bepaalt waar het bij kan en waar die data naartoe gaat?", "sourceRefs": ["artific.nl#h-veilig", "vision.artific.nl-nl#v-veilig"] },
+        { "id": "vvt-voorspelbaar", "text": "Is het voorspelbaar? Zonder monitoring en audit trail weet niemand of AI-gedrag afwijkt, verandert of ontspoort.", "sourceRefs": ["artific.nl#h-voorspelbaar", "vision.artific.nl-nl#v-voorspelbaar"] },
+        { "id": "vvt-transparant", "text": "Is het transparant? Prompt injection, hallucinaties, ongewenste acties: kun je zien wat AI doet, waarom, en aantonen dat het klopt?", "sourceRefs": ["artific.nl#h-transparant", "vision.artific.nl-nl#v-transparant"] },
+        { "id": "vvt-antwoord", "text": "Dit zijn de vragen die elke organisatie moet beantwoorden — Artific lost ze op.", "sourceRefs": ["artific.nl#h-digitaal-slot", "vision.artific.nl-nl#v-spanning-slot"] }
+      ]
+    },
+    "controlelaag": {
+      "title": "De operationele controlelaag voor AI",
+      "claims": [
+        { "id": "ctl-positie", "text": "Artific is de operationele controlelaag voor AI: OpenAI, Google en Anthropic leveren de intelligentie; Artific bouwt de motor die het productief, gecontroleerd en schaalbaar maakt binnen jouw organisatie.", "sourceRefs": ["artific.nl#h-controlelaag-alt", "vision.artific.nl-nl#v-controlelaag-h2", "vision.artific.nl-nl#v-controlelaag-tekst"] },
+        { "id": "ctl-tussen-model-en-proces", "text": "Artific zit tussen de AI-modellen (GPT, Claude, Gemini) en jouw processen (CRM, e-mail, workflows) — veilig, voorspelbaar en transparant.", "sourceRefs": ["vision.artific.nl-nl#v-controlelaag-diagram"] },
+        { "id": "ctl-wat-we-bouwen", "text": "Wat we bouwen: de operationele laag voor AI binnen organisaties — features, interacties, integraties en governance die AI omzetten in productieve, gecontroleerde medewerkers.", "sourceRefs": ["vision.artific.nl-nl#v-wat-we-bouwen"] },
+        { "id": "ctl-wat-we-niet-bouwen", "text": "Wat we niet bouwen: algemene chatbots. Artific concurreert niet met ChatGPT, Claude of Gemini, maar bouwt infrastructuur voor specifieke, gecontroleerde, enterprise AI.", "sourceRefs": ["vision.artific.nl-nl#v-wat-we-niet-bouwen"] },
+        { "id": "ctl-chatgpt-gpt", "text": "ChatGPT is niet GPT: via Artific gebruik je dezelfde foundationmodellen, maar dan als gecontroleerde agent die jouw regels volgt, alleen goedgekeurde data gebruikt en een volledige audit trail heeft.", "sourceRefs": ["vision.artific.nl-nl#v-chatgpt-gpt"] },
+        { "id": "ctl-platformlagen", "text": "Het Artific Platform verbindt jouw processen via channels, agents, toolbox, data, safeguards en runtime met AI-modellen; kennisbanken, retrieval-pipelines en gestructureerde databronnen geven agents de juiste context.", "sourceRefs": ["vision.artific.nl-nl#v-platform-diagram", "vision.artific.nl-nl#v-platform-kennis"] },
+        { "id": "ctl-workforce", "text": "De controlelaag voor je AI-workforce: veilig, voorspelbaar, transparant.", "sourceRefs": ["vision.artific.nl-nl#v-slot"] }
+      ]
+    },
+    "modules": {
+      "title": "De drie productmodules",
+      "claims": [
+        { "id": "mod-overzicht", "text": "Drie modules, één platform: drie losstaande modules die met elkaar samenwerken — gebruik er één, twee of alle drie.", "sourceRefs": ["artific.nl#h-modules-h2", "artific.nl#h-modules-intro", "product.artific.nl-nl#p-modules-h2", "product.artific.nl-nl#p-modules-intro"] },
+        { "id": "mod-ai-assistant", "module": "AI Assistant", "text": "AI Assistant (Module 01): je virtuele medewerker op maat — met een rol, persoonlijkheid en toegang tot je kennisbronnen en tools; hij sluit aan bij een team en volgt je regels. Toepassingen: interne kennisbank, klantenservice-agent, verkoopassistent.", "sourceRefs": ["product.artific.nl-nl#p-module-assistant", "artific.nl#h-modules-imgs"] },
+        { "id": "mod-ai-toolbox", "module": "AI ToolBox", "text": "AI ToolBox (Module 02): de self-service AI-laag — IT bouwt kleine workflows één keer, elke medewerker draait ze met één klik; dagelijkse taken als genereren, samenvatten en analyseren in seconden.", "sourceRefs": ["product.artific.nl-nl#p-module-toolbox", "artific.nl#h-modules-imgs"] },
+        { "id": "mod-conversation", "module": "Conversation Module", "text": "Conversation Module (Module 03): één centrale plek voor inkomende e-mail — koppel Gmail of Microsoft, laat agents berichten lezen, classificeren en conceptantwoorden klaarzetten; een medewerker reviewt voordat het de deur uit gaat.", "sourceRefs": ["product.artific.nl-nl#p-module-conversation", "artific.nl#h-modules-imgs"] }
+      ]
+    },
+    "centrale-controle": {
+      "title": "Centrale controle en adoptie",
+      "claims": [
+        { "id": "cc-een-plek", "text": "Eén plek om AI te beheren en uit te rollen binnen je hele organisatie: stop de AI-wildgroei; IT definieert beleid, security en integraties, teams configureren en rollen agents uit.", "sourceRefs": ["product.artific.nl-nl#p-centraal-h2", "product.artific.nl-nl#p-centraal-intro"] },
+        { "id": "cc-it-kaders", "text": "IT zet de kaders: modellen, data-toegang, regio's, retentie, toegestane tools en budgets — één keer instellen, overal geldig.", "sourceRefs": ["product.artific.nl-nl#p-it-kaders"] },
+        { "id": "cc-teams", "text": "Teams bouwen agents binnen de kaders van IT: geen shadow IT, geen ongecontroleerde integraties, geen verrassingen.", "sourceRefs": ["product.artific.nl-nl#p-teams-agents"] },
+        { "id": "cc-adoptie", "text": "Verhoog adoptie: een toegankelijke manier om alle medewerkers mee te krijgen, aan te sturen dankzij statistieken en inzichten.", "sourceRefs": ["product.artific.nl-nl#p-adoptie"] },
+        { "id": "cc-balans", "text": "Geef je gebruikers een productiviteitsboost en houd zelf de controle over AI-governance.", "sourceRefs": ["product.artific.nl-nl#p-centraal-slot"] }
+      ]
+    },
+    "security-privacy": {
+      "title": "Security & privacy",
+      "claims": [
+        { "id": "sec-ontwerp", "text": "Security ingebouwd, privacy zorgvuldig doordacht: ontworpen voor organisaties die controle niet kunnen inruilen voor snelheid; elke laag is gebouwd voor enterprise behoeften.", "sourceRefs": ["artific.nl#h-security-h2", "artific.nl#h-security-intro", "product.artific.nl-nl#p-security-h2", "product.artific.nl-nl#p-security-intro"] },
+        { "id": "sec-eu", "text": "Gehost in de EU: alle data, alle infrastructuur, alle processing binnen de EU.", "strict": true, "sourceRefs": ["artific.nl#h-sec-eu", "product.artific.nl-nl#p-sec-eu"] },
+        { "id": "sec-iso", "text": "ISO 27001 gecertificeerd: onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.", "strict": true, "sourceRefs": ["artific.nl#h-sec-iso", "product.artific.nl-nl#p-sec-iso"] },
+        { "id": "sec-pseudo", "text": "Pseudonimisering: persoonlijk identificeerbare informatie (PII) wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.", "strict": true, "sourceRefs": ["artific.nl#h-sec-pseudo", "product.artific.nl-nl#p-sec-pseudo"] },
+        { "id": "sec-model-agnostisch", "text": "Model-agnostisch: wissel GPT, Claude, Gemini of andere modellen per agent, per taak, per tenant — geen lock-in op één model.", "sourceRefs": ["artific.nl#h-sec-model", "product.artific.nl-nl#p-sec-model"] },
+        { "id": "sec-access", "text": "Access control: fijnmazige rollen, scopes en tenant-isolatie; permissies per agent instelbaar.", "sourceRefs": ["artific.nl#h-sec-access", "product.artific.nl-nl#p-sec-access"] },
+        { "id": "sec-audit", "text": "Audit logs: elke prompt, elke tool-call, elke beslissing wordt vastgelegd in het systeem.", "strict": true, "sourceRefs": ["artific.nl#h-sec-audit", "product.artific.nl-nl#p-sec-audit"] }
+      ]
+    },
+    "partnermodel": {
+      "title": "Partnermodel — de lagen Artific, partner, klant",
+      "claims": [
+        { "id": "pm-markt", "text": "Wij gaan niet zelf naar de markt — partners wel. Artific is geen kant-en-klaar product maar een fundament waarop partners bouwen met domeinexpertise en branchespecifieke kennis.", "sourceRefs": ["artific.nl#h-partner-h2", "artific.nl#h-partner-intro", "vision.artific.nl-nl#v-partner-h2", "vision.artific.nl-nl#v-partner-intro"] },
+        { "id": "pm-laag-artific", "text": "Laag 1 — Artific (fundament & interactielaag): platform met agent-capaciteiten, integraties, kanalen, governance en runtime, plus de interfaces die AI toegankelijk maken.", "sourceRefs": ["vision.artific.nl-nl#v-laag-artific", "artific.nl#h-partner-lagen-imgs"] },
+        { "id": "pm-laag-partners", "text": "Laag 2 — Partners (branchespecifieke laag): partners voegen domeinkennis toe en configureren agents voor zorg, juridisch, finance, retail — elke sector; ondersteund door het research lab en technische partners.", "sourceRefs": ["vision.artific.nl-nl#v-laag-partners", "artific.nl#h-partner-lagen-imgs"] },
+        { "id": "pm-laag-klanten", "text": "Laag 3 — Klanten (bedrijfscontext): klanten werken de agent in met hun data, processen en systemen; het resultaat is een virtuele medewerker die hun bedrijf kent en binnen hun regels werkt.", "sourceRefs": ["vision.artific.nl-nl#v-laag-klanten", "artific.nl#h-partner-lagen-imgs"] },
+        { "id": "pm-samen-sterker", "text": "Samen sterker: mensen samen met AI, Artific samen met partners — branchespecialisten en professionals binnen specifieke vakgebieden — voor de beste oplossing voor klanten.", "sourceRefs": ["artific.nl#h-partner-samen"] },
+        { "id": "pm-zelfde-platform", "text": "Het platform is hetzelfde; wat verschilt is hoe partners het inzetten.", "sourceRefs": ["vision.artific.nl-nl#v-lagen-slot"] }
+      ]
+    },
+    "portal-headless": {
+      "title": "Portal/interface versus headless",
+      "claims": [
+        { "id": "ph-keuze", "text": "Twee manieren om te bouwen op hetzelfde platform: gebruik de web portal of bouw headless — kies de ervaring die past bij je team.", "sourceRefs": ["product.artific.nl-nl#p-bouwen-h2", "product.artific.nl-nl#p-bouwen-intro", "vision.artific.nl-nl#v-bouwen-h2"] },
+        { "id": "ph-portal", "text": "Artific Portal — snelste weg naar productie: een white-label web-app waarin je agents configureert, gebruikers en policies beheert en uitrolt zonder een regel frontend-code.", "sourceRefs": ["product.artific.nl-nl#p-portal", "vision.artific.nl-nl#v-interface"] },
+        { "id": "ph-headless", "text": "Headless — volledige controle: roep de API aan, embed agents in je product, bouw je eigen frontend; hetzelfde security-model en dezelfde governance, jouw merk en jouw UX.", "sourceRefs": ["product.artific.nl-nl#p-headless", "vision.artific.nl-nl#v-headless"] },
+        { "id": "ph-groeipad", "text": "De meeste klanten starten met de portal en gaan stapsgewijs headless voor delen van hun stack.", "sourceRefs": ["product.artific.nl-nl#p-bouwen-slot"] }
+      ]
+    },
+    "capabilities": {
+      "title": "Relevante mogelijkheden",
+      "claims": [
+        { "id": "cap-overzicht", "text": "Een Nederlands AI-platform boordevol mogelijkheden: alles om productie-waardige AI-features te leveren zonder losse point-solutions aan elkaar te knopen.", "sourceRefs": ["product.artific.nl-nl#p-capabilities-h2", "product.artific.nl-nl#p-capabilities-intro"] },
+        { "id": "cap-agents", "text": "Agents: multi-agent orkestratie, memory & rollen, agent-to-agent (A2A), persoonlijke instructies, tone of voice, meertalig (NL/EN/DE/FR/+), evaluaties.", "sourceRefs": ["product.artific.nl-nl#p-cap-agents"] },
+        { "id": "cap-kennis", "text": "Kennis & data: private kennisbank, maatwerk document-ingestie, veilige bestandsopslag, re-ranking & hybrid search, bronvermelding, brede bestandsondersteuning, web scraping.", "sourceRefs": ["product.artific.nl-nl#p-cap-kennis"] },
+        { "id": "cap-tools", "text": "Tools & integratie: tool-runtime, custom tools, uitgebreide editor, REST & SDK, MCP-integraties.", "sourceRefs": ["product.artific.nl-nl#p-cap-tools"] },
+        { "id": "cap-interfaces", "text": "Interfaces: web portal, branded white-label, voice, embeddable widgets, conversation history, diarization, mobile-ready, projecten.", "sourceRefs": ["product.artific.nl-nl#p-cap-interfaces"] },
+        { "id": "cap-security", "text": "Security-capabilities: pseudonimisering, EU-gehost, ISO 27001, SSO, role-based access, permissies per agent, audit logs, bring your own LLM keys.", "strict": true, "sourceRefs": ["product.artific.nl-nl#p-cap-security"] },
+        { "id": "cap-operatie", "text": "Operatie: cost tracking, usage analytics, observability, meerdere environments, headless of hosted, 99,9% SLA.", "strict": true, "sourceRefs": ["product.artific.nl-nl#p-cap-operatie"] }
+      ]
+    },
+    "begeleiding-ondersteuning": {
+      "title": "Begeleiding en ondersteuning",
+      "claims": [
+        { "id": "bo-vijf-stappen", "text": "In vijf stappen volledig AI ontzorgd: introductie (intake en AI-strategie), training, implementatie, aftercare en support.", "sourceRefs": ["artific.nl#h-stappen-h2", "artific.nl#h-stappen-intro", "artific.nl#h-stap-introductie", "artific.nl#h-stap-training", "artific.nl#h-stap-implementatie", "artific.nl#h-stap-aftercare", "artific.nl#h-stap-support"] },
+        { "id": "bo-aftercare", "text": "Na livegang blijven we betrokken: monitoring, optimalisatie en minimaal één update-sync-meeting per kwartaal.", "strict": true, "sourceRefs": ["artific.nl#h-stap-aftercare"] },
+        { "id": "bo-support", "text": "Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.", "strict": true, "sourceRefs": ["artific.nl#h-stap-support"] },
+        { "id": "bo-opleidingen", "text": "Artific biedt complete AI-opleidingen, trainingen en workshops — van AI Awareness Training en 'Prompt koning in één dag' tot AI Business.", "sourceRefs": ["artific.nl#h-opleidingen-h2", "artific.nl#h-opleidingen-intro", "artific.nl#h-training-awareness", "artific.nl#h-training-prompt", "artific.nl#h-training-business"] }
+      ]
+    },
+    "bewijs": {
+      "title": "Bewijs — klanten en cases",
+      "claims": [
+        { "id": "bw-100-klanten", "text": "We helpen meer dan 100 klanten om AI voor hen te laten werken — van enterprise tot overheid, bij organisaties die security, governance en betrouwbaarheid serieus nemen.", "strict": true, "sourceRefs": ["product.artific.nl-nl#p-klanten-h2", "product.artific.nl-nl#p-klanten-intro"] },
+        { "id": "bw-klantnamen", "text": "Klanten zijn onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.", "strict": true, "sourceRefs": ["product.artific.nl-nl#p-klanten-logos"] },
+        { "id": "bw-bulpe", "text": "Bulpe Fulfilment ondersteunt zijn klantenservice met het Artific AI-platform; de resultaten zijn zo positief dat de volgende AI-processtap al in ontwikkeling is.", "sourceRefs": ["artific.nl#h-bulpe-h2", "artific.nl#h-bulpe-tekst"] },
+        { "id": "bw-fctwente", "text": "FC Twente koos Artific en AI-SupportGroup voor drie seizoenen als officiële AI-partner van de club.", "strict": true, "sourceRefs": ["artific.nl#h-blog-fctwente"] },
+        { "id": "bw-quote-leqqr", "text": "Klantquote Leqqr (Arjan Zwarteveen): de Artific AI-Assistent werkt als een trein — in drie weken enorm bespaard op personele kosten terwijl de supportkwaliteit beter werd.", "strict": true, "sourceRefs": ["artific.nl#h-quote-leqqr"] },
+        { "id": "bw-quote-vechtstede", "text": "Klantquote Vechtstede Notarissen (Rogier Lukas): de eerste resultaten van de AI-Notaris Assistent zijn veelbelovend.", "sourceRefs": ["artific.nl#h-quote-vechtstede"] },
+        { "id": "bw-quote-harundo", "text": "Klantquote Harundo (Sander van der Meer): de custom made AI-Assistent/Chatbot werkt uitstekend en wordt door elke (reseller)klant met open armen ontvangen.", "sourceRefs": ["artific.nl#h-quote-harundo"] }
+      ]
+    },
+    "conversie": {
+      "title": "Conversieboodschappen",
+      "claims": [
+        { "id": "cv-demo", "text": "Vraag een demo aan.", "sourceRefs": ["artific.nl#h-hero-cta", "artific.nl#h-demo-slideout"] },
+        { "id": "cv-afspraak", "text": "Maak een afspraak.", "sourceRefs": ["artific.nl#h-hero-cta"] },
+        { "id": "cv-informatie", "text": "Informatie aanvragen.", "sourceRefs": ["artific.nl#h-training-awareness", "artific.nl#h-training-prompt", "artific.nl#h-training-business"] },
+        { "id": "cv-versnellen", "text": "Klaar om AI-adoptie te versnellen? Let's talk.", "sourceRefs": ["product.artific.nl-nl#p-slot"] },
+        { "id": "cv-partners", "text": "Ontdek onze partners.", "sourceRefs": ["artific.nl#h-partner-cta"] }
+      ]
+    }
+  },
+  "ctas": {
+    "canonical": {
+      "vraag-een-demo-aan": {
+        "label": "Vraag een demo aan",
+        "type": "conversie",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-hero-cta", "elementType": "a", "rawHref": "#" }
+        ],
+        "sourceBehavior": "Opent op artific.nl een slideout met een Gravity Forms-demoaanvraagformulier (WordPress, AJAX); zie content/sources/demo-trigger-observation.md.",
+        "destination": "https://artific.nl/contact-opnemen/",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "deviation": "Voorgeschreven fallback: het brongedrag (slideout-formulier) vereist server-side afhandeling op artific.nl en is niet overdraagbaar naar statische pagina's. Demo-aanvragen leiden daarom consequent naar de officiële contactpagina.",
+        "verified": "HTTP 200 op 2026-07-15; klikgedrag bron gereproduceerd in tweede browserrun"
+      },
+      "maak-een-afspraak": {
+        "label": "Maak een afspraak",
+        "type": "conversie",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-hero-cta", "elementType": "a", "rawHref": "https://artific.nl/contact-opnemen/" }
+        ],
+        "destination": "https://artific.nl/contact-opnemen/",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "verified": "HTTP 200 op 2026-07-15"
+      },
+      "informatie-aanvragen": {
+        "label": "Informatie aanvragen",
+        "type": "conversie",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-training-awareness", "elementType": "a", "rawHref": "https://artific.nl/contact-opnemen/" },
+          { "sourceRef": "artific.nl#h-training-prompt", "elementType": "a", "rawHref": "https://artific.nl/contact-opnemen/" },
+          { "sourceRef": "artific.nl#h-training-business", "elementType": "a", "rawHref": "https://artific.nl/contact-opnemen/" }
+        ],
+        "destination": "https://artific.nl/contact-opnemen/",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "verified": "HTTP 200 op 2026-07-15"
+      },
+      "over-onze-partners": {
+        "label": "Over onze partners",
+        "type": "ondersteunend",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-partner-cta", "elementType": "a", "rawHref": "http://artific.nl/over-ons/partners/" }
+        ],
+        "destination": "https://artific.nl/over-ons/partners/",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "notes": "Bron gebruikt http; genormaliseerd naar https (zelfde pagina).",
+        "verified": "HTTP 200 op 2026-07-15"
+      },
+      "meer-lezen": {
+        "label": "Meer lezen",
+        "type": "ondersteunend",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-blog-fctwente", "elementType": "a", "rawHref": "https://artific.nl/blogs/artific-en-ai-supportgroup-officiele-ai-partners-van-fc-twente/" },
+          { "sourceRef": "artific.nl#h-blog-artiliance", "elementType": "a", "rawHref": "https://artific.nl/blogs/artific-verwelkomt-artiliance-als-nieuwe-implementatiepartner/" },
+          { "sourceRef": "artific.nl#h-blog-portfolio", "elementType": "a", "rawHref": "https://artific.nl/blogs/hoe-voeg-je-ai-toe-aan-je-portfolio-zonder-zelf-te-ontwikkelen/" }
+        ],
+        "destination": "per-voorkomen (rawHref van elk voorkomen is de officiële bestemming)",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "verified": "alle drie HTTP 200 op 2026-07-15"
+      },
+      "klantbeoordelingen": {
+        "label": "klantbeoordelingen",
+        "type": "ondersteunend",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-nav", "elementType": "a", "rawHref": "https://artific.nl/klantbeoordelingen/" },
+          { "sourceRef": "artific.nl#h-klanten-h2", "elementType": "a", "rawHref": "https://artific.nl/klantbeoordelingen/" }
+        ],
+        "destination": "https://artific.nl/klantbeoordelingen/",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "verified": "HTTP 200 op 2026-07-15"
+      },
+      "award-blog": {
+        "label": "(afbeeldinglink) AI Company of the Year — winnaarslogo",
+        "type": "ondersteunend",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-award", "elementType": "a (afbeelding)", "rawHref": "http://artific.nl/blogs/artific-uitgeroepen-tot-ai-company-of-the-year-tijdens-de-nationale-ai-awards/" }
+        ],
+        "destination": "https://artific.nl/blogs/artific-uitgeroepen-tot-ai-company-of-the-year-tijdens-de-nationale-ai-awards/",
+        "linkBehavior": "normale navigatie, zelfde tabblad",
+        "notes": "Bron gebruikt http; genormaliseerd naar https (zelfde pagina).",
+        "verified": "HTTP 200 op 2026-07-15"
+      },
+      "bulpe-video": {
+        "label": "(afbeeldinglink) Bulpe Fulfilment klantvideo",
+        "type": "ondersteunend",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-bulpe-video", "elementType": "a (afbeelding)", "rawHref": "https://vimeo.com/1062704736" }
+        ],
+        "destination": "https://vimeo.com/1062704736",
+        "linkBehavior": "externe navigatie (Vimeo)",
+        "verified": "HTTP 200 op 2026-07-15"
+      },
+      "registreren": {
+        "label": "Registreren",
+        "type": "navigatie",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-nav-registreren-inloggen", "elementType": "a", "rawHref": "#" }
+        ],
+        "destination": null,
+        "decision": "Niet overnemen in de varianten: het bronelement heeft geen werkende bestemming en geen JS-gedrag, en is alleen op één breakpoint zichtbaar. Geen officiële bestemming bekend; er wordt niets gegist.",
+        "verified": "gedrag geïnspecteerd op 2026-07-15 (geen data-attributen, geen handler)"
+      },
+      "inloggen": {
+        "label": "Inloggen",
+        "type": "navigatie",
+        "occurrences": [
+          { "sourceRef": "artific.nl#h-nav-registreren-inloggen", "elementType": "a", "rawHref": "#" }
+        ],
+        "destination": null,
+        "decision": "Niet overnemen in de varianten: zelfde situatie als 'Registreren' — geen werkende bestemming in de bron, dus geen gegiste bestemming in de varianten.",
+        "verified": "gedrag geïnspecteerd op 2026-07-15 (geen data-attributen, geen handler)"
+      }
+    },
+    "navigation": {
+      "artific.nl-header": {
+        "sourceRef": "artific.nl#h-nav",
+        "links": {
+          "AI Platform": "https://artific.nl/ai-platform/",
+          "Partners": "https://artific.nl/over-ons/partners/",
+          "Vacatures": "https://artific.nl/werken-bij-artific/",
+          "Over ons": "https://artific.nl/over-ons/",
+          "Data beveiliging & privacy": "https://artific.nl/zo-waarborgt-artific-de-veiligheid-en-privacy-van-jouw-data/",
+          "Contact": "https://artific.nl/contact-opnemen/",
+          "Artific Playground": "https://ai.artific.nl/"
+        },
+        "notes": "'Over Artific' is een dropdown-parent met rawHref '#'; de werkelijke bestemmingen zijn de submenu-items 'Over ons' en 'Data beveiliging & privacy'."
+      },
+      "artific.nl-footer": {
+        "sourceRef": "artific.nl#h-footer",
+        "links": {
+          "Contact opnemen": "https://artific.nl/contact-opnemen/",
+          "info@artific.nl": "mailto:info@artific.nl",
+          "tel: 053-203 0123": "tel:053 203 0123",
+          "Blogs": "https://artific.nl/category/blogs/",
+          "Start AI": "https://artific.nl/ai-oplossingen/start-ai/",
+          "Think AI": "https://artific.nl/ai-oplossingen/think-ai/",
+          "Act AI": "https://artific.nl/ai-oplossingen/act-ai/",
+          "Build AI": "https://artific.nl/ai-oplossingen/build-ai/",
+          "LinkedIn": "https://www.linkedin.com/company/artific-ai/?originalSubdomain=nl",
+          "Facebook": "https://m.facebook.com/p/Artific-100091617280701/",
+          "Algemene voorwaarden": "http://artific.nl/inhoud/uploads/NLdigital-Voorwaarden-Inkijkexemplaar.pdf",
+          "Privacy Policy": "https://artific.qwilr.com/Privacy-Policy-OyBNYoWpS6ie",
+          "Veiligheid en privacy van data": "https://artific.nl/zo-waarborgt-artific-de-veiligheid-en-privacy-van-jouw-data/",
+          "Cookies": "https://artific.nl/cookies/"
+        }
+      },
+      "vision-inpage": {
+        "sourceRef": "vision.artific.nl-nl#v-nav",
+        "links": {
+          "Option A": "#option-a",
+          "Solution": "#solution",
+          "Platform": "#platform",
+          "Partners": "#partners",
+          "Partner Model": "#partner-role",
+          "Focus": "#focus"
+        },
+        "notes": "Uitsluitend in-page ankers; geen externe conversie-CTA's op deze pagina. De 'Export to PDF'-knop is standaard verborgen en wordt niet overgenomen."
+      },
+      "product-inpage": {
+        "sourceRef": "product.artific.nl-nl#p-nav",
+        "links": {
+          "Modules": "#modules",
+          "Centralized": "#centralized",
+          "Security": "#security",
+          "Capabilities": "#capabilities",
+          "Portal · Headless": "#portal-headless",
+          "Customers": "#customers"
+        },
+        "notes": "Uitsluitend in-page ankers; de slottekst \"Let's talk.\" is platte tekst zonder link. De 'Export to PDF'-knop is standaard verborgen en wordt niet overgenomen."
+      }
+    }
+  },
+  "brand": {
+    "source": "assets/brand/brand.json",
+    "rule": "Kleuren en logo's uitsluitend uit assets/brand/brand.json (geverifieerd tegen de aangeleverde Artific-PDF's); nooit van de live sites afgeleid."
+  }
+}
