@@ -6,7 +6,7 @@ Statische HTML-website met vijf onafhankelijk bekijkbare, klantgerichte landings
 
 | Variant | Adres | Status |
 | --- | --- | --- |
-| Minimalistisch | `/minimalistisch/` | **Opgeleverd** — volledige landingspagina met eigen stijlgids (`minimalistisch/DESIGN.md`) |
+| Minimalistisch | `/minimalistisch/` | **Gebouwd, oplevering geblokkeerd** — volledige landingspagina met eigen stijlgids (`minimalistisch/DESIGN.md`); definitieve oplevering wacht op de twee interne merk-PDF's en de Google Stitch-MCP (zie hieronder) |
 | Brutalistisch A | `/brutalistisch-a/` | gereserveerde statuspagina |
 | Brutalistisch B | `/brutalistisch-b/` | gereserveerde statuspagina |
 | Conventioneel (SaaS) | `/conventioneel/` | gereserveerde statuspagina |
@@ -46,7 +46,7 @@ Controleert JSON-syntax, unieke claim-IDs, oplosbaarheid van alle bronankers, de
 
 `validate-minimalistisch.mjs` bewaakt de opgeleverde minimalistische variant: Nederlandse metadata, exact één H1, sectievolgorde, geldige `data-claim-id`'s (incl. de drie modules), uitsluitend CTA's/links uit de canonieke kaart, alleen goedgekeurde lokale logo's, alleen hexkleuren uit `brand.json`, gepinde GSAP/ScrollTrigger-CDN met reduced-motion-guards en de verplichte hoofdstukken in `minimalistisch/DESIGN.md`.
 
-De huisstijlgate in `validate-content.mjs` staat `status: "verified"` uitsluitend toe wanneer beide interne PDF's (`260506 Artific brand manual v1.0.pdf`, `260506 Voorbeelden creative materials.pdf`) als beschikbaar referentiedocument zijn opgenomen; zelfverklaarde openbare-PDF-evidence kan die gate niet passeren. Zolang ze ontbreken is `unverified` verplicht, mét per kleur/logo een `pdfProvenance` (beschikbaar documentId, geldige paginanummers en evidence), reproduceerbare referentiedocumenten (artific.nl-URL + SHA-256, `available: true`) en een gedocumenteerde `deviation`.
+De huisstijlgate in `validate-content.mjs` is hard: de eindoplevering vereist `status: "verified"`, en `verified` is uitsluitend toegestaan wanneer beide interne PDF's (`260506 Artific brand manual v1.0.pdf`, `260506 Voorbeelden creative materials.pdf`) als beschikbaar referentiedocument zijn opgenomen; zelfverklaarde openbare-PDF-evidence kan die gate niet passeren. Zolang die documenten ontbreken is de huisstijlbron `unverified` en **faalt de validator bewust** — de oplevering van varianten is dan geblokkeerd. Daarnaast blijft per kleur/logo `pdfProvenance` (beschikbaar documentId, geldige paginanummers en evidence), reproduceerbare referentiedocumenten (artific.nl-URL + SHA-256, `available: true`) en een gedocumenteerde `deviation` verplicht.
 
 ## Referentiemateriaal en secrets
 

@@ -1,8 +1,8 @@
 # Ontwerpdocument — variant Minimalistisch
 
-Stijlgids voor de landingspagina op `/minimalistisch/`. Dit document beschrijft de daadwerkelijk geïmplementeerde waarden uit `styles.css` en `main.js`; het is geen voorstel maar de vastlegging van de opgeleverde variant.
+Stijlgids voor de landingspagina op `/minimalistisch/`. Dit document beschrijft de daadwerkelijk geïmplementeerde waarden uit `styles.css` en `main.js`; het is geen voorstel maar de vastlegging van de gebouwde variant.
 
-> **Provenance:** dit document is handmatig opgesteld op basis van de geïmplementeerde CSS/JS en de `minimalist-ui`-stijlprincipes. De Google Stitch-MCP was in de buildomgeving van dit ticket **niet beschikbaar** (geen geconfigureerde MCP-tools aanwezig); dit document wordt daarom nadrukkelijk *niet* als Stitch-output gepresenteerd. Er is geen credential gebruikt of opgeslagen.
+> **Provenance — oplevering geblokkeerd:** dit document is handmatig opgesteld op basis van de geïmplementeerde CSS/JS en de `minimalist-ui`-stijlprincipes. De opdracht vereist dat dit document via de geconfigureerde Google Stitch-MCP wordt gemaakt, maar die MCP was in de buildomgeving van dit ticket **niet beschikbaar** (geen geconfigureerde MCP-tools aanwezig). Dit document wordt daarom nadrukkelijk *niet* als Stitch-output gepresenteerd en de variant geldt niet als definitief opgeleverd totdat het document via de Stitch-MCP is gefinaliseerd. Er is geen credential gebruikt of opgeslagen.
 
 ## Ontwerpprincipes
 
