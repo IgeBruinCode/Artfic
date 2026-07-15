@@ -17,7 +17,7 @@ De vier documenten bevestigen onderling consistent dezelfde kleurenset en dezelf
 
 ## Afwijking: de twee interne referentie-PDF's zijn nooit aangeleverd
 
-De opdracht wees `260506 Artific brand manual v1.0.pdf` en `260506 Voorbeelden creative materials.pdf` aan als referentie. Beide staan in `.gitignore`, maar zijn in vier bouwpogingen (laatst 2026-07-15) nooit aan de buildomgeving aangeleverd: niet op het bestandssysteem (volledige schijfscan, ook zonder `.pdf`-extensie en op PDF-magic-bytes), niet in de Git-historie of op enige remote-branch, niet in de volledige openbare WordPress-mediabibliotheek van artific.nl (614 items via de REST-API doorlopen) en niet via sitemaps of andere officiële locaties.
+De opdracht wees `260506 Artific brand manual v1.0.pdf` en `260506 Voorbeelden creative materials.pdf` aan als referentie. Beide staan in `.gitignore`, maar zijn in zes bouwpogingen (laatst 2026-07-15) nooit aan de buildomgeving aangeleverd: niet op het bestandssysteem (volledige schijfscan, ook zonder `.pdf`-extensie en op PDF-magic-bytes), niet in de Git-historie of op enige remote-branch, niet in de volledige openbare WordPress-mediabibliotheek van artific.nl (614 items via de REST-API doorlopen) en niet via sitemaps of andere officiële locaties.
 
 De waarden zijn daarom gedocumenteerd tegen de sterkst beschikbare openbare bron: door Artific zélf gepubliceerde PDF-materialen. Dat is documentatie van gebruik, géén merk-goedkeuring; de status blijft `unverified` tot de interne PDF's er zijn. Die afwijking staat expliciet in het `deviation`-blok van `brand.json`, inclusief de correcties ten opzichte van de eerdere web-afgeleide kandidaten:
 
