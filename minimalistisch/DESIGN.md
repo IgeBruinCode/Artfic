@@ -53,8 +53,8 @@ Beweging is een detail, nooit een voorwaarde: de volledige pagina is leesbaar en
 - Reveals: `data-reveal`-elementen komen éénmalig binnen met `opacity 0 → 1` en `y 20px → 0` (0,55s, `power2.out`, start op 88% viewport); properties worden na afloop gewist (`clearProps`). Niets staat standaard op opacity 0 in CSS/HTML.
 - Flow-voortgang: de pijlen van de controlelaag-compositie faden gestaffeld in (0,2s stagger) zodra de compositie in beeld komt.
 - Hover: CTA's krijgen een subtiele lift van 2px bij mouseenter/-leave; klik- en focusgedrag hangt nergens van GSAP af.
-- CSS: `scroll-behavior: smooth` en de hover-onderstreping worden in het `prefers-reduced-motion`-blok volledig uitgeschakeld (`scroll-behavior: auto`, `transition/animation: none`).
+- CSS: het `prefers-reduced-motion`-blok schakelt smooth scrolling (`scroll-behavior: auto`) en alle transitions/animations uit; de hover-onderstreping blijft bestaan en verschijnt dan direct, zonder overgang.
 
 ## Responsief gedrag
 
-Breakpoints op 640px (headernav verbergen), 700px (tweeluik, rijen in twee kolommen, horizontale flow) en 980px (asymmetrische hero en module-layout). Op 320px: één kolom, hero- en slot-CTA's volledig zichtbaar, geen horizontale overflow. Sectieankers krijgen `scroll-margin-top: 96px` vanwege de sticky header.
+Breakpoints op 400px (compacte sticky header: logo 88px, kleinere gap en CTA-padding zodat de header op 320px op één regel past), 640px (headernav verbergen), 700px (tweeluik, rijen in twee kolommen, horizontale flow) en 980px (asymmetrische hero en module-layout). Op 320px: één kolom, hero- en slot-CTA's volledig zichtbaar, geen horizontale overflow. Sectieankers krijgen `scroll-margin-top: 96px` vanwege de sticky header.

@@ -648,6 +648,22 @@ section[id] {
   }
 }
 
+@media (max-width: 400px) {
+  .site-header__binnen {
+    gap: var(--ruimte-1);
+    padding: var(--ruimte-1) var(--gutter);
+  }
+
+  .site-header__logo img {
+    width: 88px;
+  }
+
+  .cta--klein {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
 /* Minder beweging: geen transities, geen smooth scroll */
 @media (prefers-reduced-motion: reduce) {
   html {

@@ -53,6 +53,35 @@ const usedClaims = new Set(
 for (const id of usedClaims) {
   if (!knownClaims.has(id)) fail(`index.html: onbekende data-claim-id '${id}'`);
 }
+
+// Strikte claims: de zichtbare varianttekst ligt hier vast, zodat inhoudelijke drift
+// (cijfers, compliance, letterlijke citaten) de check laat falen in plaats van alleen het claim-ID.
+const normalize = (s) => s.replace(/&amp;/g, '&').replace(/&nbsp;|\s+/g, ' ').trim();
+const pageText = normalize(html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' '));
+const strictVariantTexts = {
+  'pos-besparing-30': ['bespaar 30% van je tijd met één AI-platform'],
+  'pos-nederlands': ['Gebouwd door Nederlandse AI-professionals. NL-gehost, AVG-proof en snel inzetbaar.'],
+  'pos-badges': ['EU-gehost', 'ISO 27001 gecertificeerd', 'API-first', 'Model-agnostisch'],
+  'pos-award': ['Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.'],
+  'sec-eu': ['Alle data, alle infrastructuur, alle processing binnen de EU.'],
+  'sec-iso': ['Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.'],
+  'sec-pseudo': ['Persoonlijk identificeerbare informatie wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.'],
+  'sec-audit': ['Elke prompt, elke tool-call, elke beslissing wordt vastgelegd in het systeem.'],
+  'bo-aftercare': ['Na livegang blijven we betrokken: monitoring, optimalisatie en minimaal één update-sync-meeting per kwartaal.'],
+  'bo-support': ['Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.'],
+  'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken', 'Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.'],
+  'bw-klantnamen': ['Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
+  // Direct citaat: letterlijk gelijk aan content/sources/artific.nl.md#h-quote-leqqr.
+  'bw-quote-leqqr': ['"De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden." — Arjan Zwarteveen, Senior Marketeer Leqqr'],
+};
+for (const id of usedClaims) {
+  if (!knownClaims.get(id)?.strict) continue;
+  const snippets = strictVariantTexts[id];
+  if (!snippets) { fail(`index.html: strikte claim '${id}' heeft geen vastgelegde varianttekst in deze validator`); continue; }
+  for (const snippet of snippets) {
+    if (!pageText.includes(normalize(snippet))) fail(`index.html: zichtbare tekst voor strikte claim '${id}' wijkt af van de vastgelegde varianttekst: '${snippet}'`);
+  }
+}
 const requiredClaims = [
   'pos-belofte', 'pos-agentic-platform', 'pos-badges',
   'dm-kop', 'vvt-veilig', 'vvt-voorspelbaar', 'vvt-transparant',
@@ -72,10 +101,12 @@ if (/href="#"[\s>]/.test(html)) fail('index.html: kale href="#" gevonden');
 if (/vision\.artific\.nl|product\.artific\.nl/.test(html)) {
   fail('index.html: inhoudelijke doorlink naar vision-/productsubpagina is niet toegestaan');
 }
+// Toegestane externe bestemmingen: de canonieke footerlinks plus alle CTA-kaartbestemmingen.
 const allowedExternal = new Set([
-  'https://artific.nl/contact-opnemen/',
-  'mailto:info@artific.nl',
-  'tel:053 203 0123',
+  ...Object.values(content.ctas.navigation['artific.nl-footer'].links),
+  ...Object.values(content.ctas.canonical)
+    .map((c) => c.destination)
+    .filter((d) => typeof d === 'string' && /^https?:/.test(d)),
 ]);
 for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
   if (href.startsWith('#') || href === 'styles.css') continue;
@@ -83,17 +114,20 @@ for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
 }
 
 const ctaCard = content.ctas.canonical;
-const ctaRe = /<a([^>]*\sdata-cta-id="([^"]+)"[^>]*)>([^<]+)<\/a>/g;
+const ctaRe = /<a\b([^>]*\sdata-cta-id="([^"]+)"[^>]*)>([\s\S]*?)<\/a>/g;
 let ctaCount = 0;
-for (const [, attrs, ctaId, label] of html.matchAll(ctaRe)) {
+for (const [, attrs, ctaId, inner] of html.matchAll(ctaRe)) {
   ctaCount += 1;
   const entry = ctaCard[ctaId];
   if (!entry) { fail(`index.html: data-cta-id '${ctaId}' staat niet in de CTA-kaart`); continue; }
-  if (label.trim() !== entry.label) fail(`index.html: CTA '${ctaId}' heeft label '${label.trim()}' i.p.v. '${entry.label}'`);
+  const label = inner.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (label !== entry.label) fail(`index.html: CTA '${ctaId}' heeft label '${label}' i.p.v. '${entry.label}'`);
   const href = attrs.match(/href="([^"]+)"/)?.[1];
   if (href !== entry.destination) fail(`index.html: CTA '${ctaId}' wijst naar '${href}' i.p.v. '${entry.destination}'`);
   if (/target=/.test(attrs)) fail(`index.html: CTA '${ctaId}' mag geen target-attribuut hebben (zelfde tabblad)`);
 }
+const ctaAttrTotal = (html.match(/data-cta-id="/g) ?? []).length;
+if (ctaAttrTotal !== ctaCount) fail(`index.html: ${ctaAttrTotal} data-cta-id-attributen gevonden maar slechts ${ctaCount} als anchor gevalideerd`);
 if (ctaCount < 3) fail(`index.html: verwacht minimaal 3 CTA-voorkomens (header, hero, slot), gevonden: ${ctaCount}`);
 
 // --- afbeeldingen: alleen goedgekeurde lokale logo's ---
