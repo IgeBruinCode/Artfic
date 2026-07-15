@@ -30,4 +30,4 @@ node scripts/validate-brutalistisch-a.mjs
 
 De drie fallbackmodi zijn getest via tijdelijke, niet-gecommitte kopieën van `index.html` (map `qa-temp/`, na afloop verwijderd) die alleen de scriptlading manipuleerden; styles.css/main.js zelf waren de originele bestanden.
 
-Openstaand buiten deze QA: de harde brand-gate (`brand.json` = `unverified`, interne PDF's niet aangeleverd) en de Stitch-MCP-gate (zie `DESIGN.md`).
+Openstaand buiten deze QA: de harde brand-gate (`brand.json` = `unverified`, interne PDF's niet aangeleverd). De Stitch-gate is gesloten: `DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document).

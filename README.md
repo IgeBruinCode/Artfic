@@ -7,7 +7,7 @@ Statische HTML-website met vijf onafhankelijk bekijkbare, klantgerichte landings
 | Variant | Adres | Status |
 | --- | --- | --- |
 | Minimalistisch | `/minimalistisch/` | **Gebouwd, oplevering geblokkeerd** — volledige landingspagina met eigen stijlgids (`minimalistisch/DESIGN.md`); definitieve oplevering wacht op de twee interne merk-PDF's en de Google Stitch-MCP (zie hieronder) |
-| Brutalistisch A | `/brutalistisch-a/` | **Gebouwd, oplevering geblokkeerd** — volledige landingspagina met eigen stijlgids (`brutalistisch-a/DESIGN.md`); definitieve oplevering wacht op de twee interne merk-PDF's en de Google Stitch-MCP (zie hieronder) |
+| Brutalistisch A | `/brutalistisch-a/` | **Gebouwd** — volledige landingspagina; `brutalistisch-a/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document zelf). Alleen de merkverificatie tegen de twee interne PDF's staat nog open (zie hieronder) |
 | Brutalistisch B | `/brutalistisch-b/` | gereserveerde statuspagina |
 | Conventioneel (SaaS) | `/conventioneel/` | gereserveerde statuspagina |
 | Premium | `/premium/` | gereserveerde statuspagina |
