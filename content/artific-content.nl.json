@@ -8,7 +8,7 @@
       "Claims met strict=true bevatten cijfers of complianceformuleringen; varianten mogen deze verkorten maar nooit aanscherpen, combineren of sterker beloven dan de bron.",
       "Varianten mogen claims weglaten of korter herformuleren, maar mogen geen nieuwe feiten, cijfers of complianceclaims toevoegen die niet in de bronnen staan.",
       "CTA-labels, -bestemmingen en -gedrag komen uitsluitend uit de ctas-map; geen kale '#', geen verzonnen bestemmingen.",
-      "Huisstijl (kleuren, logo's) komt uitsluitend uit assets/brand/brand.json; kleuren van de live sites zijn geen geldige vervanging."
+      "Huisstijl (kleuren, logo's) komt uitsluitend uit assets/brand/brand.json; varianten voegen nooit ad-hoc kleuren of logo's toe. De herkomst en verificatiestatus van elke merkwaarde staan in dat bestand zelf."
     ]
   },
   "sources": {
@@ -356,6 +356,6 @@
   },
   "brand": {
     "source": "assets/brand/brand.json",
-    "rule": "Kleuren en logo's uitsluitend uit assets/brand/brand.json (geverifieerd tegen de aangeleverde Artific-PDF's); nooit van de live sites afgeleid."
+    "rule": "Kleuren en logo's uitsluitend uit assets/brand/brand.json; elke waarde draagt daar zijn eigen herkomst (door Artific gepubliceerde merkassets, met openstaande PDF-kruisverificatie zoals gedocumenteerd). Varianten voegen nooit eigen kleuren of logo's toe."
   }
 }

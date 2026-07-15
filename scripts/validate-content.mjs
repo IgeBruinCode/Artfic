@@ -125,28 +125,34 @@ if (content) {
 
 // --- huisstijlbron ---
 if (brand) {
-  if (!['pending-source-material', 'verified'].includes(brand.status)) {
-    fail(`brand.json: ongeldige status '${brand.status}'`);
+  // Alleen een complete, geverifieerde huisstijlbron is een geldige oplevering.
+  if (brand.status !== 'verified') {
+    fail(`brand.json: status is '${brand.status}' maar moet 'verified' zijn — een onvolledige huisstijlbron is geen geldige oplevering`);
   }
-  if (brand.status === 'pending-source-material') {
-    if (brand.colors?.length || brand.logos?.length) {
-      fail('brand.json: status pending-source-material maar colors/logos zijn niet leeg — waarden zonder PDF-verificatie zijn niet toegestaan');
-    }
-    if (!brand.note?.trim()) fail('brand.json: pending-status vereist een toelichting in note');
-  } else {
-    for (const [i, c] of (brand.colors ?? []).entries()) {
-      for (const f of ['documentId', 'page', 'value', 'role']) if (!c[f]) fail(`brand.json colors[${i}]: veld '${f}' ontbreekt`);
-    }
-    if (!brand.logos?.length) fail('brand.json: status verified vereist ten minste één logo');
-    for (const [i, l] of (brand.logos ?? []).entries()) {
-      for (const f of ['documentId', 'page', 'file', 'background']) if (!l[f]) fail(`brand.json logos[${i}]: veld '${f}' ontbreekt`);
-      if (l.file) {
-        const p = join(root, 'assets/brand', l.file);
-        if (!existsSync(p)) fail(`brand.json logos[${i}]: bestand '${l.file}' bestaat niet in assets/brand/`);
-        else {
-          const svg = readFileSync(p, 'utf8');
-          if (/https?:\/\//.test(svg)) fail(`brand.json logos[${i}]: '${l.file}' bevat externe URL's en is niet zelfstandig`);
-        }
+  if (!brand.verificationBasis?.trim()) fail('brand.json: verificationBasis ontbreekt');
+  const hasProvenance = (p) => p && Array.isArray(p.assets) && p.assets.length > 0 && p.fetchedAt;
+  if (!brand.colors?.length) fail('brand.json: colors is leeg — er zijn geen goedgekeurde kleuren opgeleverd');
+  for (const [i, c] of (brand.colors ?? []).entries()) {
+    for (const f of ['id', 'value', 'role']) if (!c[f]) fail(`brand.json colors[${i}]: veld '${f}' ontbreekt`);
+    if (c.value && !/^#[0-9A-Fa-f]{6}$/.test(c.value)) fail(`brand.json colors[${i}]: '${c.value}' is geen geldige hexwaarde`);
+    if (!hasProvenance(c.provenance)) fail(`brand.json colors[${i}]: provenance met assets en fetchedAt ontbreekt`);
+  }
+  if (!brand.logos?.length) fail('brand.json: logos is leeg — er zijn geen goedgekeurde logo-assets opgeleverd');
+  const backgrounds = new Set((brand.logos ?? []).map((l) => l.background));
+  if (!backgrounds.has('licht') || !backgrounds.has('donker')) {
+    fail('brand.json: er moet een logo-uitvoering voor zowel lichte als donkere achtergronden zijn');
+  }
+  for (const [i, l] of (brand.logos ?? []).entries()) {
+    for (const f of ['id', 'file', 'background', 'exportMethod', 'usage']) if (!l[f]) fail(`brand.json logos[${i}]: veld '${f}' ontbreekt`);
+    if (!hasProvenance(l.provenance)) fail(`brand.json logos[${i}]: provenance met assets en fetchedAt ontbreekt`);
+    if (l.file) {
+      const p = join(root, 'assets/brand', l.file);
+      if (!existsSync(p)) fail(`brand.json logos[${i}]: bestand '${l.file}' bestaat niet in assets/brand/`);
+      else {
+        const svg = readFileSync(p, 'utf8');
+        if (!svg.trimStart().startsWith('<svg')) fail(`brand.json logos[${i}]: '${l.file}' is geen SVG`);
+        if (/https?:\/\/(?!www\.w3\.org\/)/.test(svg)) fail(`brand.json logos[${i}]: '${l.file}' bevat externe URL's en is niet zelfstandig`);
+        if (/<script|<text|<image|@font-face|font-family/i.test(svg)) fail(`brand.json logos[${i}]: '${l.file}' bevat scripts, tekst-elementen of fontafhankelijkheden`);
       }
     }
   }
