@@ -2,7 +2,7 @@
 
 Stijlgids voor de landingspagina op `/brutalistisch-a/`. Dit document beschrijft de daadwerkelijk geïmplementeerde waarden uit `styles.css` en `main.js`; het is geen voorstel maar de vastlegging van de gebouwde variant.
 
-> **Provenance — oplevering geblokkeerd:** dit document is handmatig opgesteld op basis van de geïmplementeerde CSS/JS en de `industrial-brutalist-ui`-stijlprincipes. De opdracht vereist dat dit document via de geconfigureerde Google Stitch-MCP wordt gemaakt, maar die MCP was in de buildomgeving van dit ticket **niet beschikbaar** (geen geconfigureerde MCP-tools of omgevingscredential aanwezig; bij de herbeoordeling op 2026-07-15 opnieuw gecontroleerd en nog steeds afwezig). Dit document wordt daarom nadrukkelijk *niet* als Stitch-output gepresenteerd en de variant geldt niet als definitief opgeleverd totdat het document via de Stitch-MCP is gefinaliseerd. Er is geen credential gebruikt of opgeslagen.
+> **Provenance — oplevering geblokkeerd:** dit document is handmatig opgesteld op basis van de geïmplementeerde CSS/JS en de `industrial-brutalist-ui`-stijlprincipes. De opdracht vereist dat dit document via de geconfigureerde Google Stitch-MCP wordt gemaakt, maar die MCP was in de buildomgeving van dit ticket **niet beschikbaar** (geen geconfigureerde MCP-tools of omgevingscredential aanwezig; bij elke herbeoordeling op 2026-07-15 — inclusief de derde bouwronde — opnieuw gecontroleerd via de beschikbare toolset en omgevingsvariabelen en nog steeds afwezig). Dit document wordt daarom nadrukkelijk *niet* als Stitch-output gepresenteerd en de variant geldt niet als definitief opgeleverd totdat het document via de Stitch-MCP is gefinaliseerd. Er is geen credential gebruikt of opgeslagen.
 
 ## Ontwerpprincipes
 
