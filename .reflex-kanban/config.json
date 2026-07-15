@@ -1,0 +1,17 @@
+{
+  "defaults": {
+    "agent": "codex",
+    "model": "gpt-5.4",
+    "effort": "high"
+  },
+  "phases": {
+    "build": {
+      "agent": "codex",
+      "model": "gpt-5.5"
+    },
+    "agent_review": {
+      "agent": "codex",
+      "model": "gpt-5.5"
+    }
+  }
+}
