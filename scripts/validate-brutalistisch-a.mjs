@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Regressiecontrole van variant Brutalistisch A tegen de gedeelde content-, CTA- en huisstijlbron.
 // Gebruik: node scripts/validate-brutalistisch-a.mjs (dependency-vrij, Node-standaardbibliotheek).
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -65,12 +65,22 @@ function extractSingleCssBlock(source, headerPattern, label) {
   return '';
 }
 
-function hasCssRule(source, selector, expectedDeclarations) {
-  return parseCssRules(source).rules.some((rule) => rule.selectors.includes(selector) &&
-    Object.entries(expectedDeclarations).every(([property, expected]) => {
-      const actual = rule.declarations.get(property) ?? '';
-      return typeof expected === 'string' ? actual === expected : expected.test(actual);
-    }));
+const normalizeSelector = (selector) => selector.replace(/\s+/g, ' ').replace(/\s*>\s*/g, '>').trim();
+const normalizeCssValue = (value) => value.replace(/\s+/g, '');
+
+function hasExpectedDeclarations(rule, expectedDeclarations) {
+  return Object.entries(expectedDeclarations).every(([property, expected]) => {
+    const actual = rule.declarations.get(property);
+    return actual !== undefined && normalizeCssValue(actual) === normalizeCssValue(expected);
+  });
+}
+
+function hasCssRule(model, selector, expectedDeclarations) {
+  const expectedSelector = normalizeSelector(selector);
+  return model.rules.some((rule) => {
+    const selectorMatches = rule.selectors.some((candidate) => normalizeSelector(candidate) === expectedSelector);
+    return selectorMatches && hasExpectedDeclarations(rule, expectedDeclarations);
+  });
 }
 
 const html = read('brutalistisch-a/index.html');
@@ -83,12 +93,13 @@ const brand = JSON.parse(read('assets/brand/brand.json'));
 checkDocumentMetadata(html, fail);
 const requiredSections = ['intro', 'visie', 'controlelaag', 'platform', 'controle', 'aanpak', 'bewijs', 'contact'];
 checkSectionOrder(html, requiredSections, fail);
-if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.test(html)) {
+const htmlNodes = parseHtmlNodes(html);
+const landmarkTags = new Set(htmlNodes.map((node) => node.tagName));
+if (!['header', 'main', 'footer'].every((tagName) => landmarkTags.has(tagName))) {
   fail('index.html: landmarks header/main/footer zijn niet compleet');
 }
-if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
+if (!htmlNodes.some((node) => node.classes.has('skiplink'))) fail('index.html: skiplink ontbreekt');
 
-const htmlNodes = parseHtmlNodes(html);
 const sections = htmlNodes.filter((node) => node.tagName === 'section' && node.classes.has('blok'));
 const innerWrappers = htmlNodes.filter((node) => node.classes.has('blok__binnen'));
 if (innerWrappers.length !== 8) fail(`index.html: verwacht exact acht .blok__binnen-wrappers, gevonden ${innerWrappers.length}`);
@@ -98,7 +109,8 @@ for (const sectionId of requiredSections) {
   if (directWrappers.length !== 1) fail(`index.html: sectie #${sectionId} moet exact één directe .blok__binnen-wrapper hebben`);
 }
 
-const sectionCodes = [...html.matchAll(/<p\b(?=[^>]*\bclass="[^"]*\bsectiecode\b[^"]*")[^>]*>([^<]+)<\/p>/g)]
+const sectionCodes = [...html.matchAll(/<p\b[^>]*>([^<]+)<\/p>/g)]
+  .filter((match) => parseHtmlNodes(match[0])[0]?.classes.has('sectiecode'))
   .map((match) => match[1].trim());
 const requiredSectionCodes = ['00 / INTRO', '01 / VISIE', '02 / POSITIE', '03 / PLATFORM', '04 / CONTROLE', '05 / AANPAK', '06 / BEWIJS', '07 / CONTACT'];
 if (sectionCodes.join('|') !== requiredSectionCodes.join('|')) {
@@ -190,63 +202,77 @@ if (!shadowValues.length || shadowValues.some((value) => !/^(?:6|8|12)px\s+(?:6|
   fail('styles.css: offsetschaduwen moeten harde effen blauwe schaduwen zonder blur zijn');
 }
 
-const compactCss = css.replace(/\s+/g, ' ');
-if (!/--werkvlak:\s*1280px/.test(compactCss)
-    || !/--gutter:\s*clamp\(16px,\s*4vw,\s*48px\)/.test(compactCss)
-    || !/--sectieruimte:\s*clamp\(64px,\s*6vw,\s*88px\)/.test(compactCss)) {
+const cssModel = parseCssRules(css);
+const rootContract = {
+  '--werkvlak': '1280px',
+  '--gutter': 'clamp(16px, 4vw, 48px)',
+  '--sectieruimte': 'clamp(64px, 6vw, 88px)',
+};
+if (!hasCssRule(cssModel, ':root', rootContract)) {
   fail('styles.css: het compacte 1280px-werkvlak met 48px-gutter en 64–88px sectieritme ontbreekt');
 }
 for (const selector of ['.blok__binnen', '.commandobar__binnen', '.site-footer__binnen']) {
-  const escaped = selector.replace('.', '\\.');
-  if (!new RegExp(`${escaped}\\s*\\{[^}]*max-width:\\s*var\\(--werkvlak\\)[^}]*margin-inline:\\s*auto`).test(compactCss)) {
+  if (!hasCssRule(cssModel, selector, { 'max-width': 'var(--werkvlak)', 'margin-inline': 'auto' })) {
     fail(`styles.css: ${selector} deelt het gecentreerde werkvlak niet`);
   }
 }
 
-const desktopCss = extractSingleCssBlock(
+const desktopModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*min-width\s*:\s*1000px\s*\)\s*\{/g,
   'desktopmediaquery (min-width: 1000px)'
-).replace(/\s+/g, ' ');
-const mobileCss = extractSingleCssBlock(
+));
+const mobileModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*max-width\s*:\s*999px\s*\)\s*\{/g,
   'mobiele mediaquery (max-width: 999px)'
-).replace(/\s+/g, ' ');
+));
 const desktopPlateContracts = [
-  /\.platen\s*\{[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/,
-  /\.platen\s*>\s*\.plaat:nth-child\(1\)\s*\{[^}]*grid-column:\s*1\s*\/\s*11[^}]*grid-row:\s*1/,
-  /\.platen\s*>\s*\.plaat:nth-child\(2\)\s*\{[^}]*grid-column:\s*2\s*\/\s*12[^}]*grid-row:\s*2/,
-  /\.platen\s*>\s*\.plaat:nth-child\(3\)\s*\{[^}]*grid-column:\s*3\s*\/\s*13[^}]*grid-row:\s*3/,
+  ['.platen', { 'grid-template-columns': 'repeat(12, minmax(0, 1fr))' }],
+  ['.platen > .plaat:nth-child(1)', { 'grid-column': '1 / 11', 'grid-row': '1' }],
+  ['.platen > .plaat:nth-child(2)', { 'grid-column': '2 / 12', 'grid-row': '2' }],
+  ['.platen > .plaat:nth-child(3)', { 'grid-column': '3 / 13', 'grid-row': '3' }],
 ];
-for (const contract of desktopPlateContracts) {
-  if (!contract.test(desktopCss)) fail('styles.css: twaalfkoloms 01–03-plaattrap ontbreekt binnen de desktopmediaquery');
+for (const [selector, declarations] of desktopPlateContracts) {
+  if (!hasCssRule(desktopModel, selector, declarations)) {
+    fail(`styles.css: desktopplaat '${selector}' mist zijn twaalfkoloms positie binnen de 1000px-mediaquery`);
+  }
 }
-if (!/\.platen\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)[^}]*width:\s*100%/.test(mobileCss)
-    || !/\.platen\s*>\s*\.plaat,[^{]*\.platen\s*>\s*\.plaat:nth-child\(3\)\s*\{[^}]*grid-column:\s*auto[^}]*grid-row:\s*auto[^}]*margin:\s*0[^}]*width:\s*100%/.test(mobileCss)) {
-  fail('styles.css: volledige lineaire reset van de plaattrap ontbreekt binnen de mobiele mediaquery');
+if (!hasCssRule(mobileModel, '.platen', { 'grid-template-columns': 'minmax(0, 1fr)', width: '100%' })) {
+  fail('styles.css: de plaatlijst mist haar lineaire reset binnen de mobiele mediaquery');
 }
-if (/\.commandobar__nav\s*\{[^}]*display:\s*none/.test(compactCss)) {
-  fail('styles.css: de lokale commandobarnavigatie mag op mobiel niet worden verborgen');
+for (const selector of ['.platen > .plaat', '.platen > .plaat:nth-child(1)', '.platen > .plaat:nth-child(2)', '.platen > .plaat:nth-child(3)']) {
+  if (!hasCssRule(mobileModel, selector, { 'grid-column': 'auto', 'grid-row': 'auto', margin: '0', width: '100%' })) {
+    fail(`styles.css: mobiele plaat '${selector}' mist een volledige lineaire reset`);
+  }
 }
-const commandobarMobileCss = extractSingleCssBlock(
+
+const commandobarMobileModel = parseCssRules(extractSingleCssBlock(
   css,
-  /@media\s*\(\s*max-width\s*:\s*480px\s*\)\s*\{/g,
-  'commandobarmediaquery (max-width: 480px)'
-).replace(/\s+/g, ' ');
-if (!/\.commandobar__binnen\s*\{[^}]*display:\s*grid[^}]*grid-template-areas:\s*"logo cta"\s*"nav nav"/.test(commandobarMobileCss)
-    || !/\.commandobar__nav\s*\{[^}]*grid-area:\s*nav[^}]*width:\s*100%/.test(commandobarMobileCss)
-    || !/\.commandobar__nav a\s*\{[^}]*width:\s*100%/.test(commandobarMobileCss)
-    || !/\.commandobar__nav a\s*\{[^}]*min-height:\s*44px/.test(compactCss)) {
-  fail('styles.css: de commandobar mist de zichtbare, tweerijige mobiele navigatie met 44px-doelen');
+  /@media\s*\(\s*max-width\s*:\s*767px\s*\)\s*\{/g,
+  'commandobarmediaquery (max-width: 767px)'
+));
+const commandobarContracts = [
+  [commandobarMobileModel, '.commandobar__binnen', { display: 'grid', 'grid-template-areas': '"logo cta" "nav nav"' }],
+  [commandobarMobileModel, '.commandobar__nav', { 'grid-area': 'nav', width: '100%' }],
+  [commandobarMobileModel, '.commandobar__nav a', { width: '100%' }],
+  [cssModel, '.commandobar__nav a', { 'min-height': '44px' }],
+  [commandobarMobileModel, '#inhoud', { 'scroll-margin-top': '116px' }],
+  [commandobarMobileModel, '.blok', { 'scroll-margin-top': '116px' }],
+];
+if (!commandobarContracts.every(([model, selector, declarations]) => hasCssRule(model, selector, declarations))) {
+  fail('styles.css: de commandobar mist onder 768px de tweerijenlayout, 44px-doelen of passende ankeroffset');
 }
-const reducedMotionCss = extractSingleCssBlock(
+
+const reducedMotionModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/g,
   'reduced-motionmediaquery'
-).replace(/\s+/g, ' ');
-const displayNoneCount = (css.match(/display\s*:\s*none/g) ?? []).length;
-if (displayNoneCount !== 1 || !/\.commandobar__voortgang\s*\{[^}]*display:\s*none/.test(reducedMotionCss)) {
+));
+const hiddenRules = cssModel.rules.filter((rule) => normalizeCssValue(rule.declarations.get('display') ?? '') === 'none');
+const onlyProgressIsHidden = hiddenRules.length === 1 &&
+  hiddenRules[0].selectors.some((selector) => normalizeSelector(selector) === '.commandobar__voortgang');
+if (!onlyProgressIsHidden || !hasCssRule(reducedMotionModel, '.commandobar__voortgang', { display: 'none' })) {
   fail('styles.css: alleen de decoratieve voortgangsbalk mag uitsluitend bij reduced motion worden verborgen');
 }
 if (/21st\.dev|magic-mcp/i.test(`${html}\n${css}\n${js}`)) {
@@ -254,13 +280,10 @@ if (/21st\.dev|magic-mcp/i.test(`${html}\n${css}\n${js}`)) {
 }
 
 // --- progressive enhancement & motion ---
-if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/gsap\.min\.js/.test(html)) fail('index.html: gepinde GSAP-CDN ontbreekt');
-if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/ScrollTrigger\.min\.js/.test(html)) fail('index.html: gepinde ScrollTrigger-CDN ontbreekt');
-if ((html.match(/<script[^>]*\sdefer/g) ?? []).length < 3) fail('index.html: scripts moeten met defer laden');
-if (/data-plaat/.test(js) && !/\sdata-plaat[\s>]/.test(html)) {
+checkMotionGuards(html, css, js, fail);
+if (/data-plaat/.test(js) && !htmlNodes.some((node) => node.attributes.has('data-plaat'))) {
   fail('index.html: main.js animeert data-plaat-doelen maar de pagina bevat er geen');
 }
-if (/opacity/.test(js)) fail('main.js: deze variant animeert alleen transforms; opacity-animaties zijn niet toegestaan');
 if (/\b(?:pin|snap|scrollTo|autoScroll|parallax)\b/.test(js)) fail('main.js: pinning, snap, automatische scroll en parallax zijn niet toegestaan');
 if (/\b(?:width|height|top|right|bottom|left|margin|padding|filter)\s*:/.test(js)) {
   fail('main.js: motion mag geen layout- of filterproperty animeren');
@@ -269,31 +292,14 @@ if (!/immediateRender:\s*false/.test(js) || !/once:\s*true/.test(js) || !/overwr
   fail('main.js: transform-entrees missen immediateRender/once/overwrite-afspraken');
 }
 if (/querySelectorAll\("\[data-plaat\]"\)/.test(js)) fail('main.js: generieke beweging van alle data-plaat-vakken is niet toegestaan');
-if (!/prefers-reduced-motion/.test(js)) fail('main.js: reduced-motion-guard ontbreekt');
-if (!/window\.gsap\s*&&\s*window\.ScrollTrigger|!window\.gsap\s*\|\|\s*!window\.ScrollTrigger/.test(js)) {
-  fail('main.js: guard op ontbrekende GSAP/ScrollTrigger ontbreekt');
+if (!/addEventListener\(\s*["']change["']/.test(js) || !/scrollTrigger[\s\S]*\.kill\(\)/.test(js)) {
+  fail('main.js: een tijdens de sessie ingeschakelde reduced-motion-voorkeur moet actieve ScrollTriggers stoppen');
 }
-if (!/clearProps/.test(js)) fail('main.js: clearProps-opruiming van inline transforms ontbreekt');
-if (!/@media \(prefers-reduced-motion: reduce\)/.test(css)) fail('styles.css: prefers-reduced-motion-blok ontbreekt');
-if (!/:focus-visible/.test(css)) fail('styles.css: zichtbare focusstijl ontbreekt');
-if (!/scroll-margin-top/.test(css)) fail('styles.css: scroll-margin-top voor ankersecties ontbreekt');
 
-// --- ontwerpdocument ---
+// --- ontwerpdocument & brandgate ---
 const designPath = 'brutalistisch-a/DESIGN.md';
-if (!existsSync(join(root, designPath))) {
-  fail(`${designPath}: ontwerpdocument ontbreekt`);
-} else {
-  const design = read(designPath);
-  for (const hoofdstuk of ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijl', 'Motion']) {
-    if (!new RegExp(`^#{2,3} .*${hoofdstuk}`, 'im').test(design)) fail(`${designPath}: hoofdstuk '${hoofdstuk}' ontbreekt`);
-  }
-  if (!/Provenance/i.test(design)) fail(`${designPath}: provenance-verklaring (Stitch-status) ontbreekt`);
-}
-
-// --- oplevergate: de variant is pas opleverbaar met een geverifieerde huisstijlbron ---
-if (brand.status !== 'verified') {
-  fail(`brand.json: status is '${brand.status}' — Brutalistisch A kan niet als opgeleverd gelden zolang de huisstijlbron niet 'verified' is (zie assets/brand/README.md); de oplevering is GEBLOKKEERD`);
-}
+checkDesignDoc(root, designPath, () => read(designPath), ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijl', 'Motion'], fail);
+checkBrandGate(brand, 'Brutalistisch A', fail);
 
 if (errors.length) {
   console.error(`FOUT — ${errors.length} probleem(en):`);

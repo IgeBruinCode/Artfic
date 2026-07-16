@@ -610,7 +610,7 @@ a { color: inherit; }
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .commandobar__binnen {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

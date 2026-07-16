@@ -38,7 +38,7 @@ Het gedeelde `--werkvlak` is `1280px` breed en wordt voor `.blok__binnen`, `.com
 
 ## Componentstijl
 
-- **Commandobar:** sticky navy buitenband met 4px gele onderrand en een decoratieve 6px blauwe `scaleX`-voortgang. Logo, vier lokale ankers en gele bar-CTA delen het gecentreerde werkvlak. Op maximaal 480px staan logo/CTA op rij één en alle vier zichtbare navigatiedoelen op rij twee; ieder doel is minimaal 44px hoog.
+- **Commandobar:** sticky navy buitenband met 4px gele onderrand en een decoratieve 6px blauwe `scaleX`-voortgang. Logo, vier lokale ankers en gele bar-CTA delen het gecentreerde werkvlak. Onder 768px staan logo/CTA op rij één en alle vier zichtbare navigatiedoelen op rij twee; ieder doel is minimaal 44px hoog.
 - **CTA's:** rechte blokken met 4px rand, kapitaal en minimaal 52px hoogte (44px in de bar). Primaire en signaal-CTA's hebben een harde 8px blauwe offset; focus is een 3px blauwe ring op licht of gele ring op donker.
 - **Pipeline en technische vakken:** drie hard omkaderde stations, aaneengesloten vragen/fasen/specsheet-rijen en gele signaalstroken. Alleen de pipeline wisselt op 1000px van verticale pijlen naar een horizontale technische keten.
 - **Moduleplaten:** lichtblauwe platen met 4px navy rand, 12px effen blauwe offset, oversized nummer, navy koplabel en rechte chips. Vanaf 1000px staan ze elk tien van twaalf kolommen breed op `1 / 11`, `2 / 12` en `3 / 13`, ieder op een eigen rij. Onder 1000px worden kolom, rij, marge en breedte expliciet naar één lineaire kolom gereset.
@@ -48,7 +48,7 @@ Het gedeelde `--werkvlak` is `1280px` breed en wordt voor `.blok__binnen`, `.com
 
 Beweging is uitsluitend een transform-gebaseerde progressive enhancement. De HTML/CSS toont alle inhoud direct; JavaScript-uitval of een geblokkeerd CDN verandert geen inhoud, links of layout.
 
-- GSAP 3.12.5 en ScrollTrigger laden gepind en met `defer`. `main.js` stopt vóór registratie bij `prefers-reduced-motion: reduce` of ontbrekende globals.
+- GSAP 3.12.5 en ScrollTrigger laden gepind en met `defer`. `main.js` stopt vóór registratie bij `prefers-reduced-motion: reduce` of ontbrekende globals. Wordt reduced motion tijdens een open sessie ingeschakeld, dan stopt het script zijn actieve ScrollTriggers en tweens en wist het de inline transforms.
 - De decoratieve voortgangsbalk volgt de scroll met `scaleX`. Sectiecodes en H2's krijgen één korte x-translate van 18px (0,35s).
 - Alleen de drie moduleplaten krijgen eigen x-translates van 18, 12 en 6px (0,4s). Pipelinekoppelingen schalen kort van 0,75 naar hun eindstaat met 0,1s stagger.
 - Alle scroll-entrees gebruiken `immediateRender: false`, `once: true`, `overwrite: "auto"` en wissen hun inline transform. CTA-hover verschuift maximaal −3px/−3px en is eveneens overwrite-safe.
@@ -56,4 +56,4 @@ Beweging is uitsluitend een transform-gebaseerde progressive enhancement. De HTM
 
 ## Responsief gedrag
 
-Bij 1000px schakelen hero, pipeline en moduletrap naar desktopopstelling; onder 1000px staan de platen in DOM-volgorde AI Assistant → AI ToolBox → Conversation Module, elk op volle beschikbare breedte. Bij 700px worden wel/niet-vakken en de security-specsheet tweekoloms. Op maximaal 480px wordt de commandobar een zichtbare tweerijencompositie, worden offsets 6px en fasen één kolom. De ankerafstand is dan 116px en anders 96px. Op 320px blijven navigatie, CTA's, plaatranden en schaduwen binnen de viewport.
+Bij 1000px schakelen hero, pipeline en moduletrap naar desktopopstelling; onder 1000px staan de platen in DOM-volgorde AI Assistant → AI ToolBox → Conversation Module, elk op volle beschikbare breedte. Bij 700px worden wel/niet-vakken en de security-specsheet tweekoloms. Onder 768px gebruikt de commandobar bewust twee rijen; zowel de acht secties als `#inhoud` krijgen daar 116px ankeroffset, zodat ook skiplink en logo het intro niet achter de sticky bar plaatsen. Vanaf 768px is de offset 96px. Op maximaal 480px worden offsetschaduwen 6px en fasen één kolom. Op 320px blijven navigatie, CTA's, plaatranden en schaduwen binnen de viewport.
