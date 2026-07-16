@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import {
   checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkDesignDoc, checkDocumentMetadata,
   checkImages, checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
+  extractSingleCssBlock, hasCssRule, parseCssRules, parseHtmlNodes,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -31,54 +32,127 @@ if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.te
 }
 if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
 
-// --- eigen trust-center-structuur: sticky SaaS-header, trust-console, bewijsrail,
-// --- drie modulecards, assurance-matrix en vijf implementatiestappen ---
-const openingTags = [...html.matchAll(/<[a-z0-9]+\b[^>]*>/g)].map((match) => match[0]);
-const hasAttributeToken = (tag, attribute, token) => {
-  const value = tag.match(new RegExp(`\\s${attribute}="([^"]*)"`))?.[1];
-  return value?.split(/\s+/).includes(token) ?? false;
+// --- eigen trust-center-structuur: sticky SaaS-header, gekoppelde console,
+// --- bewijsrail, brede moduletrap, assurance-register en vijf stappen ---
+const nodes = parseHtmlNodes(html);
+const nodesWithClass = (token) => nodes.filter((node) => node.classes.has(token));
+const directChildrenWithClass = (parent, token) =>
+  nodes.filter((node) => node.parent === parent && node.classes.has(token));
+const hasExactValues = (actual, expected) =>
+  actual.length === expected.length && actual.every((value, index) => value === expected[index]);
+const isDescendantOf = (node, ancestor) => {
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent === ancestor) return true;
+  }
+  return false;
 };
-const tagsWithClass = (token) => openingTags.filter((tag) => hasAttributeToken(tag, 'class', token));
+const cssModel = parseCssRules(css);
 
-if (tagsWithClass('saas-header').length !== 1) fail('index.html: saas-header ontbreekt');
-if (!/\.saas-header\s*{[^}]*position:\s*sticky/s.test(css)) fail('styles.css: de saas-header hoort sticky te zijn');
-const navAnchors = [...(html.match(/class="saas-header__nav"[\s\S]*?<\/nav>/)?.[0] ?? '').matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
-if (!navAnchors.length) fail('index.html: lokale sectienavigatie in de header ontbreekt');
-for (const anchor of navAnchors) {
-  if (!html.includes(`id="${anchor}"`)) fail(`index.html: navigatieanker '#${anchor}' wijst naar een niet-bestaand ID`);
+const headers = nodesWithClass('saas-header');
+if (headers.length !== 1) fail(`index.html: verwacht exact één saas-header, gevonden ${headers.length}`);
+if (!hasCssRule(cssModel, '.saas-header', { position: 'sticky', top: '0' })) {
+  fail('styles.css: de saas-header hoort sticky aan de bovenzijde te zijn');
 }
-if (tagsWithClass('trust-console').length !== 1) fail('index.html: verwacht exact één trust-console');
-if (tagsWithClass('trust-console__laag').length !== 3) fail('index.html: de trust-console hoort drie lagen (modellen → Artific → processen) te tonen');
-if (tagsWithClass('bewijsrail').length !== 1) fail('index.html: verwacht exact één bewijsrail');
-const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-const moduleCardTags = tagsWithClass('module-card');
-const hasAllModuleClaims = moduleClaims.every((claimId) =>
-  moduleCardTags.some((tag) => hasAttributeToken(tag, 'data-claim-id', claimId))
-);
-if (moduleCardTags.length !== 3 || !hasAllModuleClaims) {
-  fail('index.html: verwacht exact drie module-cards met de drie canonieke moduleclaims');
+const navs = nodesWithClass('saas-header__nav');
+const expectedNavHrefs = ['#vertrouwen', '#visie', '#platform', '#governance', '#aanpak'];
+const navLinks = navs.length === 1
+  ? nodes.filter((node) => node.tagName === 'a' && isDescendantOf(node, navs[0]))
+  : [];
+const navHrefs = navLinks.map((node) => node.attributes.get('href'));
+if (navs.length !== 1 || !hasExactValues(navHrefs, expectedNavHrefs)) {
+  fail(`index.html: headernavigatie moet exact vijf lokale links in vaste volgorde bevatten (${expectedNavHrefs.join(', ')})`);
 }
-if (tagsWithClass('assurance-matrix__item').length < 6) fail('index.html: de assurance-matrix hoort minimaal zes onderbouwde items te bevatten');
-if (tagsWithClass('stappen__stap').length !== 5) fail('index.html: verwacht exact vijf implementatiestappen');
-// Verbod op signaturen van de drie zustervarianten: dit moet een zelfstandige SaaS-compositie zijn.
-for (const [file, text] of [['index.html', html], ['styles.css', css], ['main.js', js]]) {
-  for (const signatuur of ['commandobar', 'sectiecode', 'plaat', 'folio', 'register', 'spread', 'margewoord']) {
-    if (new RegExp(`(class="[^"]*|\\.)${signatuur}(?![A-Za-z])`).test(text)) fail(`${file}: zustervariant-signatuur '${signatuur}' hoort niet in variant Conventioneel`);
+for (const href of navHrefs) {
+  if (!href?.startsWith('#') || !nodes.some((node) => node.attributes.get('id') === href.slice(1))) {
+    fail(`index.html: navigatieanker '${href}' wijst naar een niet-bestaand ID`);
   }
 }
-if (/<svg/i.test(html)) fail('index.html: inline SVG is niet toegestaan; alleen de twee logo-bestanden');
-if (/linear-gradient|radial-gradient|conic-gradient|blur\(|rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
-  fail('styles.css: gradients, blur of afgeleide/transparante kleuren zijn niet toegestaan');
+
+const consoles = nodesWithClass('trust-console');
+if (consoles.length !== 1) fail('index.html: verwacht exact één trust-console');
+if (nodesWithClass('trust-console__laag').length !== 3) {
+  fail('index.html: de trust-console hoort drie lagen (modellen → Artific → processen) te tonen');
 }
-const displayNones = css.match(/display:\s*none/g) ?? [];
-const hasAllowedDisplayNone = displayNones.length === 0 || (
-  displayNones.length === 1 &&
-  /@media \(max-width: \d+px\) {\s*\.saas-header__nav\s*{\s*display:\s*none;?\s*}/.test(css)
-);
-if (!hasAllowedDisplayNone) {
-  fail('styles.css: display:none is uitsluitend toegestaan voor .saas-header__nav in één max-width-mediaquery');
+const statusLists = nodesWithClass('trust-console__status');
+const expectedStatusHrefs = ['#assurance-eu', '#assurance-iso', '#platform', '#assurance-model'];
+const statusLinks = statusLists.length === 1
+  ? nodes.filter((node) => node.tagName === 'a' && isDescendantOf(node, statusLists[0]))
+  : [];
+if (!hasExactValues(statusLinks.map((node) => node.attributes.get('href')), expectedStatusHrefs)) {
+  fail(`index.html: de vier consolelinks moeten naar ${expectedStatusHrefs.join(', ')} wijzen`);
 }
-if (/visibility:\s*hidden/.test(css)) fail('styles.css: standaard verborgen inhoud is niet toegestaan');
+if (nodesWithClass('bewijsrail').length !== 1 || nodesWithClass('bewijsrail__item').length !== 3) {
+  fail('index.html: verwacht één bewijsrail met exact drie bewijsitems');
+}
+
+const modules = nodesWithClass('modules');
+const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
+const moduleCards = modules.length === 1 ? directChildrenWithClass(modules[0], 'module-card') : [];
+if (modules.length !== 1 || !hasExactValues(
+  moduleCards.map((node) => node.attributes.get('data-claim-id')),
+  moduleClaims,
+)) {
+  fail('index.html: verwacht exact drie directe module-cards in canonieke volgorde');
+}
+
+const assurance = nodesWithClass('assurance-matrix');
+const expectedAssurance = [
+  ['assurance-eu', 'sec-eu'],
+  ['assurance-iso', 'sec-iso'],
+  ['assurance-pseudonimisering', 'sec-pseudo'],
+  ['assurance-model', 'sec-model-agnostisch'],
+  ['assurance-toegang', 'sec-access'],
+  ['assurance-audit', 'sec-audit'],
+];
+const assuranceItems = assurance.length === 1 ? directChildrenWithClass(assurance[0], 'assurance-matrix__item') : [];
+if (assurance.length !== 1 || assuranceItems.length !== 6 || assuranceItems.some((node, index) =>
+  node.attributes.get('id') !== expectedAssurance[index][0] ||
+  node.attributes.get('data-claim-id') !== expectedAssurance[index][1]
+)) {
+  fail('index.html: assurance-register moet exact zes ge-ID’de canonieke items in vaste volgorde bevatten');
+}
+if (nodesWithClass('stappen__stap').length !== 5) fail('index.html: verwacht exact vijf implementatiestappen');
+
+const desktopModulesCss = extractSingleCssBlock(css, /@media\s*\(min-width:\s*1024px\)\s*{/g, 'module-desktopquery vanaf 1024px', fail);
+const desktopModulesModel = parseCssRules(desktopModulesCss);
+if (!hasCssRule(desktopModulesModel, '.modules', { 'grid-template-columns': 'repeat(12, minmax(0, 1fr))' })) {
+  fail('styles.css: .modules mist het twaalfkoloms desktopgrid vanaf 1024px');
+}
+for (const [index, column, row] of [[1, '1 / 11', '1'], [2, '2 / 12', '2'], [3, '3 / 13', '3']]) {
+  if (!hasCssRule(desktopModulesModel, `.module-card:nth-child(${index})`, { 'grid-column': column, 'grid-row': row })) {
+    fail(`styles.css: module ${index} mist desktopplaatsing ${column} op rij ${row}`);
+  }
+}
+const mobileModulesCss = extractSingleCssBlock(css, /@media\s*\(max-width:\s*1023px\)\s*{/g, 'module-reset t/m 1023px', fail);
+const mobileModulesModel = parseCssRules(mobileModulesCss);
+if (!hasCssRule(mobileModulesModel, '.modules', { 'grid-template-columns': 'minmax(0, 1fr)' }) ||
+    !hasCssRule(mobileModulesModel, '.module-card', {
+      display: 'block', 'grid-column': '1 / -1', 'grid-row': 'auto', width: '100%', margin: '0',
+    }) ||
+    !hasCssRule(mobileModulesModel, '.module-card__kop', { display: 'block', width: '100%', margin: '0' }) ||
+    !hasCssRule(mobileModulesModel, '.module-card__inhoud', { display: 'block', width: '100%', margin: '0' })) {
+  fail('styles.css: volledige lineaire module-reset t/m 1023px ontbreekt');
+}
+
+// Verbod op signaturen van zustervarianten: dit blijft een zelfstandige SaaS-compositie.
+for (const [file, text] of [['index.html', html], ['styles.css', css], ['main.js', js]]) {
+  for (const signatuur of [
+    'commandobar', 'sectiecode', 'plaat', 'folio', 'register', 'spread', 'margewoord',
+    'boekdeel', 'dossierregel', 'evidence-index', 'assurance-ledger',
+  ]) {
+    if (new RegExp(`(class="[^"]*|\\.)${signatuur}(?![A-Za-z])`).test(text)) {
+      fail(`${file}: zustervariant-signatuur '${signatuur}' hoort niet in variant Conventioneel`);
+    }
+  }
+}
+if (/<svg/i.test(html)) fail('index.html: inline SVG is niet toegestaan; alleen lokale logo-bestanden');
+if (/21st\.dev/i.test(`${html}\n${css}\n${js}`)) fail('runtimebestanden: 21st.dev-runtimeverwijzing is niet toegestaan');
+if (/linear-gradient|radial-gradient|conic-gradient|blur\(|rgba?\(|hsla?\(|color-mix|(?:box|text)-shadow\s*:|\bfilter\s*:/i.test(css)) {
+  fail('styles.css: gradients, blur/filter, schaduwen of transparante/afgeleide kleuren zijn niet toegestaan');
+}
+if (/display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0(?:\D|$)/i.test(css)) {
+  fail('styles.css: inhoud of navigatie mag niet standaard of responsief worden verborgen');
+}
 
 // --- claims (gedeeld, met per-variant vastgelegde strikte teksten) ---
 checkClaims(html, content, {
@@ -136,7 +210,7 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: 'body', backgroundSelector: '.trust-console', pairId: 'navy-op-lichtblauw' },
   { foregroundSelector: 'body', backgroundSelector: '.trust-console__laag', pairId: 'navy-op-wit' },
   { foregroundSelector: '.trust-console__laag--artific', backgroundSelector: '.trust-console__laag--artific', pairId: 'wit-op-navy' },
-  { foregroundSelector: 'body', backgroundSelector: '.trust-console__status li', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.trust-console__status a', backgroundSelector: '.trust-console__status a', pairId: 'navy-op-wit' },
   { foregroundSelector: 'body', backgroundSelector: '.paneel', pairId: 'navy-op-wit' },
   { foregroundSelector: 'body', backgroundSelector: '.assurance-matrix__item', pairId: 'navy-op-wit' },
   { foregroundSelector: '.stappen__stap h4::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
@@ -145,13 +219,33 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: '.saas-footer', backgroundSelector: '.saas-footer', pairId: 'wit-op-navy' },
   { foregroundSelector: '.saas-footer__links a', backgroundSelector: '.saas-footer', pairId: 'wit-op-navy' },
   { foregroundSelector: '.bewijsrail__cijfer', backgroundSelector: '.bewijsrail__item', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: 'body', backgroundSelector: '.klantnamen', pairId: 'navy-op-wit' },
 ], fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 
-// --- progressive enhancement & motion (gedeeld + variantdoelen) ---
+// --- progressive enhancement & gerichte transform-motion ---
 checkMotionGuards(html, css, js, fail);
-if (/data-reveal/.test(js) && !/\sdata-reveal[\s>]/.test(html)) fail('index.html: main.js animeert data-reveal-doelen maar de pagina bevat er geen');
-if (/data-verbinding/.test(js) && !/\sdata-verbinding[\s>]/.test(html)) fail('index.html: main.js animeert data-verbinding-doelen maar de pagina bevat er geen');
+for (const hook of ['bewijs', 'modules', 'assurance']) {
+  if (!html.includes(`data-motion-group="${hook}"`) || !js.includes(`data-motion-group="${hook}"`)) {
+    fail(`HTML/main.js: gerichte motiongroep '${hook}' ontbreekt of is niet gekoppeld`);
+  }
+}
+if (!/\sdata-verbinding[\s>]/.test(html) || !/data-verbinding/.test(js)) {
+  fail('HTML/main.js: gerichte consoleverbinding-motion ontbreekt');
+}
+if (/\b(?:opacity|filter|clipPath|height|width|top|left|margin|padding)\s*:/.test(js)) {
+  fail('main.js: motion mag uitsluitend transform-properties gebruiken');
+}
+if (/\b(?:pin|scrub|toggleActions|repeat)\s*:|ScrollToPlugin|scrollTo\s*:/.test(js)) {
+  fail('main.js: pinning, scrub, herhaling of automatische scroll is niet toegestaan');
+}
+for (const contract of ['immediateRender: false', 'once: true', 'overwrite: "auto"', 'clearProps: "transform"']) {
+  if (!js.includes(contract)) fail(`main.js: motioncontract '${contract}' ontbreekt`);
+}
+if (!/addEventListener\("change"/.test(js) || !/stopMotion/.test(js) || !/\.kill\(\)/.test(js) ||
+    !/removeProperty\("transform"\)/.test(js) || !/removeAttribute\("aria-current"\)/.test(js)) {
+  fail('main.js: dynamische reduced-motion-opruiming van triggers, transforms en navigatiestatus ontbreekt');
+}
 if (!/aria-current/.test(js)) fail('main.js: navigatiestatus via aria-current ontbreekt');
 
 // --- ontwerpdocument & oplevergate ---

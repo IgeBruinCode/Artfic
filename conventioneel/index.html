@@ -47,7 +47,10 @@
           <p class="hero__noot" data-claim-id="pos-nederlands">Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.</p>
         </div>
         <aside class="trust-console" aria-label="Governance-samenvatting: waar Artific zit en welke waarborgen gelden">
-          <p class="trust-console__titel">Waar Artific zit</p>
+          <div class="trust-console__kop">
+            <p class="trust-console__titel">Waar Artific zit</p>
+            <p class="trust-console__route">Van model naar gecontroleerd proces</p>
+          </div>
           <div class="trust-console__keten" data-claim-id="ctl-tussen-model-en-proces">
             <div class="trust-console__laag">
               <span class="trust-console__laagnaam">AI-modellen</span>
@@ -65,10 +68,10 @@
             </div>
           </div>
           <ul class="trust-console__status" data-claim-id="pos-badges" aria-label="Onderbouwde platformkenmerken">
-            <li>EU-gehost</li>
-            <li>ISO 27001 gecertificeerd</li>
-            <li>API-first</li>
-            <li>Model-agnostisch</li>
+            <li><a href="#assurance-eu">EU-gehost</a></li>
+            <li><a href="#assurance-iso">ISO 27001 gecertificeerd</a></li>
+            <li><a href="#platform">API-first</a></li>
+            <li><a href="#assurance-model">Model-agnostisch</a></li>
           </ul>
         </aside>
       </div>
@@ -77,7 +80,7 @@
     <section class="sectie sectie--tint" id="vertrouwen" aria-labelledby="vertrouwen-titel">
       <div class="container">
         <h2 id="vertrouwen-titel">Vertrouwd door organisaties die controle serieus nemen</h2>
-        <div class="bewijsrail" data-reveal>
+        <div class="bewijsrail" data-motion-group="bewijs">
           <div class="bewijsrail__item" data-claim-id="bw-100-klanten">
             <p class="bewijsrail__cijfer" aria-hidden="true">100+</p>
             <p>We helpen meer dan 100 klanten om AI voor hen te laten werken — van enterprise tot overheid, bij organisaties die security, governance en betrouwbaarheid serieus nemen.</p>
@@ -103,15 +106,15 @@
         <p class="leestekst" data-claim-id="dm-medewerker-lagen">Wat een medewerker effectief maakt zijn lagen: intelligentie (ruwe capaciteit), expertise (domeintraining) en context (inwerken in jouw bedrijf). Voor AI werkt het precies zo.</p>
 
         <div class="vragenrij" role="list">
-          <div class="paneel" role="listitem" data-reveal>
+          <div class="paneel" role="listitem">
             <h3>Is het veilig?</h3>
             <p data-claim-id="vvt-veilig">AI heeft toegang tot gevoelige data — klantgegevens, financiële rapporten, interne documenten. Wie bepaalt waar het bij kan en waar die data naartoe gaat?</p>
           </div>
-          <div class="paneel" role="listitem" data-reveal>
+          <div class="paneel" role="listitem">
             <h3>Is het voorspelbaar?</h3>
             <p data-claim-id="vvt-voorspelbaar">Zonder monitoring en audit trail weet niemand of AI-gedrag afwijkt, verandert of ontspoort.</p>
           </div>
-          <div class="paneel" role="listitem" data-reveal>
+          <div class="paneel" role="listitem">
             <h3>Is het transparant?</h3>
             <p data-claim-id="vvt-transparant">Prompt injection, hallucinaties, ongewenste acties: kun je zien wat AI doet, waarom, en aantonen dat het klopt?</p>
           </div>
@@ -144,11 +147,11 @@
         <h2 id="controlelaag-titel">De operationele controlelaag voor AI</h2>
         <p class="leestekst" data-claim-id="ctl-positie">OpenAI, Google en Anthropic leveren de intelligentie; Artific bouwt de motor die het productief, gecontroleerd en schaalbaar maakt binnen jouw organisatie.</p>
         <div class="tweeluik">
-          <div class="paneel" data-reveal>
+          <div class="paneel">
             <h3>Wat we bouwen</h3>
             <p data-claim-id="ctl-wat-we-bouwen">De operationele laag voor AI binnen organisaties — features, interacties, integraties en governance die AI omzetten in productieve, gecontroleerde medewerkers.</p>
           </div>
-          <div class="paneel" data-reveal>
+          <div class="paneel">
             <h3>Wat we niet bouwen</h3>
             <p data-claim-id="ctl-wat-we-niet-bouwen">Algemene chatbots. Artific concurreert niet met ChatGPT, Claude of Gemini, maar bouwt infrastructuur voor specifieke, gecontroleerde, enterprise AI.</p>
           </div>
@@ -162,34 +165,46 @@
         <p class="eyebrow">Product</p>
         <h2 id="platform-titel" data-claim-id="mod-overzicht">Drie modules, één platform</h2>
         <p class="leestekst" data-claim-id="mod-overzicht">Drie losstaande modules die met elkaar samenwerken — gebruik er één, twee of alle drie.</p>
-        <div class="modules">
-          <article class="module-card" data-claim-id="mod-ai-assistant" data-reveal>
-            <p class="module-card__nummer" aria-hidden="true">Module 01</p>
-            <h3>AI Assistant</h3>
-            <p>Je virtuele medewerker op maat — met een rol, persoonlijkheid en toegang tot je kennisbronnen en tools; hij sluit aan bij een team en volgt je regels.</p>
-            <p class="module-card__detail">Toepassingen: interne kennisbank, klantenservice-agent, verkoopassistent.</p>
+        <div class="modules" data-motion-group="modules">
+          <article class="module-card" data-claim-id="mod-ai-assistant">
+            <div class="module-card__kop">
+              <p class="module-card__nummer" aria-hidden="true">Module 01</p>
+              <h3>AI Assistant</h3>
+            </div>
+            <div class="module-card__inhoud">
+              <p>Je virtuele medewerker op maat — met een rol, persoonlijkheid en toegang tot je kennisbronnen en tools; hij sluit aan bij een team en volgt je regels.</p>
+              <p class="module-card__detail">Toepassingen: interne kennisbank, klantenservice-agent, verkoopassistent.</p>
+            </div>
           </article>
-          <article class="module-card" data-claim-id="mod-ai-toolbox" data-reveal>
-            <p class="module-card__nummer" aria-hidden="true">Module 02</p>
-            <h3>AI ToolBox</h3>
-            <p>De self-service AI-laag — IT bouwt kleine workflows één keer, elke medewerker draait ze met één klik.</p>
-            <p class="module-card__detail">Dagelijkse taken als genereren, samenvatten en analyseren in seconden.</p>
+          <article class="module-card" data-claim-id="mod-ai-toolbox">
+            <div class="module-card__kop">
+              <p class="module-card__nummer" aria-hidden="true">Module 02</p>
+              <h3>AI ToolBox</h3>
+            </div>
+            <div class="module-card__inhoud">
+              <p>De self-service AI-laag — IT bouwt kleine workflows één keer, elke medewerker draait ze met één klik.</p>
+              <p class="module-card__detail">Dagelijkse taken als genereren, samenvatten en analyseren in seconden.</p>
+            </div>
           </article>
-          <article class="module-card" data-claim-id="mod-conversation" data-reveal>
-            <p class="module-card__nummer" aria-hidden="true">Module 03</p>
-            <h3>Conversation Module</h3>
-            <p>Eén centrale plek voor inkomende e-mail — koppel Gmail of Microsoft, laat agents berichten lezen, classificeren en conceptantwoorden klaarzetten.</p>
-            <p class="module-card__detail">Een medewerker reviewt voordat het de deur uit gaat.</p>
+          <article class="module-card" data-claim-id="mod-conversation">
+            <div class="module-card__kop">
+              <p class="module-card__nummer" aria-hidden="true">Module 03</p>
+              <h3>Conversation Module</h3>
+            </div>
+            <div class="module-card__inhoud">
+              <p>Eén centrale plek voor inkomende e-mail — koppel Gmail of Microsoft, laat agents berichten lezen, classificeren en conceptantwoorden klaarzetten.</p>
+              <p class="module-card__detail">Een medewerker reviewt voordat het de deur uit gaat.</p>
+            </div>
           </article>
         </div>
 
         <h3 class="tussenkop" data-claim-id="ph-keuze">Twee manieren om te bouwen op hetzelfde platform</h3>
         <div class="tweeluik">
-          <div class="paneel" data-reveal>
+          <div class="paneel">
             <h4>Artific Portal — snelste weg naar productie</h4>
             <p data-claim-id="ph-portal">Een white-label web-app waarin je agents configureert, gebruikers en policies beheert en uitrolt zonder een regel frontend-code.</p>
           </div>
-          <div class="paneel" data-reveal>
+          <div class="paneel">
             <h4>Headless — volledige controle</h4>
             <p data-claim-id="ph-headless">Roep de API aan, embed agents in je product, bouw je eigen frontend; hetzelfde security-model en dezelfde governance, jouw merk en jouw UX.</p>
           </div>
@@ -204,11 +219,11 @@
         <h2 id="governance-titel" data-claim-id="cc-een-plek">Eén plek om AI te beheren en uit te rollen</h2>
         <p class="leestekst" data-claim-id="cc-een-plek">Stop de AI-wildgroei: IT definieert beleid, security en integraties, teams configureren en rollen agents uit — binnen je hele organisatie.</p>
         <div class="tweeluik">
-          <div class="paneel" data-reveal>
+          <div class="paneel">
             <h3>IT zet de kaders</h3>
             <p data-claim-id="cc-it-kaders">Modellen, data-toegang, regio's, retentie, toegestane tools en budgets — één keer instellen, overal geldig.</p>
           </div>
-          <div class="paneel" data-reveal>
+          <div class="paneel">
             <h3>Teams bouwen binnen die kaders</h3>
             <p data-claim-id="cc-teams">Geen shadow IT, geen ongecontroleerde integraties, geen verrassingen.</p>
           </div>
@@ -217,28 +232,28 @@
 
         <h3 class="tussenkop" data-claim-id="sec-ontwerp">Security ingebouwd, privacy zorgvuldig doordacht</h3>
         <p class="leestekst" data-claim-id="sec-ontwerp">Ontworpen voor organisaties die controle niet kunnen inruilen voor snelheid; elke laag is gebouwd voor enterprise behoeften.</p>
-        <dl class="assurance-matrix">
-          <div class="assurance-matrix__item" data-claim-id="sec-eu" data-reveal>
+        <dl class="assurance-matrix" data-motion-group="assurance">
+          <div class="assurance-matrix__item" id="assurance-eu" data-claim-id="sec-eu">
             <dt>Gehost in de EU</dt>
             <dd>Alle data, alle infrastructuur, alle processing binnen de EU.</dd>
           </div>
-          <div class="assurance-matrix__item" data-claim-id="sec-iso" data-reveal>
+          <div class="assurance-matrix__item" id="assurance-iso" data-claim-id="sec-iso">
             <dt>ISO 27001 gecertificeerd</dt>
             <dd>Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.</dd>
           </div>
-          <div class="assurance-matrix__item" data-claim-id="sec-pseudo" data-reveal>
+          <div class="assurance-matrix__item" id="assurance-pseudonimisering" data-claim-id="sec-pseudo">
             <dt>Pseudonimisering</dt>
             <dd>Persoonlijk identificeerbare informatie (PII) wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.</dd>
           </div>
-          <div class="assurance-matrix__item" data-claim-id="sec-model-agnostisch" data-reveal>
+          <div class="assurance-matrix__item" id="assurance-model" data-claim-id="sec-model-agnostisch">
             <dt>Model-agnostisch</dt>
             <dd>Wissel GPT, Claude, Gemini of andere modellen per agent, per taak, per tenant — geen lock-in op één model.</dd>
           </div>
-          <div class="assurance-matrix__item" data-claim-id="sec-access" data-reveal>
+          <div class="assurance-matrix__item" id="assurance-toegang" data-claim-id="sec-access">
             <dt>Access control</dt>
             <dd>Fijnmazige rollen, scopes en tenant-isolatie; permissies per agent instelbaar.</dd>
           </div>
-          <div class="assurance-matrix__item" data-claim-id="sec-audit" data-reveal>
+          <div class="assurance-matrix__item" id="assurance-audit" data-claim-id="sec-audit">
             <dt>Audit logs</dt>
             <dd>Elke prompt, elke tool-call, elke beslissing wordt vastgelegd in het systeem.</dd>
           </div>
