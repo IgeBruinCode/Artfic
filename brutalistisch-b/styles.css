@@ -1,0 +1,520 @@
+/* Variant Brutalistisch B — "tabloid register".
+   Kleuren uitsluitend uit assets/brand/brand.json. */
+
+:root {
+  --blauw: #287CEB;
+  --donkerblauw: #0A213D;
+  --marine: #062244;
+  --lichtblauw: #E5EDF8;
+  --oranjegeel: #ECA414;
+  --wit: #FFFFFF;
+  --serif: Georgia, "Times New Roman", Times, serif;
+  --sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --r1: 8px;
+  --r2: 16px;
+  --r3: 28px;
+  --r4: 48px;
+  --r5: 88px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--donkerblauw);
+  background: var(--wit);
+}
+
+p, li, dd { max-width: 62ch; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--blauw);
+  outline-offset: 2px;
+}
+.masthead :focus-visible,
+.colofonvoet :focus-visible,
+.folio--slot :focus-visible {
+  outline-color: var(--oranjegeel);
+}
+
+.skiplink {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--oranjegeel);
+  color: var(--donkerblauw);
+  font-family: var(--sans);
+  font-weight: bold;
+  padding: 12px 20px;
+  z-index: 10;
+}
+.skiplink:focus-visible {
+  left: 0;
+}
+
+/* --- Masthead: statische donkere krantenkop, niet sticky --- */
+.masthead {
+  background: var(--marine);
+  color: var(--wit);
+  border-bottom: 3px solid var(--oranjegeel);
+  padding: var(--r3) clamp(16px, 5vw, 64px) var(--r4);
+  display: grid;
+  gap: var(--r2);
+  justify-items: start;
+}
+.masthead__editie {
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--wit);
+  padding-bottom: 4px;
+}
+.masthead__logo { width: clamp(140px, 24vw, 220px); height: auto; }
+.masthead__ondertitel {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.125rem, 2.4vw, 1.5rem);
+  max-width: 34ch;
+}
+.cta--masthead {
+  background: var(--oranjegeel);
+  color: var(--donkerblauw);
+}
+
+/* --- Paginagrid: register + folio's --- */
+.krant {
+  display: block;
+}
+
+.register {
+  background: var(--lichtblauw);
+  border-bottom: 3px solid var(--donkerblauw);
+  padding: var(--r2) clamp(16px, 5vw, 64px);
+}
+.register__kop {
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: var(--r1);
+}
+.register__lijst {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--r1) var(--r2);
+  counter-reset: hoofdstuk;
+}
+.register__lijst li { counter-increment: hoofdstuk; }
+.register__lijst a {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  color: var(--donkerblauw);
+  text-decoration: none;
+  border-bottom: 2px solid var(--donkerblauw);
+  padding: 10px 2px;
+  min-height: 44px;
+}
+.register__lijst a::before {
+  content: counter(hoofdstuk, upper-roman) ". ";
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+.register__lijst a:hover,
+.register__lijst a[aria-current="location"],
+.register__lijst a.is-actueel {
+  background: var(--donkerblauw);
+  color: var(--wit);
+  border-bottom-color: var(--oranjegeel);
+}
+
+/* --- Folio's --- */
+main { display: block; }
+
+.folio {
+  padding: var(--r4) clamp(16px, 5vw, 64px) 0;
+  scroll-margin-top: var(--r2);
+}
+.folio__nummer {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  border-top: 3px double var(--donkerblauw);
+  border-bottom: 1px solid var(--donkerblauw);
+  display: inline-block;
+  padding: 4px 0;
+  margin-bottom: var(--r2);
+}
+
+.manifestkop {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 8vw, 6.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  max-width: 16ch;
+  margin-bottom: var(--r3);
+}
+.foliokop {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 5vw, 3.75rem);
+  line-height: 1.08;
+  max-width: 22ch;
+  margin-bottom: var(--r3);
+}
+.foliokop--slot { max-width: 18ch; }
+.tussenkop {
+  font-family: var(--sans);
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-top: 2px solid var(--donkerblauw);
+  padding-top: var(--r2);
+  margin: var(--r4) 0 var(--r2);
+  max-width: none;
+}
+.tussenkop--klein { font-size: 1.0625rem; }
+
+h4 {
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--r1);
+}
+
+.kolommen { display: grid; gap: var(--r3); }
+.kolom > p + p, .kolom > ul + p, .kolom > p + div { margin-top: var(--r2); }
+.kolom--smal {
+  border-top: 2px solid var(--donkerblauw);
+  padding-top: var(--r2);
+}
+
+.aanhef {
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 2.6vw, 1.625rem);
+  line-height: 1.35;
+  max-width: 42ch;
+}
+.aanhef::first-letter {
+  font-size: 2.6em;
+  float: left;
+  line-height: 0.85;
+  padding-right: 10px;
+  font-weight: 700;
+}
+
+.leesalinea { margin-bottom: var(--r2); }
+
+.margewoord {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  color: var(--blauw);
+  margin-bottom: var(--r2);
+  max-width: none;
+}
+
+.colofon {
+  list-style: none;
+  font-family: var(--sans);
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.colofon li {
+  border-bottom: 1px solid var(--donkerblauw);
+  padding: var(--r1) 0;
+}
+.colofon__noot {
+  margin-top: var(--r2);
+  font-size: 0.9375rem;
+}
+
+.vragenlijst dt {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-top: var(--r2);
+}
+.vragenlijst dt:first-child { margin-top: 0; }
+.vragenlijst dd {
+  font-size: 0.9375rem;
+  border-left: 3px solid var(--blauw);
+  padding-left: var(--r2);
+  margin-top: 4px;
+}
+
+.pullquote {
+  border-top: 3px solid var(--donkerblauw);
+  border-bottom: 3px solid var(--donkerblauw);
+  padding: var(--r3) 0;
+  margin: var(--r4) 0;
+}
+.pullquote p {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(1.5rem, 3.4vw, 2.5rem);
+  line-height: 1.2;
+  max-width: 28ch;
+}
+.pullquote--marge {
+  margin: var(--r2) 0 0;
+  padding: var(--r2) 0;
+}
+.pullquote--marge p { font-size: 1.25rem; }
+
+.kader {
+  border: 2px solid var(--donkerblauw);
+  padding: var(--r2);
+  font-size: 0.9375rem;
+}
+.kader + .kader { margin-top: var(--r2); }
+.kader--niet {
+  background: var(--donkerblauw);
+  color: var(--wit);
+}
+
+.reis {
+  list-style: none;
+  counter-reset: fase;
+  border-top: 2px solid var(--donkerblauw);
+}
+.reis li {
+  counter-increment: fase;
+  border-bottom: 1px solid var(--donkerblauw);
+  padding: var(--r2) 0 var(--r2) var(--r5);
+  position: relative;
+}
+.reis li::before {
+  content: counter(fase, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: var(--r2);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 2.25rem;
+  color: var(--blauw);
+}
+
+/* --- Modulespread: één doorlopende, door regels gescheiden spread --- */
+.spread {
+  border-top: 3px solid var(--donkerblauw);
+  border-bottom: 3px solid var(--donkerblauw);
+  display: grid;
+}
+.spread__deel {
+  padding: var(--r3) 0;
+  border-bottom: 1px solid var(--donkerblauw);
+}
+.spread__deel:last-child { border-bottom: 0; }
+.spread__deel h4 {
+  font-family: var(--serif);
+  font-size: clamp(1.375rem, 2.6vw, 1.875rem);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.spread__folio {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--donkerblauw);
+  font-style: normal;
+  margin-bottom: 6px;
+}
+
+/* --- Grootboek: redactioneel security-register --- */
+.grootboek {
+  border-top: 3px solid var(--donkerblauw);
+}
+.grootboek__post {
+  display: grid;
+  gap: 4px;
+  border-bottom: 1px solid var(--donkerblauw);
+  padding: var(--r2) 0;
+}
+.grootboek__post dt {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.grootboek__post dd { font-size: 0.9375rem; }
+
+.keten { list-style: none; }
+.keten--lagen li {
+  border-left: 3px solid var(--blauw);
+  padding: var(--r1) 0 var(--r1) var(--r2);
+  margin-bottom: var(--r2);
+}
+.keten--stappen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--r1) var(--r2);
+  margin-bottom: var(--r2);
+  counter-reset: stap;
+}
+.keten--stappen li {
+  counter-increment: stap;
+  border: 2px solid var(--donkerblauw);
+  padding: 10px var(--r2);
+}
+.keten--stappen li::before {
+  content: counter(stap) " · ";
+  font-family: var(--serif);
+  font-weight: 700;
+}
+
+.klantnamen {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1875rem;
+  margin-top: var(--r2);
+}
+
+.regel {
+  border: 0;
+  border-top: 3px solid var(--donkerblauw);
+  margin: var(--r4) 0 0;
+  transform-origin: left center;
+}
+
+/* --- CTA's --- */
+.acties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--r2);
+  margin-top: var(--r3);
+}
+.cta {
+  display: inline-block;
+  font-family: var(--sans);
+  font-weight: bold;
+  font-size: 1.0625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  padding: 14px 26px;
+  min-height: 44px;
+  border: 3px solid var(--donkerblauw);
+}
+.cta--zwaar {
+  background: var(--donkerblauw);
+  color: var(--wit);
+}
+.cta--licht {
+  background: var(--wit);
+  color: var(--donkerblauw);
+}
+.cta--masthead { border-color: var(--oranjegeel); }
+.cta:hover { border-color: var(--blauw); }
+.cta--masthead:hover { border-color: var(--wit); }
+
+/* --- Slotfolio en footer --- */
+.folio--slot {
+  background: var(--marine);
+  color: var(--wit);
+  border-top: 3px solid var(--oranjegeel);
+  margin-top: var(--r4);
+  padding-bottom: var(--r4);
+}
+.folio--slot .folio__nummer { border-color: var(--wit); }
+.folio--slot .cta--zwaar {
+  background: var(--oranjegeel);
+  color: var(--donkerblauw);
+  border-color: var(--oranjegeel);
+}
+.folio--slot .cta--licht {
+  background: var(--marine);
+  color: var(--wit);
+  border-color: var(--wit);
+}
+.folio--slot .cta:hover { border-color: var(--oranjegeel); }
+.folio--slot .cta--zwaar:hover { border-color: var(--wit); }
+.contactregel { margin-top: var(--r3); }
+
+.colofonvoet {
+  background: var(--donkerblauw);
+  color: var(--wit);
+  border-top: 3px solid var(--oranjegeel);
+  padding: var(--r4) clamp(16px, 5vw, 64px);
+  display: grid;
+  gap: var(--r2);
+  justify-items: start;
+}
+.colofonvoet__links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--r1) var(--r3);
+}
+.colofonvoet__links a {
+  display: inline-block;
+  padding: 10px 0;
+  min-height: 44px;
+}
+.colofonvoet__noot {
+  font-size: 0.875rem;
+  color: var(--lichtblauw);
+}
+
+/* --- Breakpoints --- */
+@media (min-width: 700px) {
+  .kolommen { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .kolommen--gelijk { grid-template-columns: 1fr 1fr; }
+  .kolom--smal { border-top: 0; border-left: 2px solid var(--donkerblauw); padding-top: 0; padding-left: var(--r3); }
+  .grootboek__post { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--r3); }
+  .spread { grid-template-columns: 1fr 1fr 1fr; }
+  .spread__deel { border-bottom: 0; border-right: 1px solid var(--donkerblauw); padding: var(--r3) var(--r3) var(--r3) 0; }
+  .spread__deel + .spread__deel { padding-left: var(--r3); }
+  .spread__deel:last-child { border-right: 0; padding-right: 0; }
+}
+
+@media (min-width: 1040px) {
+  .krant {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+  }
+  .register {
+    position: sticky;
+    top: 0;
+    border-bottom: 0;
+    border-right: 3px solid var(--donkerblauw);
+    min-height: 100vh;
+    padding: var(--r3) var(--r2);
+  }
+  .register__lijst { display: block; }
+  .register__lijst a {
+    display: block;
+    border-bottom: 1px solid var(--donkerblauw);
+    padding: 10px 4px;
+  }
+  .folio { padding-left: var(--r4); padding-right: var(--r4); }
+  .spread__deel:nth-child(2) { padding-top: var(--r5); }
+  .spread__deel:nth-child(3) { padding-top: calc(var(--r5) + var(--r4)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
