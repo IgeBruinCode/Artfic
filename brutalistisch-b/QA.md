@@ -1,6 +1,6 @@
 # QA-log — variant Brutalistisch B (tabloid register)
 
-Datum: 2026-07-16 · Browser: Chromium (headless, CDP-sidecar) via `node scripts/serve.mjs 4173` · Route: `http://127.0.0.1:4173/brutalistisch-b/`
+Datum: 2026-07-16 · Browser: Chromium (headless, CDP-sidecar; fallbackmodi rechtstreeks via het Chrome DevTools Protocol) via `node scripts/serve.mjs 4173` · Route: `http://127.0.0.1:4173/brutalistisch-b/`
 
 ## Uitgevoerde controles
 
@@ -12,8 +12,10 @@ Datum: 2026-07-16 · Browser: Chromium (headless, CDP-sidecar) via `node scripts
 | Skiplink (toetsenbord) | **OK** — eerste Tab toont "Direct naar de inhoud" linksboven met zichtbare focusstijl |
 | Registerlink activeren | **OK** — klik op "Voor organisaties" navigeert naar `#organisatie`; het register markeert daarna uitsluitend dat hoofdstuk (`aria-current="location"` + donker vlak), bevestigd op 1440 px |
 | CTA's en footerlinks | **OK** — alle `data-cta-id`'s, labels, bestemmingen (uitsluitend `https://artific.nl/contact-opnemen/`), `mailto:`/`tel:`-waarden en het ontbreken van `target` automatisch gecontroleerd door `scripts/validate-brutalistisch-b.mjs` (geslaagd); geen kale `#` |
-| Reduced motion | **OK (bron + statische terugval)** — `main.js` stopt vóór elke tween bij `prefers-reduced-motion: reduce`; CSS schakelt smooth scrolling en transities uit; regels staan in CSS standaard op volledige lengte en niets is standaard verborgen, dus de statische weergave is de terugval. Emulatie van de mediaquery was in de headless sidecar niet beschikbaar; guardpad broncode-geverifieerd en door de validator afgedwongen |
-| JavaScript uit / CDN geblokkeerd | **OK (per constructie + bron)** — alle inhoud, ankers en CTA's zijn statische HTML zonder reveal-CSS; `main.js` keert direct terug zonder `window.gsap`/`window.ScrollTrigger`. Door de validator afgedwongen (guards, geen `opacity`-animatie, geen standaard-verborgen content) |
+| Baseline (1440 px, JS aan, CDN vrij) | **OK — daadwerkelijk uitgevoerd via CDP** — `window.gsap` geladen, 16 ScrollTriggers actief, na scrollen naar 60% markeert het register `#organisatie` via `aria-current`; decoratieve margewoorden driften (transform gemeten), nog niet bereikte folio-regels staan op `scaleX(0.35)` in afwachting van hun eenmalige entree; geen horizontale overflow |
+| Reduced motion | **OK — daadwerkelijk uitgevoerd via CDP-emulatie** (`Emulation.setEmulatedMedia`, `prefers-reduced-motion: reduce` — `matchMedia` rapporteert `true`): `main.js` maakt **0** tweens/ScrollTriggers aan, alle `[data-regel]`- en `[data-marge]`-transforms zijn `none` (regels op volledige lengte), geen `aria-current`-mutaties, `scroll-behavior` valt terug naar `auto`; alle 6 folio's, H1 en 5 CTA's aanwezig, geen overflow |
+| CDN geblokkeerd | **OK — daadwerkelijk uitgevoerd via CDP** (`Network.setBlockedURLs` op `*cdn.jsdelivr.net*`; 2 requests aantoonbaar geblokkeerd terwijl `main.js` wél laadt): `window.gsap` is `undefined`, de guard stopt het script **zonder één runtime exception**, alle transforms `none`, volledige inhoud en 5 CTA's bruikbaar |
+| JavaScript uit | **OK — daadwerkelijk uitgevoerd via CDP** (`Emulation.setScriptExecutionDisabled`): H1, 6 folio's, 6 registerlinks en 5 CTA's aanwezig, **0** standaard verborgen elementen in `main` (visibility/display/opacity gemeten), regels op volledige lengte, geen `aria-current`, geen overflow; ook op 320 px geen overflow en register `position: static` |
 | Regressie zustervarianten | **OK** — `/minimalistisch/` en `/brutalistisch-a/` blijven byte-ongewijzigd in deze taak (diff-controle) en hun validators slagen |
 | Side-by-side stijlvergelijking | **OK** — B verschilt wezenlijk van A (geen sticky commandobar, sectiecodes, kapitale sans-koppen, offset-schaduwen, pipeline of moduleplaten; wél statische masthead, sticky hoofdstukregister, serif/sans-mix, asymmetrische krantencolommen, doorlopende modulespread, grootboek) en van de minimalistische leeskolom |
 
@@ -24,4 +26,4 @@ Datum: 2026-07-16 · Browser: Chromium (headless, CDP-sidecar) via `node scripts
 
 ## Openstaand
 
-- Het ontwerpdocument `DESIGN.md` kon niet via de Google Stitch-MCP worden aangemaakt: de MCP was in deze bouwronde niet beschikbaar in de omgeving. De provenance in `DESIGN.md` legt dit expliciet vast; er is geen handgeschreven document als Stitch-output gepresenteerd.
+- Geen. De Stitch-gate is gesloten: `DESIGN.md` is via de Google Stitch-MCP doorgevoerd in een afzonderlijk Brutalistisch B-project met eigen design system (provenance met project-, screen- en asset-ID in het document zelf; credential uitsluitend runtime gebruikt, niet opgeslagen).
