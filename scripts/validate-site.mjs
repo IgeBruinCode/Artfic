@@ -89,10 +89,33 @@ for (const variant of variants) {
   const designPath = `${variant}/DESIGN.md`;
   if (!existsSync(join(root, designPath))) { fail(`${designPath}: ontwerpdocument ontbreekt`); continue; }
   const design = read(designPath);
-  if (!/gefinaliseerd via Google Stitch-MCP/i.test(design)) fail(`${designPath}: geen geslaagde Stitch-finalisatie in de provenance`);
-  if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld|oplevering geblokkeerd/i.test(design)) {
-    fail(`${designPath}: provenance meldt een open of mislukte Stitch-status`);
+  if (variant === 'brutalistisch-b') {
+    if (!/content\/artific-content\.nl\.json/.test(design) || !/assets\/brand\/brand\.json/.test(design)) {
+      fail(`${designPath}: actuele, lokale content- en merkprovenance ontbreekt`);
+    }
+    if (/Google Stitch|21st\.dev|Magic|MCP|API[-_ ]?key/i.test(design)) {
+      fail(`${designPath}: externe provider-, configuratie- of secretmarker hoort niet in de actuele B-provenance`);
+    }
+  } else {
+    if (!/gefinaliseerd via Google Stitch-MCP/i.test(design)) fail(`${designPath}: geen geslaagde Stitch-finalisatie in de provenance`);
+    if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld|oplevering geblokkeerd/i.test(design)) {
+      fail(`${designPath}: provenance meldt een open of mislukte Stitch-status`);
+    }
   }
+}
+
+const bChoice = choiceAnchors.find(([href]) => href === 'brutalistisch-b/')?.[1] ?? '';
+if (!/geel/i.test(bChoice) || !/navy/i.test(bChoice) || !/relatiedeck/i.test(bChoice)) {
+  fail('index.html (root): Brutalistisch B mist de actuele geel/navy-relatiedeckomschrijving');
+}
+if (/tabloid|krant|folio|hoofdstukregister/i.test(bChoice)) {
+  fail('index.html (root): Brutalistisch B gebruikt nog de vervallen redactionele omschrijving');
+}
+for (const variant of variants) {
+  const runtime = `${read(`${variant}/index.html`)}\n${read(`${variant}/styles.css`)}\n${read(`${variant}/main.js`)}`;
+  const hasRelationshipDeck = /relationship-deck/.test(runtime);
+  if (variant === 'brutalistisch-b' && !hasRelationshipDeck) fail('brutalistisch-b: uniek relatiedeckcontract ontbreekt');
+  if (variant !== 'brutalistisch-b' && hasRelationshipDeck) fail(`${variant}: B-relatiedecksignatuur lekt naar een zustervariant`);
 }
 
 // --- alle inhouds- en variantvalidators ---

@@ -1,111 +1,179 @@
-/* Progressive enhancement: de pagina is volledig bruikbaar zonder dit script. */
 (function () {
   "use strict";
 
+  var deck = document.querySelector("[data-relationship-deck]");
+  if (!deck) return;
+
+  var track = deck.querySelector(".relationship-track");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll("[data-relation-id]"));
+  var pagination = Array.prototype.slice.call(deck.querySelectorAll(".relationship-pagination a"));
+  var mount = deck.querySelector("[data-deck-enhancement]");
+  if (!track || !mount || slides.length === 0) return;
+
   var motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-  if (motionPreference.matches) return;
-  if (!window.gsap || !window.ScrollTrigger) return;
+  var activeIndex = 0;
+  var pendingIndex = null;
+  var settleVersion = 0;
+  var ownedAnimations = [];
 
-  var gsap = window.gsap;
-  var ScrollTrigger = window.ScrollTrigger;
-  var registerLinks = document.querySelectorAll(".register__lijst a[href^='#']");
-  var ctaTargets = document.querySelectorAll(".cta");
-  var motionTargets = document.querySelectorAll(".folio__nummer, [data-marge], [data-regel], .spread__deel, .cta");
-  var editorialTweens = [];
-  var scrollTriggers = [];
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function clearRegisterLink(link) {
-    link.removeAttribute("aria-current");
-    link.classList.remove("is-actueel");
+  function createDeckButton(text, ariaLabel) {
+    var button = document.createElement("button");
+    button.className = "deck-button";
+    button.type = "button";
+    button.textContent = text;
+    button.setAttribute("aria-label", ariaLabel);
+    return button;
   }
 
-  function addEditorialEnter(target, fromVars, triggerStart) {
-    var tween = gsap.from(target, Object.assign({}, fromVars, {
-      duration: 0.42,
-      ease: "power2.out",
-      immediateRender: false,
-      overwrite: "auto",
-      clearProps: "transform",
-      scrollTrigger: {
-        trigger: target,
-        start: triggerStart || "top 90%",
-        once: true
-      }
-    }));
-    editorialTweens.push(tween);
-    if (tween.scrollTrigger) scrollTriggers.push(tween.scrollTrigger);
+  var previousButton = createDeckButton("← Vorige", "Vorige klantrelatie");
+  var nextButton = createDeckButton("Volgende →", "Volgende klantrelatie");
+
+  var status = document.createElement("p");
+  status.className = "deck-status";
+  status.setAttribute("aria-live", "polite");
+  status.setAttribute("aria-atomic", "true");
+
+  mount.appendChild(previousButton);
+  mount.appendChild(nextButton);
+  mount.appendChild(status);
+
+  function normalizeIndex(index) {
+    return (index + slides.length) % slides.length;
   }
 
-  registerLinks.forEach(function (link) {
-    var folio = document.querySelector(link.getAttribute("href"));
-    if (!folio) return;
+  function commitActive(index) {
+    activeIndex = normalizeIndex(index);
+    pagination.forEach(function (link, linkIndex) {
+      if (linkIndex === activeIndex) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+    status.textContent = "Relatie " + (activeIndex + 1) + " van " + slides.length + ": " + slides[activeIndex].getAttribute("data-relation-name");
+  }
 
-    scrollTriggers.push(ScrollTrigger.create({
-      trigger: folio,
-      start: "top 40%",
-      end: "bottom 40%",
-      onToggle: function (trigger) {
-        if (!trigger.isActive) return;
-
-        registerLinks.forEach(clearRegisterLink);
-        link.setAttribute("aria-current", "location");
-        link.classList.add("is-actueel");
+  function nearestSlideIndex() {
+    var nearestIndex = activeIndex;
+    var nearestDistance = Infinity;
+    slides.forEach(function (slide, index) {
+      var distance = Math.abs(slide.offsetLeft - track.scrollLeft);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
       }
-    }));
-  });
+    });
+    return nearestIndex;
+  }
 
-  document.querySelectorAll(".folio__nummer, [data-marge]").forEach(function (label, index) {
-    addEditorialEnter(label, { x: index % 2 === 0 ? -16 : 16 });
-  });
+  function settleMovement() {
+    settleVersion += 1;
+    if (pendingIndex !== null) {
+      var settledIndex = pendingIndex;
+      pendingIndex = null;
+      commitActive(settledIndex);
+      return;
+    }
 
-  document.querySelectorAll("[data-regel]").forEach(function (regel) {
-    addEditorialEnter(regel, { scaleX: 0.35 }, "top 92%");
-  });
+    var nearestIndex = nearestSlideIndex();
+    if (nearestIndex !== activeIndex) commitActive(nearestIndex);
+  }
 
-  var spreadOffset = window.innerWidth >= 1040 ? 18 : 8;
-  document.querySelectorAll(".spread__deel").forEach(function (deel, index) {
-    addEditorialEnter(deel, { x: index === 1 ? spreadOffset : -spreadOffset }, "top 88%");
-  });
+  function scheduleSettle() {
+    if (typeof window.requestAnimationFrame !== "function") return;
 
-  function handleCtaEnter(event) {
-    if (motionPreference.matches) return;
-    gsap.to(event.currentTarget, {
-      skewX: -4,
-      duration: 0.12,
-      ease: "power1.out",
-      overwrite: "auto"
+    var version = ++settleVersion;
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        if (version === settleVersion) settleMovement();
+      });
     });
   }
 
-  function handleCtaLeave(event) {
+  function moveTo(index) {
+    var targetIndex = normalizeIndex(index);
+    if (pendingIndex === null && targetIndex === activeIndex) return;
+
+    pendingIndex = targetIndex;
+    settleVersion += 1;
+    slides[targetIndex].scrollIntoView({
+      behavior: motionPreference.matches ? "auto" : "smooth",
+      block: "nearest",
+      inline: "start"
+    });
+    if (motionPreference.matches) settleMovement();
+  }
+
+  function navigationIndex() {
+    return pendingIndex === null ? activeIndex : pendingIndex;
+  }
+
+  previousButton.addEventListener("click", function () {
+    moveTo(navigationIndex() - 1);
+  });
+
+  nextButton.addEventListener("click", function () {
+    moveTo(navigationIndex() + 1);
+  });
+
+  pagination.forEach(function (link, index) {
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
+      moveTo(index);
+    });
+  });
+
+  track.addEventListener("keydown", function (event) {
+    var nextIndex = null;
+    if (event.key === "ArrowLeft") nextIndex = navigationIndex() - 1;
+    if (event.key === "ArrowRight") nextIndex = navigationIndex() + 1;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = slides.length - 1;
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    moveTo(nextIndex);
+  });
+
+  track.addEventListener("scroll", scheduleSettle, { passive: true });
+  track.addEventListener("scrollend", settleMovement);
+
+  function startDecorativeMotion() {
     if (motionPreference.matches) return;
-    gsap.to(event.currentTarget, {
-      skewX: 0,
-      duration: 0.12,
-      ease: "power1.out",
-      overwrite: "auto",
-      clearProps: "transform"
+
+    document.querySelectorAll("[data-motion-card]").forEach(function (card, index) {
+      if (typeof card.animate !== "function") return;
+
+      var offset = 10 + (index % 3) * 4;
+      var animation = card.animate([
+        { transform: "translateY(" + offset + "px) rotate(0.4deg)" },
+        { transform: "translateY(0) rotate(0deg)" }
+      ], {
+        duration: 360 + index * 22,
+        easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        fill: "none"
+      });
+      ownedAnimations.push(animation);
     });
   }
 
-  ctaTargets.forEach(function (cta) {
-    cta.addEventListener("mouseenter", handleCtaEnter);
-    cta.addEventListener("mouseleave", handleCtaLeave);
-  });
-
-  function stopMotion() {
-    editorialTweens.forEach(function (tween) { tween.kill(); });
-    scrollTriggers.forEach(function (scrollTrigger) { scrollTrigger.kill(); });
-    gsap.killTweensOf(ctaTargets);
-    gsap.set(motionTargets, { clearProps: "transform" });
-    registerLinks.forEach(clearRegisterLink);
-    editorialTweens.length = 0;
-    scrollTriggers.length = 0;
+  function stopDecorativeMotion() {
+    ownedAnimations.forEach(function (animation) {
+      animation.cancel();
+    });
+    ownedAnimations.length = 0;
   }
 
   motionPreference.addEventListener("change", function (event) {
-    if (event.matches) stopMotion();
+    if (!event.matches) {
+      startDecorativeMotion();
+      return;
+    }
+
+    stopDecorativeMotion();
+    if (pendingIndex !== null) {
+      slides[pendingIndex].scrollIntoView({ behavior: "auto", block: "nearest", inline: "start" });
+      settleMovement();
+    }
   });
+
+  commitActive(0);
+  startDecorativeMotion();
 })();
