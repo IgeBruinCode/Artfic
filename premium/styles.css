@@ -52,9 +52,16 @@ img { max-width: 100%; height: auto; display: block; }
 
 a { color: inherit; }
 
+/* Focusindicator per oppervlak: donkerblauw op licht (≥ 3:1), oranjegeel op donker. */
 :focus-visible {
-  outline: 3px solid var(--oranjegeel);
+  outline: 3px solid var(--donkerblauw);
   outline-offset: 3px;
+}
+.premium-header :focus-visible,
+.premium-footer :focus-visible,
+.boekdeel--donker :focus-visible,
+.skiplink:focus-visible {
+  outline-color: var(--oranjegeel);
 }
 
 /* --- skiplink --- */
@@ -229,7 +236,7 @@ h4 { font-size: 1.0625rem; letter-spacing: 0; }
   font-size: 0.9375rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--blauw);
+  color: var(--donkerblauw);
 }
 .evidence-index__regel dd { max-width: var(--leesbreedte); }
 
@@ -260,7 +267,6 @@ h4 { font-size: 1.0625rem; letter-spacing: 0; }
   border-top: 1px solid var(--donkerblauw);
   padding-top: var(--r-2);
 }
-.maturity-track__fase h4 { color: var(--blauw); }
 .maturity-track__fase p { margin-top: var(--r-1); font-size: 0.9375rem; }
 
 /* --- controle-architectuur --- */

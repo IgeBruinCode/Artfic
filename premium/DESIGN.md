@@ -16,10 +16,10 @@ Uitsluitend de zes waarden uit `assets/brand/brand.json` (status: `verified`). G
 - `#0A213D` (donkerblauw) — lopende tekst op licht, structurele hairlines op lichte vlakken en de Artific-laag in de controle-architectuur.
 - `#FFFFFF` (wit) — lichte boekdelen (`#bewijs`, `#controlelaag`, `#aanpak`) en tekst op donker.
 - `#E5EDF8` (lichtblauw) — getinte boekdelen (`#visie`, `#platform`) en subtiele scheidingslijnen in de evidence-index.
-- `#287CEB` (blauw) — dossierregel-indexen op licht, hairlines, module-nummers, dunne CTA- en hero-margeranden.
-- `#ECA414` (oranjegeel) — schaars accent: primaire CTA (`.cta--accent`), indexnummers en ledger-termen op donker, conclusiestreep en focusring. Nadrukkelijk een Artific-accent, geen luxe-goudmotief.
+- `#287CEB` (blauw) — uitsluitend lijnen en decoratieve, `aria-hidden` indexnummers op licht, hairlines, dunne CTA- en hero-margeranden; nooit als kleine betekenisvolle tekst op licht (contrast onder AA).
+- `#ECA414` (oranjegeel) — schaars accent: primaire CTA (`.cta--accent`), indexnummers en ledger-termen op donker, conclusiestreep en de focusring op donkere oppervlakken. Nadrukkelijk een Artific-accent, geen luxe-goudmotief.
 
-Contrast: donkerblauw op wit/lichtblauw en wit op marineblauw halen ruim WCAG AA voor kleine tekst; de oranjegele CTA draagt marineblauwe tekst (contrast ≈ 8,6:1).
+Contrast (oppervlakte-afhankelijke regel): kleine betekenisvolle tekst is altijd donkerblauw op wit/lichtblauw (≥ 12:1) of wit/oranjegeel op marineblauw; helder blauw `#287CEB` is op lichte vlakken gereserveerd voor lijnen en decoratieve indexcijfers omdat het bij kleine tekst onder WCAG AA blijft (≈ 4,06:1 op wit, ≈ 3,44:1 op lichtblauw). De evidence-termen en maturity-koppen zijn daarom donkerblauw. De oranjegele CTA draagt marineblauwe tekst (contrast ≈ 8,6:1).
 
 ## Spacing
 
@@ -32,13 +32,13 @@ Eén H1 in de hero; per hoofdsectie één H2, met logisch geneste H3/H4 (vragen,
 ## Componentstijlen
 
 - **Dossierregel** — index (tabulaire cijfers, blauw op licht, oranjegeel op donker) + 1px hairline + uppercase sectielabel; markeert elk hoofdstuk.
-- **Evidence-index** (`#bewijs`) — definitielijst met hairline-regels: uppercase blauwe term links, traceerbare claim rechts; boven- en onderrand donkerblauw, tussenlijnen lichtblauw.
+- **Evidence-index** (`#bewijs`) — definitielijst met hairline-regels: uppercase donkerblauwe term links, traceerbare claim rechts; boven- en onderrand donkerblauw, tussenlijnen lichtblauw.
 - **Vraag-ledger & maturity-track** (`#visie`) — driekoloms rijen met 1–2px topregels; geen cards of iconen.
 - **Controle-architectuur** (`#controlelaag`) — drie aaneengesloten omlijnde lagen (modellen → Artific → processen); de Artific-laag is gevuld donkerblauw met oranjegele kop.
 - **Module-sequence** (`#platform`) — drie grote modulehoofdstukken als 3/4/5-grid-rijen, verbonden door hairlines; module-nummer, grote H3 en toepassing per rij.
 - **Assurance-ledger** (`#governance`) — tweekoloms grootboek op donker: oranjegele uppercase termen, witte toelichting, blauwe onderlijnen.
 - **Begeleiding** (`#aanpak`) — vijf kolommen met geautonummerde stappen (`01`–`05`) boven dunne topregels.
-- **CTA's** — rechthoekig (geen afronding): oranjegeel gevuld (`.cta--accent`), wit omlijnd op donker (`.cta--omlijnd`), wit gevuld in de header (`.cta--licht`); minimaal 44–48px hoog. Focus: 3px oranjegele outline met 3px offset.
+- **CTA's** — rechthoekig (geen afronding): oranjegeel gevuld (`.cta--accent`), wit omlijnd op donker (`.cta--omlijnd`), wit gevuld in de header (`.cta--licht`); minimaal 44–48px hoog. Focus: 3px outline met 3px offset, oppervlakte-afhankelijk — donkerblauw op lichte vlakken (≥ 3:1), oranjegeel op de donkere header/footer/boekdelen en de skiplink.
 
 ## Motion
 

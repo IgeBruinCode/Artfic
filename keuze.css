@@ -17,8 +17,9 @@ body {
   background: var(--wit);
 }
 
+/* Donkerblauwe focusindicator: ≥ 3:1 tegen het witte oppervlak (oranjegeel haalt dat niet). */
 :focus-visible {
-  outline: 3px solid var(--oranjegeel);
+  outline: 3px solid var(--donkerblauw);
   outline-offset: 3px;
 }
 

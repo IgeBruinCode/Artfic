@@ -36,12 +36,14 @@ const expectedChoices = [
   ['Veilig / conventioneel', 'conventioneel/'],
   ['Premium', 'premium/'],
 ];
-const choiceAnchors = [...rootHtml.matchAll(/<a\b[^>]*class="keuze__optie"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)];
+const choiceAnchors = [...rootHtml.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
+  .filter(([, attrs]) => (attrs.match(/\sclass="([^"]*)"/)?.[1] ?? '').split(/\s+/).includes('keuze__optie'))
+  .map(([, attrs, inner]) => [attrs.match(/\shref="([^"]+)"/)?.[1], inner]);
 if (choiceAnchors.length !== 5) fail(`index.html (root): verwacht exact vijf keuzeanchors, gevonden: ${choiceAnchors.length}`);
 for (const [naam, href] of expectedChoices) {
-  const anchor = choiceAnchors.find(([, aHref]) => aHref === href);
+  const anchor = choiceAnchors.find(([aHref]) => aHref === href);
   if (!anchor) fail(`index.html (root): keuze naar '${href}' ontbreekt`);
-  else if (!anchor[2].includes(naam)) fail(`index.html (root): keuze '${href}' draagt niet de naam '${naam}'`);
+  else if (!anchor[1].includes(naam)) fail(`index.html (root): keuze '${href}' draagt niet de naam '${naam}'`);
 }
 const allowedHex = new Set(brand.colors.map((c) => c.value.toUpperCase()));
 for (const [hex] of keuzeCss.matchAll(/#[0-9a-fA-F]{6}\b/g)) {

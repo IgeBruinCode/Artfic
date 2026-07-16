@@ -1,6 +1,6 @@
 # QA-log — setbrede afronding (rootkeuze + vijf varianten)
 
-Uitgevoerd op **2026-07-16** met **Chromium (headless, CDP-sidecar)** tegen `node scripts/serve.mjs 4173` vanuit de repository-root. Alle genoemde controles zijn daadwerkelijk uitgevoerd; beperkingen staan expliciet onderaan.
+Uitgevoerd op **2026-07-16** met **Chromium (headless, via CDP-sidecar aangestuurd)** tegen `node scripts/serve.mjs 4173` vanuit de repository-root. Alle genoemde controles zijn daadwerkelijk uitgevoerd; de fallbackmatrix hieronder is per variant interactief gedraaid met echte `prefers-reduced-motion`-emulatie (`Emulation.setEmulatedMedia`), echte jsDelivr-blokkering (`Network.setBlockedURLs`) en echte CTA-kliks met request-interceptie.
 
 ## Responsieve matrix (exact 320 / 768 / 1440 px)
 
@@ -18,14 +18,25 @@ Alle zes routes gaven direct HTTP 200; klikken op elke rootkeuze opende de bijbe
 ## Toetsenbord, landmarks & CTA's
 
 - **Premium:** eerste Tab focust de skiplink (zichtbaar, donker blok linksboven met oranjegele focusring); daarna logo, vijf lokale navigatieankers, header-CTA, hero-CTA's, slot-CTA's en footerlinks in documentvolgorde. Landmark-inspectie (accessibility tree): `banner`, gelabelde `navigation` ("Secties op deze pagina"), `main#inhoud`, footer; kopoutline H1 → per sectie H2 met geneste H3/H4, geen niveausprongen.
-- **CTA's (alle vijf varianten, vergeleken met de canonieke kaart):** elk voorkomen van `vraag-een-demo-aan` en `maak-een-afspraak` draagt exact het canonieke label, wijst naar `https://artific.nl/contact-opnemen/` en heeft geen `target` (zelfde tabblad). Automatisch afgedwongen door `node scripts/validate-site.mjs` en per variant handmatig aangeklikt op `/premium/` (beide hero-CTA's, header-CTA, beide slot-CTA's zichtbaar en bereikbaar op alle drie breedtes).
-- **Rootkeuze:** vijf anchors, zichtbare focusring (3px oranjegeel), doelhoogte ≥ 44px, geen JavaScript-afhankelijkheid.
+- **CTA-kliks (alle vijf varianten, elk voorkomen):** per variant zijn alle vijf CTA-anchors (header-demo, hero-demo, hero-afspraak, slot-demo, slot-afspraak) daadwerkelijk aangeklikt in de browser, met request-interceptie op `https://artific.nl/*` zodat de klik-navigatie wordt vastgelegd zonder de productiesite te bezoeken. Resultaat: 25/25 kliks navigeerden naar exact `https://artific.nl/contact-opnemen/`, alle labels exact canoniek (`Vraag een demo aan` / `Maak een afspraak`), nergens een `target`-attribuut. Dit wordt daarnaast automatisch afgedwongen door `node scripts/validate-site.mjs`.
+- **Rootkeuze:** vijf anchors, zichtbare focusring (3px donkerblauw op wit, ≥ 3:1 — oranjegeel is als focusindicator gereserveerd voor donkere oppervlakken), doelhoogte ≥ 44px, geen JavaScript-afhankelijkheid.
+- **Contrast premium:** de evidence-termen en maturity-koppen zijn donkerblauw (`#0A213D`) op licht; helder blauw `#287CEB` wordt op lichte vlakken alleen voor lijnen en decoratieve `aria-hidden` indexcijfers gebruikt (zie de oppervlakte-afhankelijke contrastregel in `premium/DESIGN.md`).
 
-## Reduced motion, JavaScript uit & CDN-uitval
+## Reduced motion, geblokkeerd CDN & JavaScript uit — interactief getest per variant
 
-- **Structurele borging (alle vijf varianten):** geen enkele stylesheet verbergt reveal-doelen (`display:none` alleen voor de headernavigatie in één max-width-query; geen `visibility:hidden`, geen `opacity: 0`), dus zonder scripts is elke pagina byte-voor-byte volledig zichtbaar. Alle `main.js`-bestanden stoppen vóór GSAP-registratie bij `prefers-reduced-motion: reduce` of ontbrekende `window.gsap`/`window.ScrollTrigger` (CDN-uitval) en animeren uitsluitend transforms met `clearProps`-opruiming; de validators dwingen deze guards af.
-- **Praktische controle:** de statische HTML van alle zes routes is zonder JavaScript gecontroleerd (volledige inhoud, ankers en CTA's aanwezig in de kale HTML-respons van de server). Premium bevat bij reduced motion nul tweens/ScrollTriggers (guard retourneert vóór `registerPlugin`).
-- **Beperking:** de gebruikte headless-browsersessie biedt geen schakelaar voor `prefers-reduced-motion`-emulatie of selectieve requestblokkering van jsDelivr; die twee modi zijn daarom geverifieerd via de kale-HTML-controle en de code-/validatorguards hierboven, niet via een aparte browserrun.
+Per variant drie afzonderlijke browserruns (echte emulatie/blokkering via CDP), met per run controle op zichtbare H1 (`offsetParent` + computed opacity 1), vijf bereikbare CTA's, geen horizontale overflow en werkende lokale ankers:
+
+| Route | Normaal (ScrollTriggers/tweens actief) | `prefers-reduced-motion: reduce` (geëmuleerd) | jsDelivr geblokkeerd |
+| --- | --- | --- | --- |
+| `/minimalistisch/` | 8 triggers / 9 tweens | **0 ScrollTriggers**, geen animatie; inhoud & CTA's identiek | `window.gsap` ontbreekt; pagina volledig statisch bruikbaar; ankerklik werkt |
+| `/brutalistisch-a/` | 34 / 34 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
+| `/brutalistisch-b/` | 16 / 11 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
+| `/conventioneel/` | 25 / 21 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
+| `/premium/` | 39 / 49 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
+
+- Bij reduced motion resteert in de gsap-tijdlijn uitsluitend één interne, duurloze `ScrollTrigger._refreshAll`-delayedCall (geen visuele beweging, nul triggers); elke `main.js` stopt vóór `registerPlugin`, dus er ontstaan geen animaties of `aria-current`-mutaties.
+- Het CDN-blokkeringsscenario dekt tegelijk JavaScript-uit: zonder de GSAP-globals stopt elk `main.js` direct en is de pagina puur statische HTML/CSS. De statische HTML van alle zes routes is daarnaast zonder JavaScript gecontroleerd (volledige inhoud, ankers en CTA's in de kale serverrespons).
+- **Motionkarakter per variant:** `premium`, `conventioneel`, `brutalistisch-a` en `brutalistisch-b` animeren uitsluitend transforms; `minimalistisch/main.js` animeert (bewust, conform haar eigen validator) óók opacity in haar reveals — dat is daar veilig omdat de CSS niets standaard verbergt en de reveal alleen draait wanneer GSAP geladen is én reduced motion uit staat. Geen enkele stylesheet verbergt reveal-doelen (`display:none` alleen voor headernavigatie in één max-width-query; geen `visibility:hidden`, geen `opacity: 0`).
 
 ## Onderlinge vergelijking (eigenheid per variant)
 
