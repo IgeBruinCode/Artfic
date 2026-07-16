@@ -1,11 +1,13 @@
 /* Neutrale keuzepagina op / — uitsluitend merkkleuren uit assets/brand/brand.json. */
 :root {
   --blauw: #287CEB;
-  --donkerblauw: #0A213D;
+  --navy: #042244;
   --lichtblauw: #E5EDF8;
-  --oranjegeel: #ECA414;
+  --geel: #FFD602;
   --wit: #FFFFFF;
 }
+
+.brand-logo { min-width: 80px; height: auto; transform: none; filter: none; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,13 +15,13 @@ body {
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 1.0625rem;
   line-height: 1.6;
-  color: var(--donkerblauw);
+  color: var(--navy);
   background: var(--wit);
 }
 
 /* Donkerblauwe focusindicator: ≥ 3:1 tegen het witte oppervlak (oranjegeel haalt dat niet). */
 :focus-visible {
-  outline: 3px solid var(--donkerblauw);
+  outline: 3px solid var(--navy);
   outline-offset: 3px;
 }
 
@@ -41,7 +43,7 @@ body {
 .keuze__lijst {
   list-style: none;
   margin-top: 48px;
-  border-top: 1px solid var(--donkerblauw);
+  border-top: 1px solid var(--navy);
 }
 
 .keuze__optie {
@@ -52,13 +54,14 @@ body {
   text-decoration: none;
   color: inherit;
 }
-.keuze__lijst li:last-child .keuze__optie { border-bottom: 1px solid var(--donkerblauw); }
+.keuze__lijst li:last-child .keuze__optie { border-bottom: 1px solid var(--navy); }
 .keuze__optie:hover { background: var(--lichtblauw); }
+.keuze__optie:hover .keuze__naam { color: var(--navy); }
 
 .keuze__naam {
   display: block;
   font-weight: 600;
   font-size: 1.1875rem;
-  color: var(--blauw);
+  color: var(--navy);
 }
 .keuze__omschrijving { display: block; margin-top: 4px; font-size: 0.9375rem; }

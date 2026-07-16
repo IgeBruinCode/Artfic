@@ -4,57 +4,68 @@ Stijlgids voor de landingspagina op `/minimalistisch/`. Dit document beschrijft 
 
 > **Provenance — gefinaliseerd via Google Stitch-MCP (2026-07-16):** de in dit document vastgelegde, werkelijk geïmplementeerde waarden uit `styles.css`/`main.js` zijn via de Google Stitch-MCP (`stitch.googleapis.com/mcp`, MCP-protocol 2025-03-26) gefinaliseerd in een **afzonderlijk** Stitch-project voor deze variant: het document is met `upload_design_md` geüpload naar Stitch-project `10126708337972370583` ("Artific — Minimalistisch (rustige editorial)", screen `17171847500156386945`) en met `create_design_system_from_design_md` (DESKTOP) omgezet in design system `assets/f503f899b0534601b77f334f334c4d98` ("Artific Minimalist"). De door Stitch vastgelegde named colors bevatten exact de merktokens uit `assets/brand/brand.json` (`artific-blauw #287CEB`, `artific-donkerblauw #0A213D`, `artific-lichtblauw #E5EDF8`, `artific-oranjegeel #ECA414`, `surface_container_lowest #FFFFFF`); de overige door Stitch intern gegenereerde Material-paletwaarden worden **niet** op de pagina gebruikt. Er zijn bij deze finalisatie geen ontwerpwaarden gewijzigd die niet in de bestaande CSS/JS staan; de implementatie blijft leidend. De gebruikte credential is uitsluitend runtime aangeboden en is niet in broncode, Markdown, configuratie of scripts opgeslagen.
 
+> **Huisstijlherijking:** de Stitch-provenance hierboven blijft als historische runregistratie letterlijk behouden. De daarin genoemde toenmalige token-snapshot is niet langer de merkbasis; de actuele implementatie en onderstaande kleurregels volgen de twee lokale primaire PDF’s en `assets/brand/brand.json`.
+
+> **Creatieve bron — 21st.dev Magic MCP (2026-07-16):** via de officiële 21st.dev MCP is een gerichte 21st AI-schets gegenereerd en verfijnd als generatie `b8b327ee-b328-41f9-929e-b81c3d246ae9`, Take 1. Daaruit zijn vier rustige patronen handmatig vertaald: één vast twaalfkoloms veld met 24px gap, compacte marge-labels, 1px sectierails en drie brede hoofdstukken op 1–8 / 3–10 / 5–12. De voorgestelde eenmalige 14px-groepsenter is ingekort tot de bestaande 0,48s GSAP-enhancement en veilig gemaakt met `immediateRender: false`; er is geen CSS-initiële verborgen staat. Tailwind/CDN-code, gegenereerde tekst, seriftypografie, extra kleuren, zichtbare kolomguide-elementen en alle frameworkonderdelen uit de schets zijn bewust niet overgenomen. De raadpleging was uitsluitend een build-time creatieve bron; de pagina bevat geen 21st.dev-runtimeverzoek, package of configuratie.
+
 ## Ontwerpprincipes
 
-Rustig en doelbewust: de inhoud draagt de aandacht. Eén kolom leestekst met ruime ademruimte, editorial lijnen in plaats van cards of iconengrids, geen foto's of illustraties. Het enige beeldmateriaal is het officiële Artific-logo (blauw op licht, wit op donker) en één abstracte flow-compositie ("AI-modellen → Artific → jouw processen") die volledig uit typografie, lijnen en merkkleuren is opgebouwd.
+Rustig en doelbewust: tekst, witruimte en uitlijning dragen de aandacht. Alle acht hoofdsecties gebruiken één gecentreerde `.sectie__grid`; dunne rails en brede open composities nemen de plaats in van cards, dashboards, fotografie en iconengrids. De flow-compositie is het enige abstracte schema. Verder gebruikt de pagina uitsluitend typografie, lijnen, de bevestigde merkkleuren en de officiële logo's.
+
+Vanaf 980px verdeelt iedere sectie dezelfde inhoudsbreedte in twaalf kolommen. Marge-informatie staat op kolommen 1–2, sectiekoppen op 3–9, lees- en ondersteunende tekst hoofdzakelijk op 5–10 en hoofdcomposities op 3–12. De hero gebruikt 1–8 voor het verhaal en 10–12 voor bewijs. Daardoor ontstaan betekenisvolle open zones, geen toevallige lege helften.
 
 ## Kleurgebruik
 
-Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified` — per waarde meetbaar geverifieerd tegen officieel door Artific gepubliceerde PDF-documenten; hertoetsing tegen de interne brand manual volgt zodra die wordt aangeleverd, zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
+Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified` — per waarde meetbaar geverifieerd tegen de twee aanwezige primaire PDF-documenten, met pagina-evidence in `brand.json`). Geen afgeleide tinten, gradients of transparante merkkleuren.
 
 | Kleur | Hex | Rol op deze pagina |
 | --- | --- | --- |
 | Wit | `#FFFFFF` | hoofdcanvas, tekst op donkere vlakken |
-| Artific-donkerblauw | `#0A213D` | alle lopende tekst en koppen, primaire CTA-vulling, donkere contactsectie en footer |
-| Artific-blauw | `#287CEB` | herkenbaar maar beperkt accent: eyebrow-streep, onderstrepingen, stap- en fasenummers, flow-pijlen, rand van flow-blokken, focusring op licht |
-| Artific-lichtblauw | `#E5EDF8` | rustige scheidingslijnen, badge-randen, decoratieve modulenummers, selectie-achtergrond |
-| Artific-oranjegeel | `#ECA414` | spaarzaam: accentregels, primaire CTA en focusring op de donkere sectie (daar AA-contrastveilig) |
+| Artific-donkerblauw | `#042244` | lopende tekst en koppen, primaire CTA-vulling, donkere contactsectie en footer |
+| Artific-blauw | `#287CEB` | eyebrow- en sectierails, onderstrepingen, grote fasenummers, flow-pijlen en focusring op licht |
+| Artific-lichtblauw | `#E5EDF8` | rustige sectiebanden, scheidingslijnen op wit, badge-randen, decoratieve modulenummers en selectie-achtergrond |
+| Artific-geel | `#FFD602` | accentregels, primaire CTA en focusring op donkere oppervlakken |
 
-Contrastregels: kleine lopende tekst is altijd `#0A213D` op wit/lichtblauw of `#FFFFFF` op donkerblauw (ruim boven WCAG AA). `#287CEB` haalt op wit géén 4,5:1 en wordt daarom alleen decoratief of op grote cijfers gebruikt, nooit voor kleine informatieve tekst. `#ECA414` wordt nooit als tekstkleur op wit gebruikt; op `#0A213D` haalt het ruim WCAG AA.
+Kleine lopende tekst is `#042244` op wit of lichtblauw en `#FFFFFF` op donkerblauw. `#287CEB` wordt op lichte oppervlakken alleen decoratief of op grote cijfers gebruikt. `#FFD602` is geen tekstkleur op wit; geel op donkerblauw is de toegankelijke accent- en focuscombinatie.
 
-## Spacing
+## Spacing en grid
 
-8px-gebaseerde schaal als custom properties: `--ruimte-1` 8px, `--ruimte-2` 16px, `--ruimte-3` 24px, `--ruimte-4` 40px, `--ruimte-5` 64px. Verticale sectieruimte is vloeiend: `clamp(64px, 12vw, 144px)`; horizontale gutters `clamp(16px, 5vw, 48px)`. Paginabreedte maximaal 1120px, leesbreedte maximaal `62ch` (± 65–70 tekens). Rijen en genummerde items krijgen 24–40px verticale padding met 1px lichtblauwe scheidingslijnen als enige decoratie.
+De 8px-schaal blijft leidend: `--ruimte-1` 8px, `--ruimte-2` 16px, `--ruimte-3` 24px, `--ruimte-4` 40px en `--ruimte-5` 64px. Sectieruimte is verkort tot `clamp(64px, 7.5vw, 104px)` en de hero start met `clamp(56px, 8vw, 96px)`. Horizontale gutters zijn `clamp(16px, 5vw, 48px)`.
+
+De maximale inhoudsbreedte is 1120px binnen een 1216px container inclusief desktopgutters. Het desktopgrid gebruikt `repeat(12, minmax(0, 1fr))`, een vaste kolomgap van 24px en een basis-row-gap van 24px. Header, secties en footer delen dezelfde containergrenzen. Lopende tekst blijft begrensd op `62ch`.
 
 ## Visuele hiërarchie
 
 - Systeemfont-stack: `"Helvetica Neue", Helvetica, Arial, sans-serif`; geen webfonts.
-- Typografische schaal via `clamp()`: H1 `2.25–4rem`, H2 `1.75–2.75rem`, H3 `1.25–1.5rem`, H4 `1.05–1.2rem`, body `1–1.125rem` (regelafstand 1.6), alle koppen gewicht 600 met licht negatieve letterspatiëring.
-- Exact één H1 (de merkbelofte); H2 per hoofdsectie, H3 voor vragen/fasen/modules/sublagen, H4 binnen rijen. Eyebrow-labels (kapitaal, gespatieerd, blauwe streep links) markeren secties zonder de koppenhiërarchie te belasten.
-- Asymmetrie op desktop: hero in 7/4-grid, modules met breed nummer-kanaal links; op mobiel valt alles terug naar één kolom.
-- Grote decoratieve nummers (`01 02 03` in lichtblauw/blauw, `aria-hidden`) geven ritme zonder iconografie.
+- Typografische schaal via `clamp()`: H1 `2.25–4rem`, H2 `1.75–2.75rem`, H3 `1.25–1.5rem`, H4 `1.05–1.2rem`, body `1–1.125rem` met regelafstand 1.6.
+- Exact één H1; H2 per hoofdsectie, H3 voor vragen, fasen, modules en sublagen, H4 binnen onderliggende rijen.
+- Eyebrows staan op desktop in de linker marge-as naast de H2. Hairlines verbinden de daaronder liggende hoofdstukken.
+- Grote decoratieve nummers zijn `aria-hidden`; inhoud en documentvolgorde blijven zonder die nummers volledig begrijpelijk.
 
 ## Componentstijlen
 
-- **Header:** sticky, wit met 1px lichtblauwe onderrand; blauw logo, sectieankers (verborgen ≤ 640px), compacte donkere CTA. Alle interactieve doelen ≥ 44px hoog.
-- **CTA's:** rechthoekig (geen afronding), 2px rand, gewicht 600, ≥ 48px hoog. Primair: donkerblauw vlak met witte tekst; secundair: wit met donkerblauwe rand; op de donkere slotsectie: oranjegeel vlak respectievelijk witte omlijning. Hover: onderstreping (CSS) plus 2px GSAP-lift; focus: 3px ring in blauw (licht) of oranjegeel (donker).
-- **Editorial rijen:** kop + korte alinea tussen 1px lijnen; op ≥ 700px twee kolommen. Geen cards, schaduwen of iconen.
-- **Genummerde fasen/lagen/stappen:** CSS-counters met decimal-leading-zero, nummer in gedempte kleur naast de inhoud.
-- **Flow-compositie:** drie omlijnde tekstblokken met pijlen (verticaal op mobiel, horizontaal ≥ 700px); het middelste Artific-blok is donkerblauw gevuld. Pijlen zijn `aria-hidden`, het geheel heeft een beschrijvend `aria-label`.
-- **Quote:** blauwe linkerlijn, grotere serif-loze tekst, bronvermelding eronder.
-- **Badges/toepassingen:** tekstchips met 1px lichtblauwe rand, geen achtergrondvulling.
-- **Footer:** donkerblauw, wit logo, officiële contactlinks (contactpagina, e-mail, telefoon).
+- **Header:** sticky, wit met 1px lichtblauwe onderrand; blauw logo, vijf sectieankers op brede schermen en een compacte donkere CTA. Alle interactieve doelen zijn minimaal 44px hoog.
+- **CTA's:** rechthoekig, 2px rand, gewicht 600 en minimaal 48px hoog. Primair is donkerblauw met wit; secundair wit met donkerblauw. Op de donkere slotsectie staan geel met donkerblauw en wit omlijnd naast elkaar. Focus is een zichtbare 3px blauwe of gele ring.
+- **Editorial rijen en fasen:** iedere hoofdsectie begint na de hero met een 1px lichtblauwe rail; bij lichtblauwe en donkere banden is die rail blauw. Binnen secties blijven tekstgroepen open tussen hairlines, zonder achtergrondvlak, schaduw of afgeronde kaartvorm. Vanaf 700px benutten de rijen twee kolommen.
+- **Moduletrap:** `.modules` beslaat op desktop alle twaalf kolommen. AI Assistant staat op 1–8, AI ToolBox op 3–10 en Conversation Module op 5–12, elk op een eigen rij. Elke module is een open band met nummerrail, tekst en gedeelde hairline; de gezamenlijke bounds lopen van de linker- tot rechtergridrand.
+- **Flow-compositie:** drie omlijnde tekstblokken met pijlen, verticaal op klein en horizontaal vanaf 700px. Het middelste Artific-blok is donkerblauw gevuld.
+- **Tintbanden:** de controlelaag, governance en bewijssectie gebruiken Artific Light Blue met navy tekst en blauwe scheidingslijnen.
+- **Quote en badges:** een quote met blauwe linkerlijn en sobere tekstchips met 1px lijn, zonder achtergrondvulling.
+- **Footer:** donkerblauw met wit logo en de officiële contactlinks.
 
 ## Bewegingsprincipes
 
-Beweging is een detail, nooit een voorwaarde: de volledige pagina is leesbaar en bedienbaar zonder JavaScript, bij geblokkeerd CDN en met reduced motion.
+Beweging is een detail, nooit een voorwaarde. De volledige pagina is zichtbaar en bedienbaar zonder JavaScript, bij een geblokkeerd CDN en met reduced motion.
 
-- GSAP 3.12.5 + ScrollTrigger, gepind via jsDelivr-CDN met `defer`; `main.js` stopt direct bij `prefers-reduced-motion: reduce` of ontbrekende `window.gsap`/`window.ScrollTrigger`.
-- Reveals: `data-reveal`-elementen komen éénmalig binnen met `opacity 0 → 1` en `y 20px → 0` (0,55s, `power2.out`, start op 88% viewport); properties worden na afloop gewist (`clearProps`). Niets staat standaard op opacity 0 in CSS/HTML.
-- Flow-voortgang: de pijlen van de controlelaag-compositie faden gestaffeld in (0,2s stagger) zodra de compositie in beeld komt.
-- Hover: CTA's krijgen een subtiele lift van 2px bij mouseenter/-leave; klik- en focusgedrag hangt nergens van GSAP af.
-- CSS: het `prefers-reduced-motion`-blok schakelt smooth scrolling (`scroll-behavior: auto`) en alle transitions/animations uit; de hover-onderstreping blijft bestaan en verschijnt dan direct, zonder overgang.
+- GSAP 3.12.5 en ScrollTrigger zijn als optionele, gepinde jsDelivr-enhancement geladen. `main.js` stopt vóór registratie bij `prefers-reduced-motion: reduce` of ontbrekende GSAP-globals.
+- Expliciete `data-reveal`-koppen komen éénmalig 14px omhoog met een opacity-inloop van 0,48s, `power2.out`, vanaf 88% van de viewport.
+- De drie modules gebruiken dezelfde enter als één groep met 0,08s stagger. Flow-pijlen faden in 0,4s in met 0,2s stagger.
+- CTA's krijgen op pointer-hover een lift van 2px in 0,18s. `overwrite: "auto"` voorkomt gestapelde tweens bij snelle pointerwissels.
+- `immediateRender: false` laat inhoud zichtbaar tot de trigger werkelijk start; iedere enter wist daarna `opacity` en `transform`. CSS of HTML verbergt nooit standaard inhoud.
+- Het reduced-motion-blok schakelt smooth scrolling, transitions en animaties uit.
 
 ## Responsief gedrag
 
-Breakpoints op 400px (compacte sticky header: logo 88px, kleinere gap en CTA-padding zodat de header op 320px op één regel past), 640px (headernav verbergen), 700px (tweeluik, rijen in twee kolommen, horizontale flow) en 980px (asymmetrische hero en module-layout). Op 320px: één kolom, hero- en slot-CTA's volledig zichtbaar, geen horizontale overflow. Sectieankers krijgen `scroll-margin-top: 96px` vanwege de sticky header.
+Het editoriale twaalfkoloms grid en de moduletrap starten op 980px. Daaronder is `.sectie__grid` lineair en wordt `.modules` expliciet naar `display: block`, volle breedte en automatische gridpositie gereset. Daardoor blijft de canonieke DOM-volgorde AI Assistant → AI ToolBox → Conversation Module ook de visuele en toetsenbordvolgorde.
+
+Vanaf 700px worden tweeluiken en editorial rijen tweekoloms en wordt de flow horizontaal. Tot en met 860px is de sectienavigatie verborgen zodat logo en header-CTA op 768px en kleiner niet botsen. Op 400px krijgt de header compactere afmetingen en gebruikt een module een compacte, wrapbare nummer-/tekstverdeling. Op 320px blijven CTA's, chips en tekst binnen de viewport zonder horizontale scroll. Sectieankers gebruiken `scroll-margin-top: 96px` voor de sticky header.

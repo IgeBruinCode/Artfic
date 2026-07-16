@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Structurele en referentiële controle van de gedeelde Artific-content-, CTA- en huisstijlbron.
 // Gebruik: node scripts/validate-content.mjs (dependency-vrij, Node-standaardbibliotheek).
+import { createHash } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -130,63 +131,231 @@ if (content) {
 
 // --- huisstijlbron ---
 if (brand) {
-  // Harde oplevergate: de eindoplevering vereist status 'verified'. De verificatiebasis is de
-  // set officieel door Artific gepubliceerde, huisstijldragende PDF-documenten van artific.nl
-  // (referenceDocuments, elk met URL + SHA-256 en pdfProvenance per waarde). De twee interne
-  // referentie-PDF's zijn nooit aan de buildomgeving aangeleverd; zolang dat zo is, is een
-  // volledig deviation-blok met beide bestandsnamen, reden en herverificatiepad verplicht en
-  // moet elke waarde tegen die documenten worden hertoetst zodra ze alsnog worden aangeleverd.
-  const internalDocs = ['260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'];
-  const internalAvailable = internalDocs.every((f) =>
-    (brand.referenceDocuments ?? []).some((d) => d.filename === f && d.available === true));
-  if (brand.status !== 'verified') {
-    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na meetbare verificatie van elke kleur en logo-uitvoering tegen officieel door Artific gepubliceerde documenten (zie assets/brand/README.md)`);
+  const requiredDocuments = new Map([
+    ['brand-manual', '260506 Artific brand manual v1.0.pdf'],
+    ['creative-materials', '260506 Voorbeelden creative materials.pdf'],
+  ]);
+  const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
+  const unique = (items, label) => {
+    const ids = new Set();
+    for (const [index, item] of (items ?? []).entries()) {
+      if (!item.id) fail(`brand.json ${label}[${index}]: id ontbreekt`);
+      else if (ids.has(item.id)) fail(`brand.json ${label}: dubbel id '${item.id}'`);
+      else ids.add(item.id);
+    }
+    return ids;
+  };
+  const requireExactTuples = (items, expected, tupleFor, label) => {
+    const counts = new Map();
+    for (const item of items ?? []) {
+      const tuple = tupleFor(item);
+      counts.set(tuple, (counts.get(tuple) ?? 0) + 1);
+      if (!expected.has(tuple)) fail(`brand.json ${label}: niet-geaudite tuple '${tuple}'`);
+    }
+    for (const tuple of expected) {
+      if (counts.get(tuple) !== 1) fail(`brand.json ${label}: verwachte tuple '${tuple}' moet exact eenmaal voorkomen`);
+    }
+  };
+
+  if (brand.status !== 'verified') fail(`brand.json: status is '${brand.status}' in plaats van 'verified'`);
+  if ((brand.referenceDocuments ?? []).length !== requiredDocuments.size) {
+    fail(`brand.json: verwacht exact de twee aangeleverde primaire referenceDocuments, gevonden: ${(brand.referenceDocuments ?? []).length}`);
   }
-  const availableDocs = new Map();
-  if (!brand.referenceDocuments?.length) fail('brand.json: referenceDocuments is leeg — er is geen PDF-verificatiebron');
-  for (const [i, d] of (brand.referenceDocuments ?? []).entries()) {
-    const ctx = `brand.json referenceDocuments[${i}] ('${d.id ?? '?'}')`;
-    for (const f of ['id', 'filename', 'url', 'sha256', 'fetchedAt', 'role']) if (!d[f]) fail(`${ctx}: veld '${f}' ontbreekt`);
-    if (d.filename && !d.filename.toLowerCase().endsWith('.pdf')) fail(`${ctx}: '${d.filename}' is geen PDF`);
-    if (d.url && !/^https:\/\/artific\.nl\//.test(d.url)) fail(`${ctx}: url moet een officiële artific.nl-locatie zijn`);
-    if (d.sha256 && !/^[0-9a-f]{64}$/.test(d.sha256)) fail(`${ctx}: sha256 is geen geldige hash`);
-    if (d.available !== true) fail(`${ctx}: referentiedocument is niet beschikbaar (available !== true) — zonder document kan geen waarde als goedgekeurd gelden`);
-    else availableDocs.set(d.id, d);
-  }
-  const requested = (brand.deviation?.requestedDocuments ?? []).map((d) => d.filename);
-  if (!internalAvailable && (!internalDocs.every((f) => requested.includes(f)) || !brand.deviation?.reason?.trim() || !brand.deviation?.upgradePath?.trim())) {
-    fail('brand.json: deviation met beide interne PDF-bestandsnamen, reden en upgradePath is verplicht zolang die documenten niet zijn aangeleverd');
-  }
-  const hasPdfProvenance = (p) =>
-    Array.isArray(p) && p.length > 0 && p.every((e) =>
-      availableDocs.has(e.documentId) &&
-      Array.isArray(e.pages) && e.pages.length > 0 &&
-      e.pages.every((n) => Number.isInteger(n) && n >= 1 && n <= availableDocs.get(e.documentId).pages) &&
-      e.evidence?.trim());
-  if (!brand.colors?.length) fail('brand.json: colors is leeg — er zijn geen goedgekeurde kleuren opgeleverd');
-  for (const [i, c] of (brand.colors ?? []).entries()) {
-    for (const f of ['id', 'value', 'role']) if (!c[f]) fail(`brand.json colors[${i}]: veld '${f}' ontbreekt`);
-    if (c.value && !/^#[0-9A-Fa-f]{6}$/.test(c.value)) fail(`brand.json colors[${i}]: '${c.value}' is geen geldige hexwaarde`);
-    if (!hasPdfProvenance(c.pdfProvenance)) fail(`brand.json colors[${i}] ('${c.id ?? '?'}'): pdfProvenance met beschikbaar documentId, geldige paginanummers en evidence ontbreekt — niet geverifieerd tegen de referentie-PDF's`);
-  }
-  if (!brand.logos?.length) fail('brand.json: logos is leeg — er zijn geen goedgekeurde logo-assets opgeleverd');
-  const backgrounds = new Set((brand.logos ?? []).map((l) => l.background));
-  if (!backgrounds.has('licht') || !backgrounds.has('donker')) {
-    fail('brand.json: er moet een logo-uitvoering voor zowel lichte als donkere achtergronden zijn');
-  }
-  for (const [i, l] of (brand.logos ?? []).entries()) {
-    for (const f of ['id', 'file', 'background', 'exportMethod', 'usage']) if (!l[f]) fail(`brand.json logos[${i}]: veld '${f}' ontbreekt`);
-    if (!hasPdfProvenance(l.pdfProvenance)) fail(`brand.json logos[${i}] ('${l.id ?? '?'}'): pdfProvenance met beschikbaar documentId, geldige paginanummers en evidence ontbreekt — niet geverifieerd tegen de referentie-PDF's`);
-    if (l.file) {
-      const p = join(root, 'assets/brand', l.file);
-      if (!existsSync(p)) fail(`brand.json logos[${i}]: bestand '${l.file}' bestaat niet in assets/brand/`);
+
+  const documentIds = unique(brand.referenceDocuments, 'referenceDocuments');
+  const primaryDocuments = new Map();
+  for (const [index, document] of (brand.referenceDocuments ?? []).entries()) {
+    const ctx = `brand.json referenceDocuments[${index}] ('${document.id ?? '?'}')`;
+    const expectedPath = requiredDocuments.get(document.id);
+    if (!expectedPath) fail(`${ctx}: document is niet een van de twee aangeleverde primaire PDF's`);
+    for (const field of ['filename', 'path', 'sha256', 'pages', 'role']) {
+      if (!document[field]) fail(`${ctx}: veld '${field}' ontbreekt`);
+    }
+    if (expectedPath && (document.filename !== expectedPath || document.path !== expectedPath)) {
+      fail(`${ctx}: filename en path moeten exact '${expectedPath}' zijn`);
+    }
+    if (document.primary !== true || document.available !== true) fail(`${ctx}: primary en available moeten true zijn`);
+    if (!/^[0-9a-f]{64}$/.test(document.sha256 ?? '')) fail(`${ctx}: ongeldige SHA-256`);
+    if (!Number.isInteger(document.pages) || document.pages < 1) fail(`${ctx}: ongeldige paginatelling`);
+
+    if (document.path) {
+      const pdfPath = join(root, document.path);
+      if (!existsSync(pdfPath)) fail(`${ctx}: lokaal PDF-bestand '${document.path}' ontbreekt`);
       else {
-        const svg = readFileSync(p, 'utf8');
-        if (!svg.trimStart().startsWith('<svg')) fail(`brand.json logos[${i}]: '${l.file}' is geen SVG`);
-        if (/https?:\/\/(?!www\.w3\.org\/)/.test(svg)) fail(`brand.json logos[${i}]: '${l.file}' bevat externe URL's en is niet zelfstandig`);
-        if (/<script|<text|<image|@font-face|font-family/i.test(svg)) fail(`brand.json logos[${i}]: '${l.file}' bevat scripts, tekst-elementen of fontafhankelijkheden`);
+        const bytes = readFileSync(pdfPath);
+        if (sha256(bytes) !== document.sha256) fail(`${ctx}: SHA-256 wijkt af van brand.json`);
+        const pageCount = (bytes.toString('latin1').match(/\/Type\s*\/Page\b/g) ?? []).length;
+        if (pageCount !== document.pages) fail(`${ctx}: verwacht ${document.pages} pagina's, PDF bevat ${pageCount}`);
       }
     }
+    if (document.id) primaryDocuments.set(document.id, document);
+  }
+  for (const [id, path] of requiredDocuments) {
+    if (!documentIds.has(id)) fail(`brand.json: primair document '${id}' (${path}) ontbreekt`);
+  }
+
+  const checkPrimaryProvenance = (provenance, ctx) => {
+    if (!Array.isArray(provenance) || provenance.length === 0) {
+      fail(`${ctx}: pdfProvenance ontbreekt`);
+      return;
+    }
+    for (const [index, entry] of provenance.entries()) {
+      const document = primaryDocuments.get(entry.documentId);
+      const entryCtx = `${ctx}.pdfProvenance[${index}]`;
+      if (!document) fail(`${entryCtx}: documentId '${entry.documentId}' is geen primaire PDF`);
+      if (!Array.isArray(entry.pages) || entry.pages.length === 0) fail(`${entryCtx}: pages ontbreekt`);
+      else if (document && entry.pages.some((page) => !Number.isInteger(page) || page < 1 || page > document.pages)) {
+        fail(`${entryCtx}: paginanummer valt buiten 1-${document.pages}`);
+      }
+      if (!entry.evidence?.trim()) fail(`${entryCtx}: concrete evidence ontbreekt`);
+    }
+  };
+
+  const auditedColors = new Map([
+    ['artific-blauw', '#287CEB'],
+    ['artific-geel', '#FFD602'],
+    ['artific-navy', '#042244'],
+    ['artific-lichtblauw', '#E5EDF8'],
+    ['artific-grijs', '#64748B'],
+    ['wit', '#FFFFFF'],
+  ]);
+  const colorIds = unique(brand.colors, 'colors');
+  const colorsById = new Map();
+  const colorValues = new Set();
+  if ((brand.colors ?? []).length !== auditedColors.size) {
+    fail(`brand.json: verwacht exact ${auditedColors.size} tegen de brand manual geaudite kleuren`);
+  }
+  for (const [index, color] of (brand.colors ?? []).entries()) {
+    const ctx = `brand.json colors[${index}] ('${color.id ?? '?'}')`;
+    for (const field of ['id', 'value', 'role']) if (!color[field]) fail(`${ctx}: veld '${field}' ontbreekt`);
+    if (!/^#[0-9A-F]{6}$/.test(color.value ?? '')) fail(`${ctx}: '${color.value}' is geen uppercase hexwaarde`);
+    if (!auditedColors.has(color.id)) fail(`${ctx}: kleur-id is niet opgenomen in de primaire PDF-audit`);
+    else if (auditedColors.get(color.id) !== color.value) fail(`${ctx}: '${color.value}' wijkt af van de geaudite waarde '${auditedColors.get(color.id)}'`);
+    if (colorValues.has(color.value)) fail(`${ctx}: dubbele kleurwaarde '${color.value}'`);
+    colorValues.add(color.value);
+    colorsById.set(color.id, color);
+    checkPrimaryProvenance(color.pdfProvenance, ctx);
+    if (!color.pdfProvenance?.some((entry) => entry.documentId === 'brand-manual')) {
+      fail(`${ctx}: iedere kleur vereist expliciete provenance uit de brand manual; creative materials is alleen toepassingsevidence`);
+    }
+  }
+
+  const auditedLogoUsageRules = new Map([
+    ['logo-minimum-digital-width', (rule) => Number.isInteger(rule.minDigitalWidthPx) && rule.minDigitalWidthPx === 80],
+    ['logo-preserve-artwork', (rule) => rule.requireAutoHeight === true &&
+      JSON.stringify(rule.forbiddenCssProperties) === JSON.stringify(['filter', 'transform'])],
+    ['logo-clearspace', (rule) => rule.manualQa === true && rule.requirement?.includes('hoogte van de letter a')],
+  ]);
+  unique(brand.logoUsageRules, 'logoUsageRules');
+  if ((brand.logoUsageRules ?? []).length !== auditedLogoUsageRules.size) {
+    fail(`brand.json: verwacht exact ${auditedLogoUsageRules.size} geaudite logo-gebruiksregels`);
+  }
+  for (const [index, rule] of (brand.logoUsageRules ?? []).entries()) {
+    const ctx = `brand.json logoUsageRules[${index}] ('${rule.id ?? '?'}')`;
+    if (!auditedLogoUsageRules.has(rule.id)) fail(`${ctx}: regel is niet opgenomen in de primaire PDF-audit`);
+    else if (!auditedLogoUsageRules.get(rule.id)(rule)) fail(`${ctx}: gestructureerde regel wijkt af van de primaire PDF-audit`);
+    checkPrimaryProvenance(rule.pdfProvenance, ctx);
+    if (!rule.pdfProvenance?.some((entry) => entry.documentId === 'brand-manual')) {
+      fail(`${ctx}: logo-gebruiksregel vereist provenance uit de brand manual`);
+    }
+  }
+
+  const auditedLogos = new Map([
+    ['logo-blauw', ['artific-logo-blauw.svg', 'aa9dd2935ef63ea6c4884a6d781721dd091a2b036095c795987888e766e2fb06']],
+    ['logo-wit', ['artific-logo-wit.svg', '8735f58f7c16c15c8ba5eb133c3d920cf604a338db077babf25afbf1eaa859f4']],
+    ['logo-navy', ['artific-logo-navy.png', 'd77170b6920cd645a751a4fb56bd55a7a9b0ff8b4e83b1d6afd2e1b56c894a7d']],
+  ]);
+  const logoIds = unique(brand.logos, 'logos');
+  if ((brand.logos ?? []).length !== auditedLogos.size) fail(`brand.json: verwacht exact ${auditedLogos.size} geaudite logo-uitvoeringen`);
+  for (const [index, logo] of (brand.logos ?? []).entries()) {
+    const ctx = `brand.json logos[${index}] ('${logo.id ?? '?'}')`;
+    for (const field of ['id', 'file', 'mediaType', 'sha256', 'exportMethod']) if (!logo[field]) fail(`${ctx}: veld '${field}' ontbreekt`);
+    if (!auditedLogos.has(logo.id)) fail(`${ctx}: logo-id is niet opgenomen in de primaire PDF-audit`);
+    else {
+      const [expectedFile, expectedHash] = auditedLogos.get(logo.id);
+      if (logo.file !== expectedFile || logo.sha256 !== expectedHash) fail(`${ctx}: bestand of hash wijkt af van de geaudite logo-uitvoering`);
+    }
+    checkPrimaryProvenance(logo.pdfProvenance, ctx);
+    const assetPath = join(root, 'assets/brand', logo.file ?? '');
+    if (!existsSync(assetPath)) {
+      fail(`${ctx}: asset '${logo.file}' ontbreekt`);
+      continue;
+    }
+    const bytes = readFileSync(assetPath);
+    if (sha256(bytes) !== logo.sha256) fail(`${ctx}: assethash wijkt af`);
+    if (logo.mediaType === 'image/svg+xml') {
+      const svg = bytes.toString('utf8');
+      if (!svg.trimStart().startsWith('<svg')) fail(`${ctx}: asset is geen SVG`);
+      if (/https?:\/\/(?!www\.w3\.org\/)|<script|<text|<image|@font-face|font-family|\.pdf/i.test(svg)) {
+        fail(`${ctx}: SVG bevat runtime-, script-, tekst-, image- of fontafhankelijkheid`);
+      }
+    } else if (logo.mediaType === 'image/png') {
+      if (!bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) fail(`${ctx}: asset is geen PNG`);
+    } else {
+      fail(`${ctx}: niet-toegestaan mediaType '${logo.mediaType}'`);
+    }
+  }
+
+  const auditedLogoBackgrounds = new Set([
+    'logo-blauw:wit',
+    'logo-blauw:artific-lichtblauw',
+    'logo-wit:artific-blauw',
+    'logo-wit:artific-navy',
+    'logo-navy:artific-geel',
+  ]);
+  unique(brand.logoBackgrounds, 'logoBackgrounds');
+  requireExactTuples(brand.logoBackgrounds, auditedLogoBackgrounds,
+    (rule) => `${rule.logoId}:${rule.backgroundColorId}`, 'logoBackgrounds');
+  for (const [index, rule] of (brand.logoBackgrounds ?? []).entries()) {
+    const ctx = `brand.json logoBackgrounds[${index}] ('${rule.id ?? '?'}')`;
+    if (!logoIds.has(rule.logoId)) fail(`${ctx}: onbekend logoId '${rule.logoId}'`);
+    if (!colorIds.has(rule.backgroundColorId)) fail(`${ctx}: onbekend backgroundColorId '${rule.backgroundColorId}'`);
+    if (!auditedLogoBackgrounds.has(`${rule.logoId}:${rule.backgroundColorId}`)) {
+      fail(`${ctx}: combinatie is niet opgenomen in de primaire PDF-audit`);
+    }
+    checkPrimaryProvenance(rule.pdfProvenance, ctx);
+  }
+
+  const relativeLuminance = (hex) => {
+    const channels = hex.slice(1).match(/../g).map((value) => parseInt(value, 16) / 255)
+      .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  };
+  const contrastRatio = (foreground, background) => {
+    const a = relativeLuminance(foreground);
+    const b = relativeLuminance(background);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  };
+
+  const auditedContrastPairs = new Set([
+    'artific-navy:wit:body-text',
+    'artific-navy:artific-lichtblauw:body-text',
+    'artific-navy:artific-geel:body-text',
+    'artific-blauw:wit:large-text-only',
+    'wit:artific-blauw:large-text-only',
+    'wit:artific-navy:body-text',
+    'artific-lichtblauw:artific-navy:body-text',
+    'artific-geel:artific-navy:body-text',
+  ]);
+  unique(brand.contrastPairs, 'contrastPairs');
+  requireExactTuples(brand.contrastPairs, auditedContrastPairs,
+    (pair) => `${pair.foregroundColorId}:${pair.backgroundColorId}:${pair.usage}`, 'contrastPairs');
+  for (const [index, pair] of (brand.contrastPairs ?? []).entries()) {
+    const ctx = `brand.json contrastPairs[${index}] ('${pair.id ?? '?'}')`;
+    const foreground = colorsById.get(pair.foregroundColorId);
+    const background = colorsById.get(pair.backgroundColorId);
+    if (!foreground) fail(`${ctx}: onbekend foregroundColorId '${pair.foregroundColorId}'`);
+    if (!background) fail(`${ctx}: onbekend backgroundColorId '${pair.backgroundColorId}'`);
+    if (!['body-text', 'large-text-only'].includes(pair.usage)) fail(`${ctx}: ongeldige usage '${pair.usage}'`);
+    if (!auditedContrastPairs.has(`${pair.foregroundColorId}:${pair.backgroundColorId}:${pair.usage}`)) {
+      fail(`${ctx}: combinatie/usage is niet opgenomen in de primaire PDF-audit`);
+    }
+    if (foreground && background) {
+      const ratio = contrastRatio(foreground.value, background.value);
+      const minimum = pair.usage === 'body-text' ? 4.5 : 3;
+      if (ratio < minimum) fail(`${ctx}: berekende WCAG-ratio ${ratio.toFixed(2)}:1 is lager dan ${minimum}:1`);
+    }
+    checkPrimaryProvenance(pair.pdfProvenance, ctx);
   }
 }
 

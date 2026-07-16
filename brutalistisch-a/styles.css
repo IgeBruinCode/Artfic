@@ -4,21 +4,24 @@
 
 :root {
   --blauw: #287CEB;
-  --donkerblauw: #0A213D;
-  --marine: #062244;
+  --navy: #042244;
   --lichtblauw: #E5EDF8;
-  --oranjegeel: #ECA414;
+  --geel: #FFD602;
   --wit: #FFFFFF;
 
-  --lijn: 4px solid var(--donkerblauw);
+  --lijn: 4px solid var(--navy);
   --lijn-wit: 4px solid var(--wit);
-  --gutter: clamp(16px, 5vw, 72px);
+  --werkvlak: 1280px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --sectieruimte: clamp(64px, 6vw, 88px);
   --r-1: 8px;
   --r-2: 16px;
   --r-3: 32px;
   --r-4: 56px;
   --r-5: 96px;
 }
+
+.brand-logo { min-width: 80px; height: auto; transform: none; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,12 +30,12 @@ html { scroll-behavior: smooth; }
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: var(--wit);
-  color: var(--donkerblauw);
+  color: var(--navy);
   line-height: 1.55;
   font-size: 1.0625rem;
 }
 
-::selection { background: var(--oranjegeel); color: var(--donkerblauw); }
+::selection { background: var(--geel); color: var(--navy); }
 
 img { display: block; max-width: 100%; height: auto; }
 
@@ -45,7 +48,7 @@ a { color: inherit; }
 .blok--donker :focus-visible,
 .commandobar :focus-visible,
 .site-footer :focus-visible {
-  outline-color: var(--oranjegeel);
+  outline-color: var(--geel);
 }
 
 /* --- skiplink --- */
@@ -54,8 +57,8 @@ a { color: inherit; }
   left: -9999px;
   top: 0;
   z-index: 100;
-  background: var(--oranjegeel);
-  color: var(--donkerblauw);
+  background: var(--geel);
+  color: var(--navy);
   font-weight: 700;
   text-transform: uppercase;
   padding: var(--r-2);
@@ -70,13 +73,14 @@ a { color: inherit; }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--marine);
+  background: var(--navy);
   color: var(--wit);
-  border-bottom: 4px solid var(--oranjegeel);
+  border-bottom: 4px solid var(--geel);
 }
 .commandobar__voortgang {
   height: 6px;
   background: var(--blauw);
+  --brand-surface-role: decorative;
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -85,6 +89,9 @@ a { color: inherit; }
   align-items: center;
   gap: var(--r-2);
   flex-wrap: wrap;
+  width: 100%;
+  max-width: var(--werkvlak);
+  margin-inline: auto;
   padding: var(--r-1) var(--gutter);
   min-height: 56px;
 }
@@ -110,9 +117,9 @@ a { color: inherit; }
   letter-spacing: 0.08em;
   font-size: 0.85rem;
   font-weight: 700;
-  border-bottom: 3px solid var(--marine);
+  border-bottom: 3px solid var(--navy);
 }
-.commandobar__nav a:hover { border-bottom-color: var(--oranjegeel); }
+.commandobar__nav a:hover { border-bottom-color: var(--geel); }
 
 /* --- CTA-blokken --- */
 .cta {
@@ -132,27 +139,27 @@ a { color: inherit; }
   min-height: 44px;
   padding: 4px var(--r-2);
   font-size: 0.85rem;
-  background: var(--oranjegeel);
-  color: var(--donkerblauw);
-  border-color: var(--oranjegeel);
+  background: var(--geel);
+  color: var(--navy);
+  border-color: var(--geel);
 }
 .cta--primair {
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
   box-shadow: 8px 8px 0 0 var(--blauw);
 }
 .cta--omlijnd {
   background: var(--wit);
-  color: var(--donkerblauw);
+  color: var(--navy);
 }
 .cta--signaal {
-  background: var(--oranjegeel);
-  color: var(--donkerblauw);
-  border-color: var(--oranjegeel);
+  background: var(--geel);
+  color: var(--navy);
+  border-color: var(--geel);
   box-shadow: 8px 8px 0 0 var(--blauw);
 }
 .cta--omlijnd-wit {
-  background: var(--marine);
+  background: var(--navy);
   color: var(--wit);
   border: var(--lijn-wit);
 }
@@ -167,15 +174,22 @@ a { color: inherit; }
 
 /* --- blokken --- */
 .blok {
-  padding: var(--r-5) var(--gutter);
+  padding-block: var(--sectieruimte);
   border-bottom: var(--lijn);
-  scroll-margin-top: 96px;
   position: relative;
 }
+#inhoud,
+.blok { scroll-margin-top: 96px; }
+.blok__binnen {
+  width: 100%;
+  max-width: var(--werkvlak);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
 .blok--donker {
-  background: var(--marine);
+  background: var(--navy);
   color: var(--wit);
-  border-bottom: 4px solid var(--oranjegeel);
+  border-bottom: 4px solid var(--geel);
 }
 
 .sectiecode {
@@ -183,15 +197,15 @@ a { color: inherit; }
   font-weight: 800;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--donkerblauw);
-  border: 3px solid var(--donkerblauw);
+  color: var(--navy);
+  border: 3px solid var(--navy);
   display: inline-block;
   padding: 4px 12px;
   margin-bottom: var(--r-3);
 }
 .blok--donker .sectiecode {
-  color: var(--oranjegeel);
-  border-color: var(--oranjegeel);
+  color: var(--geel);
+  border-color: var(--geel);
 }
 
 .label {
@@ -214,7 +228,7 @@ a { color: inherit; }
 .blok__kop--slot { max-width: 24ch; }
 
 .hero__kop {
-  font-size: clamp(3.25rem, 10vw, 9rem);
+  font-size: clamp(3.25rem, 8vw, 7rem);
   line-height: 0.95;
   font-weight: 900;
   text-transform: uppercase;
@@ -255,8 +269,8 @@ a { color: inherit; }
 /* --- signaalstrook --- */
 .signaalstrook {
   margin-top: var(--r-4);
-  background: var(--oranjegeel);
-  color: var(--donkerblauw);
+  background: var(--geel);
+  color: var(--navy);
   border: var(--lijn);
   padding: var(--r-2) var(--r-3);
   font-weight: 800;
@@ -278,7 +292,7 @@ a { color: inherit; }
   font-size: 0.95rem;
 }
 .tussenkop {
-  margin-top: var(--r-5);
+  margin-top: var(--r-4);
   margin-bottom: var(--r-3);
   font-size: clamp(1.5rem, 3.5vw, 2.5rem);
   font-weight: 900;
@@ -303,7 +317,7 @@ a { color: inherit; }
   font-size: 1.35rem;
   text-transform: uppercase;
   margin-bottom: var(--r-1);
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
   display: inline-block;
   padding: 2px 10px;
@@ -354,8 +368,9 @@ a { color: inherit; }
   min-width: min(100%, 340px);
 }
 .pipeline__station--artific {
-  background: var(--donkerblauw);
-  border-color: var(--oranjegeel);
+  background: var(--navy);
+  color: var(--wit);
+  border-color: var(--geel);
 }
 .pipeline__kop {
   font-weight: 900;
@@ -371,7 +386,8 @@ a { color: inherit; }
 .pipeline__koppeling {
   font-size: 2rem;
   font-weight: 900;
-  color: var(--oranjegeel);
+  color: var(--geel);
+  --brand-text-role: decorative;
   padding: 4px var(--r-3);
   line-height: 1;
 }
@@ -387,7 +403,7 @@ a { color: inherit; }
   padding: var(--r-3);
 }
 .blok--donker .welniet__vak { border-color: var(--wit); }
-.welniet__vak--niet { border-color: var(--oranjegeel); }
+.welniet__vak--niet { border-color: var(--geel); }
 .welniet__vak h3, .welniet__vak h4 {
   font-size: 1.25rem;
   text-transform: uppercase;
@@ -408,7 +424,7 @@ a { color: inherit; }
   padding: var(--r-4) var(--r-3) var(--r-3);
   position: relative;
   box-shadow: 12px 12px 0 0 var(--blauw);
-  max-width: 860px;
+  width: 100%;
 }
 .plaat__nummer {
   position: absolute;
@@ -418,13 +434,14 @@ a { color: inherit; }
   font-weight: 900;
   line-height: 1;
   color: var(--blauw);
+  --brand-text-role: decorative;
 }
 .plaat h3 {
   font-size: clamp(1.75rem, 4vw, 3rem);
   text-transform: uppercase;
   font-weight: 900;
   margin-bottom: var(--r-2);
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
   display: inline-block;
   padding: 4px 14px;
@@ -438,7 +455,7 @@ a { color: inherit; }
   margin-top: var(--r-2);
 }
 .plaat__lijst li {
-  border: 3px solid var(--donkerblauw);
+  border: 3px solid var(--navy);
   padding: 4px 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -459,7 +476,7 @@ a { color: inherit; }
   text-transform: uppercase;
   font-size: 1.1rem;
   margin-bottom: 4px;
-  color: var(--oranjegeel);
+  color: var(--geel);
 }
 .specsheet__rij p { max-width: 60ch; }
 
@@ -474,7 +491,7 @@ a { color: inherit; }
 .strakke-lijst li::before {
   content: "→ ";
   font-weight: 900;
-  color: var(--oranjegeel);
+  color: var(--geel);
 }
 
 .stappen {
@@ -516,14 +533,18 @@ a { color: inherit; }
 
 /* --- footer --- */
 .site-footer {
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
-  padding: var(--r-4) var(--gutter);
-  border-top: 4px solid var(--oranjegeel);
+  padding-block: var(--r-4);
+  border-top: 4px solid var(--geel);
 }
 .site-footer__binnen {
   display: grid;
   gap: var(--r-3);
+  width: 100%;
+  max-width: var(--werkvlak);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 .site-footer__links {
   list-style: none;
@@ -554,8 +575,14 @@ a { color: inherit; }
 
 @media (min-width: 1000px) {
   .hero__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); align-items: start; }
-  .plaat--verschoven { margin-left: clamp(48px, 12vw, 220px); }
-  .plaat:last-child { margin-left: clamp(24px, 6vw, 110px); }
+  .platen {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--r-2);
+    row-gap: var(--r-4);
+  }
+  .platen > .plaat:nth-child(1) { grid-column: 1 / 11; grid-row: 1; }
+  .platen > .plaat:nth-child(2) { grid-column: 2 / 12; grid-row: 2; }
+  .platen > .plaat:nth-child(3) { grid-column: 3 / 13; grid-row: 3; }
   .pipeline {
     grid-template-columns: auto auto auto auto auto;
     align-items: stretch;
@@ -567,11 +594,51 @@ a { color: inherit; }
   .pipeline__koppeling::before { font-size: 2rem; }
 }
 
-@media (max-width: 480px) {
-  .commandobar__nav { display: none; }
-  .commandobar__binnen { gap: var(--r-1); }
+@media (max-width: 999px) {
+  .platen {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .platen > .plaat,
+  .platen > .plaat:nth-child(1),
+  .platen > .plaat:nth-child(2),
+  .platen > .plaat:nth-child(3) {
+    grid-column: auto;
+    grid-row: auto;
+    margin: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .commandobar__binnen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "logo cta" "nav nav";
+    gap: 0 var(--r-1);
+    padding-block: 4px;
+  }
+  .commandobar__logo { grid-area: logo; }
   .commandobar__logo img { width: 96px; }
-  .cta--bar { font-size: 0.75rem; padding: 4px 10px; }
+  .commandobar__nav {
+    grid-area: nav;
+    margin-left: 0;
+    width: 100%;
+  }
+  .commandobar__nav ul { gap: 0; width: 100%; }
+  .commandobar__nav li { flex: 1 1 25%; }
+  .commandobar__nav a {
+    justify-content: center;
+    width: 100%;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+  }
+  .cta--bar { grid-area: cta; font-size: 0.75rem; padding: 4px 10px; }
+  #inhoud,
+  .blok { scroll-margin-top: 116px; }
+}
+
+@media (max-width: 480px) {
   .plaat { box-shadow: 6px 6px 0 0 var(--blauw); }
   .cta--primair, .cta--signaal { box-shadow: 6px 6px 0 0 var(--blauw); }
   .fasen li { grid-template-columns: 1fr; }

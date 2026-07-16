@@ -1,29 +1,38 @@
 # QA-log — variant Brutalistisch B (tabloid register)
 
-Datum: 2026-07-16 · Browser: Chromium (headless, CDP-sidecar; fallbackmodi rechtstreeks via het Chrome DevTools Protocol) via `node scripts/serve.mjs 4173` · Route: `http://127.0.0.1:4173/brutalistisch-b/`
+Datum: 2026-07-16 · Browser: Chromium via de CDP-sidecar en het browserhulpmiddel · Server: `node scripts/serve.mjs 4173` · Route: `http://127.0.0.1:4173/brutalistisch-b/`
 
-## Uitgevoerde controles
+## Responsief en visueel
 
-| Controle | Resultaat |
+| Breedte | Resultaat |
 | --- | --- |
-| 1440 px, volledige pagina | **OK** — masthead, sticky register links (240px) met actieve-hoofdstukmarkering, zes folio's in tabloidkolommen 2:1, trapsgewijze modulespread, grootboek, slotfolio; geen overflow of overlap (full-page screenshot beoordeeld) |
-| 768 px, volledige pagina | **OK** — register als wrappende linkstrook boven de inhoud, kolommen 2:1 behouden, spread in drie kolommen; geen overflow |
-| 320 px, volledige pagina | **OK** — één lineaire kolom, register wrappend en volledig zichtbaar, H1 breekt binnen het scherm, alle CTA's zichtbaar; geen horizontale scroller |
-| Skiplink (toetsenbord) | **OK** — eerste Tab toont "Direct naar de inhoud" linksboven met zichtbare focusstijl |
-| Registerlink activeren | **OK** — klik op "Voor organisaties" navigeert naar `#organisatie`; het register markeert daarna uitsluitend dat hoofdstuk (`aria-current="location"` + donker vlak), bevestigd op 1440 px |
-| CTA's en footerlinks | **OK** — alle `data-cta-id`'s, labels, bestemmingen (uitsluitend `https://artific.nl/contact-opnemen/`), `mailto:`/`tel:`-waarden en het ontbreken van `target` automatisch gecontroleerd door `scripts/validate-brutalistisch-b.mjs` (geslaagd); geen kale `#` |
-| Baseline (1440 px, JS aan, CDN vrij) | **OK — daadwerkelijk uitgevoerd via CDP** — `window.gsap` geladen, 16 ScrollTriggers actief, na scrollen naar 60% markeert het register `#organisatie` via `aria-current`; decoratieve margewoorden driften (transform gemeten), nog niet bereikte folio-regels staan op `scaleX(0.35)` in afwachting van hun eenmalige entree; geen horizontale overflow |
-| Reduced motion | **OK — daadwerkelijk uitgevoerd via CDP-emulatie** (`Emulation.setEmulatedMedia`, `prefers-reduced-motion: reduce` — `matchMedia` rapporteert `true`): `main.js` maakt **0** tweens/ScrollTriggers aan, alle `[data-regel]`- en `[data-marge]`-transforms zijn `none` (regels op volledige lengte), geen `aria-current`-mutaties, `scroll-behavior` valt terug naar `auto`; alle 6 folio's, H1 en 5 CTA's aanwezig, geen overflow |
-| CDN geblokkeerd | **OK — daadwerkelijk uitgevoerd via CDP** (`Network.setBlockedURLs` op `*cdn.jsdelivr.net*`; 2 requests aantoonbaar geblokkeerd terwijl `main.js` wél laadt): `window.gsap` is `undefined`, de guard stopt het script **zonder één runtime exception**, alle transforms `none`, volledige inhoud en 5 CTA's bruikbaar |
-| JavaScript uit | **OK — daadwerkelijk uitgevoerd via CDP** (`Emulation.setScriptExecutionDisabled`): H1, 6 folio's, 6 registerlinks en 5 CTA's aanwezig, **0** standaard verborgen elementen in `main` (visibility/display/opacity gemeten), regels op volledige lengte, geen `aria-current`, geen overflow; ook op 320 px geen overflow en register `position: static` |
-| Regressie zustervarianten | **OK** — `/minimalistisch/` en `/brutalistisch-a/` blijven byte-ongewijzigd in deze taak (diff-controle) en hun validators slagen |
-| Side-by-side stijlvergelijking | **OK** — B verschilt wezenlijk van A (geen sticky commandobar, sectiecodes, kapitale sans-koppen, offset-schaduwen, pipeline of moduleplaten; wél statische masthead, sticky hoofdstukregister, serif/sans-mix, asymmetrische krantencolommen, doorlopende modulespread, grootboek) en van de minimalistische leeskolom |
+| 320px | **OK** — gele masthead en register direct zichtbaar; navy logo vrijstaand en onvervormd; zes folio's zichtbaar; geen overflow (`scrollWidth = innerWidth = 320`). Modules lineair AI Assistant → AI ToolBox → Conversation Module, ieder 288px breed van x=16 tot x=304. |
+| 768px | **OK** — masthead op twaalf kolommen, register als wrappende strook en redactionele 2:1-kolommen. Geen overflow (`768 = 768`). Modules blijven lineair, ieder circa 691px breed van x=38 tot x=730. |
+| 1440px | **OK** — alleen het 240px-register is sticky; masthead en folio's zijn statisch. De spread is 1104px breed (x=288–1392). De drie banden zijn elk 920px breed en verspringen x=288–1208, 380–1300 en 472–1392, dus de gezamenlijke trap raakt beide spreadranden. Geen overflow (`1440 = 1440`). |
 
-## Automatische checks (2026-07-16)
+De normale 1440px-screenshot bevestigde de gele masthead met het originele navy PNG-logo, het gele register, navy lead-story-folio's I/III/VI, gele folio's II/IV/V, serif/sans-hiërarchie, het security-grootboek en de brede aaneengesloten gele moduletrap. Computed styles waren `rgb(255, 214, 2)` + `rgb(4, 34, 68)` voor masthead/register/geel en `rgb(4, 34, 68)` + wit voor intro/platform. Het logo werd lokaal geladen als `/assets/brand/artific-logo-navy.png`; er waren geen PDF- of 21st.dev-runtimeverwijzingen.
 
-- `node scripts/validate-brutalistisch-b.mjs` — geslaagd (na bewuste mutatietest: ongeldige CTA-tekst, kleur en claim-ID werden alle gedetecteerd)
-- `node scripts/validate-content.mjs`, `node scripts/validate-minimalistisch.mjs`, `node scripts/validate-brutalistisch-a.mjs` — geslaagd
+## Toetsenbord, links en contrast
 
-## Openstaand
+Zeventien opeenvolgende Tab-stappen op 320px volgden de volledige route: skiplink, masthead-CTA, zes registerankers, twee intro-CTA's, twee slot-CTA's, e-mail, telefoon en daarna alle drie footerlinks (`Contact opnemen`, `info@artific.nl`, `053-203 0123`). Elk doel rapporteerde een zichtbare 3px `solid` focusring: navy op geel en geel op navy. De skiplink verscheen bij de eerste Tab linksboven.
 
-- Geen. De Stitch-gate is gesloten: `DESIGN.md` is via de Google Stitch-MCP doorgevoerd in een afzonderlijk Brutalistisch B-project met eigen design system (provenance met project-, screen- en asset-ID in het document zelf; credential uitsluitend runtime gebruikt, niet opgeslagen).
+Alle vijf CTA's zijn lokaal met `preventDefault` onderschept en programmatisch geklikt: 5/5 gaven het canonieke label en exact `https://artific.nl/contact-opnemen/`. De zes hoofdstukhrefs bleven `#intro`, `#visie`, `#platform`, `#organisatie`, `#bewijs`, `#contact`; `#platform` en `#contact` zijn in Chromium direct geopend. De twee `mailto:info@artific.nl`- en twee `tel:053 203 0123`-voorkomens bleven aanwezig. Contrastparen en merkoppervlakken zijn aanvullend door `checkContrastUsage`/`checkImages` gevalideerd.
+
+## Motion en uitval
+
+| Scenario | Werkelijk gemeten resultaat |
+| --- | --- |
+| Normale motion | GSAP geladen; 25 ScrollTriggers voor zes registerzones en de korte folio-/regel-/spread-entrees. De drie mobiele spreadentrees zijn tijdens ieder actief tween gedurende 25 animation frames bemonsterd: `scrollWidth` bleef 320, de kleinste linkerrand was 8,93px en de grootste rechterrand 311,07px. Na afwerking stonden nul gemeten doeltransforms achter. |
+| Reduced motion vóór laden | Echte CDP-emulatie via `Emulation.setEmulatedMedia`; `matchMedia` was `true`, 0 ScrollTriggers, 0 doeltransforms, zes zichtbare folio's en geen overflow. |
+| Reduced motion tijdens sessie | Voor omschakeling 25 triggers en leverde een CTA-mouseenter één actieve skewtween. Na CDP-mediawijziging: 0 triggers, 0 CTA-tweens en 0 doeltransforms. Een nieuwe mouseenter én mouseleave terwijl reduce actief bleef maakten nog steeds 0 tweens; de handlers respecteerden dus de actuele mediaquery. |
+| jsDelivr-uitval | Beide scripts samen geblokkeerd: 2 requests, `window.gsap` undefined. Daarna elk script apart: 1 geblokkeerd request per run; zonder GSAP was `window.gsap` undefined, zonder ScrollTrigger bleef GSAP aanwezig. Alle drie runs hadden 0 triggers/transforms, zes folio's en geen overflow. |
+| JavaScript uit | `Emulation.setScriptExecutionDisabled` vóór navigatie; `window.gsap` afwezig, 0 triggers/transforms, zes folio's en alle vijf CTA's statisch beschikbaar. |
+
+## Automatische controles
+
+- `node scripts/validate-brutalistisch-b.mjs` — geslaagd.
+- `node scripts/validate-site.mjs` — geslaagd.
+- `node --check brutalistisch-b/main.js` en `node --check scripts/validate-brutalistisch-b.mjs` — geslaagd.
+- `git diff --check` — geslaagd.
+- Teruggedraaide mutatietests voor mastheadlogo, mastheadkleur, modulevolgorde, desktopoffset, extra sticky element, verboden scrub-motion, CTA-bestemming, ontbrekende CTA-reduced-motion-guard, ontbrekende `killTweensOf`-cleanup en een onveilige mobiele spreadoffset faalden alle gericht; na herstel slaagde de validator opnieuw.
+- Scan van runtimebestanden vond geen credentials, MCP-configuratie, nieuwe dependency of 21st.dev-runtimecode. Er is in deze build geen Magic MCP-run uitgevoerd of gedocumenteerd, omdat in de werkomgeving geen geconfigureerde Magic MCP-client beschikbaar was.
