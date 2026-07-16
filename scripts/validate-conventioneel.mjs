@@ -33,23 +33,28 @@ if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
 
 // --- eigen trust-center-structuur: sticky SaaS-header, trust-console, bewijsrail,
 // --- drie modulecards, assurance-matrix en vijf implementatiestappen ---
-if (!/class="saas-header"/.test(html)) fail('index.html: saas-header ontbreekt');
+// Klasse-tokenmatching: robuust tegen extra modifier-klassen en attribuutvolgorde.
+const openingTags = [...html.matchAll(/<[a-z0-9]+\b[^>]*>/g)].map((m) => m[0]);
+const hasClassToken = (tag, token) => new RegExp(`class="(?:[^"]* )?${token}(?: [^"]*)?"`).test(tag);
+const tagsWithClass = (token) => openingTags.filter((tag) => hasClassToken(tag, token));
+
+if (tagsWithClass('saas-header').length !== 1) fail('index.html: saas-header ontbreekt');
 if (!/\.saas-header\s*{[^}]*position:\s*sticky/s.test(css)) fail('styles.css: de saas-header hoort sticky te zijn');
 const navAnchors = [...(html.match(/class="saas-header__nav"[\s\S]*?<\/nav>/)?.[0] ?? '').matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
 if (!navAnchors.length) fail('index.html: lokale sectienavigatie in de header ontbreekt');
 for (const anchor of navAnchors) {
   if (!html.includes(`id="${anchor}"`)) fail(`index.html: navigatieanker '#${anchor}' wijst naar een niet-bestaand ID`);
 }
-if ((html.match(/class="trust-console"/g) ?? []).length !== 1) fail('index.html: verwacht exact één trust-console');
-if ((html.match(/class="trust-console__laag[" ]/g) ?? []).length !== 3) fail('index.html: de trust-console hoort drie lagen (modellen → Artific → processen) te tonen');
-if ((html.match(/class="bewijsrail"/g) ?? []).length !== 1) fail('index.html: verwacht exact één bewijsrail');
+if (tagsWithClass('trust-console').length !== 1) fail('index.html: verwacht exact één trust-console');
+if (tagsWithClass('trust-console__laag').length !== 3) fail('index.html: de trust-console hoort drie lagen (modellen → Artific → processen) te tonen');
+if (tagsWithClass('bewijsrail').length !== 1) fail('index.html: verwacht exact één bewijsrail');
 const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-const moduleCards = html.match(/class="module-card"/g) ?? [];
-if (moduleCards.length !== 3 || !moduleClaims.every((id) => new RegExp(`class="module-card"[^>]*data-claim-id="${id}"`).test(html))) {
+const moduleCardTags = tagsWithClass('module-card');
+if (moduleCardTags.length !== 3 || !moduleClaims.every((id) => moduleCardTags.some((tag) => new RegExp(`data-claim-id="(?:[^"]* )?${id}(?: [^"]*)?"`).test(tag)))) {
   fail('index.html: verwacht exact drie module-cards met de drie canonieke moduleclaims');
 }
-if ((html.match(/class="assurance-matrix__item"/g) ?? []).length < 6) fail('index.html: de assurance-matrix hoort minimaal zes onderbouwde items te bevatten');
-if ((html.match(/class="stappen__stap"/g) ?? []).length !== 5) fail('index.html: verwacht exact vijf implementatiestappen');
+if (tagsWithClass('assurance-matrix__item').length < 6) fail('index.html: de assurance-matrix hoort minimaal zes onderbouwde items te bevatten');
+if (tagsWithClass('stappen__stap').length !== 5) fail('index.html: verwacht exact vijf implementatiestappen');
 // Verbod op signaturen van de drie zustervarianten: dit moet een zelfstandige SaaS-compositie zijn.
 for (const [file, text] of [['index.html', html], ['styles.css', css], ['main.js', js]]) {
   for (const signatuur of ['commandobar', 'sectiecode', 'plaat', 'folio', 'register', 'spread', 'margewoord']) {
@@ -60,8 +65,10 @@ if (/<svg/i.test(html)) fail('index.html: inline SVG is niet toegestaan; alleen 
 if (/linear-gradient|radial-gradient|conic-gradient|blur\(|rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: gradients, blur of afgeleide/transparante kleuren zijn niet toegestaan');
 }
-if (/display:\s*none/.test(css) && !/@media[^{]*max-width[^{]*{[^@]*\.saas-header__nav\s*{\s*display:\s*none/s.test(css)) {
-  fail('styles.css: display:none is alleen toegestaan voor de headernavigatie op smalle schermen');
+// display:none mag exact één keer voorkomen: de headernavigatie op smalle schermen.
+const displayNones = css.match(/display:\s*none/g) ?? [];
+if (displayNones.length > 1 || (displayNones.length === 1 && !/@media \(max-width: \d+px\) {\s*\.saas-header__nav\s*{\s*display:\s*none;?\s*}/.test(css))) {
+  fail('styles.css: display:none is uitsluitend toegestaan voor .saas-header__nav in één max-width-mediaquery');
 }
 if (/visibility:\s*hidden/.test(css)) fail('styles.css: standaard verborgen inhoud is niet toegestaan');
 
@@ -114,6 +121,18 @@ if (!/aria-current/.test(js)) fail('main.js: navigatiestatus via aria-current on
 // --- ontwerpdocument & oplevergate ---
 checkDesignDoc(root, 'conventioneel/DESIGN.md', () => read('conventioneel/DESIGN.md'),
   ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijl', 'Motion', 'Responsief gedrag'], fail);
+// De Stitch-finalisatie moet concreet en afgerond zijn: alleen het woord 'Provenance'
+// met hoofdstukken volstaat niet. Vereist zijn echte Stitch-identifiers en géén open status.
+try {
+  const design = read('conventioneel/DESIGN.md');
+  if (!/gefinaliseerd via Google Stitch-MCP/i.test(design)) fail('DESIGN.md: provenance verklaart niet dat het document via de Google Stitch-MCP is gefinaliseerd');
+  if (!/Stitch-project\s*`\d{15,}`/.test(design)) fail('DESIGN.md: concreet Stitch-project-ID ontbreekt in de provenance');
+  if (!/screen\s*`\d{10,}`/.test(design)) fail('DESIGN.md: concreet Stitch-screen-ID ontbreekt in de provenance');
+  if (!/design system\s*`assets\/[0-9a-f]{32}`/.test(design)) fail('DESIGN.md: concreet Stitch-design-system-ID ontbreekt in de provenance');
+  if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld/i.test(design)) {
+    fail('DESIGN.md: provenance meldt een open of mislukte Stitch-status; de finalisatie is niet afgerond');
+  }
+} catch { /* ontbrekend document is al gemeld door checkDesignDoc */ }
 checkBrandGate(brand, 'Conventioneel', fail);
 
 if (errors.length) {

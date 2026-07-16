@@ -9,7 +9,7 @@ Statische HTML-website met vijf onafhankelijk bekijkbare, klantgerichte landings
 | Minimalistisch | `/minimalistisch/` | **Gebouwd, oplevering geblokkeerd** — volledige landingspagina met eigen stijlgids (`minimalistisch/DESIGN.md`); definitieve oplevering wacht op de twee interne merk-PDF's en de Google Stitch-MCP (zie hieronder) |
 | Brutalistisch A | `/brutalistisch-a/` | **Gebouwd** — volledige landingspagina; `brutalistisch-a/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document zelf). Alleen de merkverificatie tegen de twee interne PDF's staat nog open (zie hieronder) |
 | Brutalistisch B | `/brutalistisch-b/` | **Gebouwd** — volledige landingspagina ("tabloid register") met eigen stijlgids en QA-log; `brutalistisch-b/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
-| Conventioneel (SaaS) | `/conventioneel/` | **Gebouwd** — volledige landingspagina ("trust-center SaaS") met eigen stijlgids en QA-log (`conventioneel/QA.md`); `conventioneel/DESIGN.md` is handmatig vastgelegd omdat de Google Stitch-MCP in de buildomgeving niet beschikbaar was — de Stitch-finalisatie staat expliciet open (provenance in het document zelf) |
+| Conventioneel (SaaS) | `/conventioneel/` | **Gebouwd** — volledige landingspagina ("trust-center SaaS") met eigen stijlgids en QA-log (`conventioneel/QA.md`); `conventioneel/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
 | Premium | `/premium/` | gereserveerde statuspagina |
 
 Lokaal bekijken:

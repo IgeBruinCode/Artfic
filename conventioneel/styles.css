@@ -402,7 +402,7 @@ section[id] { scroll-margin-top: 88px; }
   letter-spacing: 0.14em;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--blauw);
+  color: var(--donkerblauw);
 }
 
 .module-card__detail {
@@ -474,11 +474,11 @@ section[id] { scroll-margin-top: 88px; }
 
 /* --- responsief --- */
 
-@media (max-width: 719px) {
+@media (max-width: 899px) {
   .saas-header__nav { display: none; }
 }
 
-@media (min-width: 720px) and (max-width: 959px) {
+@media (min-width: 900px) and (max-width: 1099px) {
   .saas-header__binnen { gap: var(--ruimte-2); }
   .saas-header__nav ul { gap: var(--ruimte-2); }
   .saas-header__nav a { font-size: 0.9375rem; }
