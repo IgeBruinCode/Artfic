@@ -14,6 +14,47 @@ const errors = [];
 const fail = (msg) => errors.push(msg);
 const read = (p) => readFileSync(join(root, p), 'utf8');
 
+function extractSingleCssBlock(source, headerPattern, label) {
+  const matches = [...source.matchAll(headerPattern)];
+  if (matches.length !== 1) {
+    fail(`styles.css: verwacht exact één ${label}-blok, gevonden ${matches.length}`);
+    return '';
+  }
+
+  const openingBrace = matches[0].index + matches[0][0].lastIndexOf('{');
+  let depth = 1;
+  let quote = '';
+  for (let i = openingBrace + 1; i < source.length; i += 1) {
+    const char = source[i];
+    const next = source[i + 1];
+
+    if (quote) {
+      if (char === '\\') i += 1;
+      else if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '/' && next === '*') {
+      const commentEnd = source.indexOf('*/', i + 2);
+      if (commentEnd === -1) {
+        fail(`styles.css: onafgesloten comment in ${label}-blok`);
+        return '';
+      }
+      i = commentEnd + 1;
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '{') depth += 1;
+    if (char === '}') depth -= 1;
+    if (depth === 0) return source.slice(openingBrace + 1, i);
+  }
+
+  fail(`styles.css: onafgesloten ${label}-blok`);
+  return '';
+}
+
 const html = read('minimalistisch/index.html');
 const css = read('minimalistisch/styles.css');
 const js = read('minimalistisch/main.js');
@@ -27,6 +68,28 @@ if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.te
   fail('index.html: landmarks header/main/footer zijn niet compleet');
 }
 if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
+
+const gridWrapperCount = (html.match(/class="[^"]*\bsectie__grid\b[^"]*"/g) || []).length;
+if (gridWrapperCount !== 8) {
+  fail(`index.html: verwacht exact acht .sectie__grid-wrappers, gevonden ${gridWrapperCount}`);
+}
+for (const sectionId of requiredSections) {
+  const sectionStart = new RegExp(`<section[^>]+id="${sectionId}"[^>]*>\\s*<div class="[^"]*\\bsectie__grid\\b`);
+  if (!sectionStart.test(html)) fail(`index.html: sectie #${sectionId} begint niet met de gedeelde .sectie__grid-wrapper`);
+}
+
+const moduleLists = html.match(/<ol class="modules"[^>]*>[\s\S]*?<\/ol>/g) || [];
+if (moduleLists.length !== 1) {
+  fail(`index.html: verwacht exact één .modules-lijst, gevonden ${moduleLists.length}`);
+} else {
+  const modules = moduleLists[0].match(/<li class="module"\s+data-claim-id="([^"]+)"/g) || [];
+  if (modules.length !== 3) fail(`index.html: verwacht exact drie .module-items, gevonden ${modules.length}`);
+  const moduleClaims = [...moduleLists[0].matchAll(/<li class="module"\s+data-claim-id="([^"]+)"/g)].map((match) => match[1]);
+  const canonicalModuleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
+  if (moduleClaims.join('|') !== canonicalModuleClaims.join('|')) {
+    fail(`index.html: modulevolgorde moet ${canonicalModuleClaims.join(' → ')} zijn`);
+  }
+}
 
 const strictVariantTexts = {
   'pos-besparing-30': ['bespaar 30% van je tijd met één AI-platform'],
@@ -65,7 +128,7 @@ checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], b
 checkContrastUsage(html, css, brand, [
   { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
   { foregroundSelector: 'body', backgroundSelector: '.site-header', pairId: 'navy-op-wit' },
-  { foregroundSelector: 'body', backgroundSelector: '.sectie--tint', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.sectie--tint', backgroundSelector: '.sectie--tint', pairId: 'navy-op-lichtblauw' },
   { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
   { foregroundSelector: '.sectie--donker', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
   { foregroundSelector: '.cta--licht', backgroundSelector: '.cta--licht', pairId: 'navy-op-geel' },
@@ -80,13 +143,48 @@ checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], 
 if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
 }
+if (/\b(?:commandobar|sectiecode|plaat|masthead|folio|spread|trust-console|module-card|boekdeel|dossierregel)\b/i.test(`${html}\n${css}\n${js}`)) {
+  fail('minimalistisch: runtime bevat een verboden signatuur van een zustervariant');
+}
+if (/(?:box-shadow\s*:|(?:linear|radial|conic)-gradient\s*\()/i.test(css)) {
+  fail('styles.css: cardschaduwen en gradients horen niet bij de minimalistische editorial variant');
+}
+
+const desktopCss = extractSingleCssBlock(
+  css,
+  /@media\s*\(\s*min-width\s*:\s*980px\s*\)\s*\{/g,
+  'desktopmediaquery (min-width: 980px)'
+).replace(/\s+/g, ' ');
+const mobileCss = extractSingleCssBlock(
+  css,
+  /@media\s*\(\s*max-width\s*:\s*979px\s*\)\s*\{/g,
+  'mobiele mediaquery (max-width: 979px)'
+).replace(/\s+/g, ' ');
+
+const desktopGridContracts = [
+  /\.sectie__grid\s*\{[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/,
+  /\.sectie__grid\s*>\s*\.modules\s*\{[^}]*grid-column:\s*1\s*\/\s*13[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/,
+  /\.modules\s*>\s*\.module:nth-child\(1\)\s*\{[^}]*grid-column:\s*1\s*\/\s*9[^}]*grid-row:\s*1/,
+  /\.modules\s*>\s*\.module:nth-child\(2\)\s*\{[^}]*grid-column:\s*3\s*\/\s*11[^}]*grid-row:\s*2/,
+  /\.modules\s*>\s*\.module:nth-child\(3\)\s*\{[^}]*grid-column:\s*5\s*\/\s*13[^}]*grid-row:\s*3/,
+];
+for (const contract of desktopGridContracts) {
+  if (!contract.test(desktopCss)) fail('styles.css: twaalfkoloms grid- of moduletrapcontract ontbreekt binnen de desktopmediaquery');
+}
+if (!/\.modules\s*\{[^}]*display:\s*block[^}]*width:\s*100%/.test(mobileCss)
+    || !/\.modules\s*>\s*\.module,[^{]*\.modules\s*>\s*\.module:nth-child\(3\)\s*\{[^}]*width:\s*100%[^}]*grid-column:\s*auto[^}]*grid-row:\s*auto/.test(mobileCss)) {
+  fail('styles.css: mobiele lineaire reset voor de volledige moduletrap ontbreekt binnen de mobiele mediaquery');
+}
 
 checkMotionGuards(html, css, js, fail, {
   allowOpacity: true,
-  requireClearProps: false,
+  requireClearProps: true,
 });
 if (/data-reveal/.test(js) && !/\sdata-reveal[\s>]/.test(html)) {
   fail('index.html: main.js implementeert data-reveal-scrollreveals maar de pagina bevat geen enkel data-reveal-doel');
+}
+if (!/immediateRender:\s*false/.test(js)) {
+  fail('main.js: scroll-enters moeten inhoud zichtbaar laten tot de trigger werkelijk start');
 }
 
 // --- ontwerpdocument ---
