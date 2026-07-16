@@ -25,7 +25,7 @@ export function checkSectionOrder(html, requiredSections, fail) {
   }
 }
 
-const normalize = (s) => s.replace(/<!--[\s\S]*?-->/g, ' ').replace(/&amp;/g, '&').replace(/&nbsp;|\s+/g, ' ').trim();
+const normalize = (text) => text.replace(/<!--[\s\S]*?-->/g, ' ').replace(/&amp;/g, '&').replace(/&nbsp;|\s+/g, ' ').trim();
 
 // Strikte claims: de zichtbare varianttekst ligt per validator vast, zodat inhoudelijke drift
 // (cijfers, compliance) de check laat falen in plaats van alleen het claim-ID.
@@ -42,29 +42,40 @@ export function checkClaims(html, content, { strictVariantTexts, requiredClaims 
   }
 
   const claimScopes = new Map();
-  for (const m of html.matchAll(/<([a-z0-9]+)\b[^>]*\sdata-claim-id="([^"]+)"[^>]*>/g)) {
-    const [openTag, tag, ids] = m;
-    const start = m.index + openTag.length;
-    const tokenRe = new RegExp(`<${tag}\\b[^>]*>|</${tag}>`, 'g');
-    tokenRe.lastIndex = start;
+  for (const match of html.matchAll(/<([a-z0-9]+)\b[^>]*\sdata-claim-id="([^"]+)"[^>]*>/g)) {
+    const [openingTag, tagName, claimIds] = match;
+    const contentStart = match.index + openingTag.length;
+    const tagPattern = new RegExp(`<${tagName}\\b[^>]*>|</${tagName}>`, 'g');
+    tagPattern.lastIndex = contentStart;
+
     let depth = 1;
-    let end = html.length;
-    let t;
-    while ((t = tokenRe.exec(html))) {
-      depth += t[0].startsWith('</') ? -1 : 1;
-      if (depth === 0) { end = t.index; break; }
+    let contentEnd = html.length;
+    let tagMatch;
+    while ((tagMatch = tagPattern.exec(html))) {
+      depth += tagMatch[0].startsWith('</') ? -1 : 1;
+      if (depth === 0) {
+        contentEnd = tagMatch.index;
+        break;
+      }
     }
-    if (depth !== 0) fail(`index.html: sluittag voor <${tag} data-claim-id="${ids}"> niet gevonden`);
-    const inner = normalize(html.slice(start, end).replace(/<[^>]+>/g, ' '));
-    for (const id of ids.split(/\s+/).filter(Boolean)) {
-      if (!claimScopes.has(id)) claimScopes.set(id, []);
-      claimScopes.get(id).push(inner);
+
+    if (depth !== 0) {
+      fail(`index.html: sluittag voor <${tagName} data-claim-id="${claimIds}"> niet gevonden`);
+    }
+
+    const scope = normalize(html.slice(contentStart, contentEnd).replace(/<[^>]+>/g, ' '));
+    for (const claimId of claimIds.split(/\s+/).filter(Boolean)) {
+      if (!claimScopes.has(claimId)) claimScopes.set(claimId, []);
+      claimScopes.get(claimId).push(scope);
     }
   }
   for (const id of usedClaims) {
     if (!knownClaims.get(id)?.strict) continue;
     const snippets = strictVariantTexts[id];
-    if (!snippets) { fail(`index.html: strikte claim '${id}' heeft geen vastgelegde varianttekst in deze validator`); continue; }
+    if (!snippets) {
+      fail(`index.html: strikte claim '${id}' heeft geen vastgelegde varianttekst in deze validator`);
+      continue;
+    }
     const scopes = (claimScopes.get(id) ?? []).map(normalize);
     // Ieder voorkomen wordt afzonderlijk gecontroleerd: één geldig voorkomen mag
     // een tweede, afwijkend voorkomen van dezelfde strikte claim niet maskeren.
@@ -130,7 +141,9 @@ export function checkBrandColors(files, brand, fail) {
   const allowedHex = new Set(brand.colors.map((c) => c.value.toUpperCase()));
   for (const [file, text] of files) {
     for (const [hex] of text.matchAll(/#[0-9a-fA-F]{6}\b/g)) {
-      if (!allowedHex.has(hex.toUpperCase())) fail(`${file}: kleur '${hex}' staat niet in brand.json`);
+      if (!allowedHex.has(hex.toUpperCase())) {
+        fail(`${file}: kleur '${hex}' staat niet in brand.json`);
+      }
     }
   }
 }
