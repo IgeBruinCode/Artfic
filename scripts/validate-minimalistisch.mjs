@@ -149,6 +149,10 @@ if (/\b(?:commandobar|sectiecode|plaat|masthead|folio|spread|trust-console|modul
 if (/(?:box-shadow\s*:|(?:linear|radial|conic)-gradient\s*\()/i.test(css)) {
   fail('styles.css: cardschaduwen en gradients horen niet bij de minimalistische editorial variant');
 }
+if (!/\.sectie\s*\+\s*\.sectie\s*\{[^}]*border-top:\s*1px solid var\(--lichtblauw\)/s.test(css)
+    || !/\.sectie\s*\+\s*\.sectie--tint\s*,\s*\.sectie\s*\+\s*\.sectie--donker\s*\{[^}]*border-top-color:\s*var\(--blauw\)/s.test(css)) {
+  fail('styles.css: de doorlopende 1px-sectierails ontbreken of gebruiken niet de gedocumenteerde merkkleuren');
+}
 
 const desktopCss = extractSingleCssBlock(
   css,
@@ -200,6 +204,10 @@ if (!existsSync(join(root, designPath))) {
   if (!/Stitch-project\s*`\d{15,}`/.test(design)) fail(`${designPath}: concreet Stitch-project-ID ontbreekt in de provenance`);
   if (!/screen\s*`\d{10,}`/.test(design)) fail(`${designPath}: concreet Stitch-screen-ID ontbreekt in de provenance`);
   if (!/design system\s*`assets\/[0-9a-f]{32}`/.test(design)) fail(`${designPath}: concreet Stitch-design-system-ID ontbreekt in de provenance`);
+  if (!/Creatieve bron — 21st\.dev Magic MCP/i.test(design)) fail(`${designPath}: de uitgevoerde 21st.dev Magic MCP-bronrun ontbreekt`);
+  if (!/21st AI-schets[\s\S]*generatie\s*`[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}`[\s\S]*Take 1/i.test(design)) {
+    fail(`${designPath}: concrete Magic-generatie en geraadpleegde take ontbreken in de provenance`);
+  }
   if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld|oplevering geblokkeerd/i.test(design)) {
     fail(`${designPath}: provenance meldt een open of mislukte Stitch-status; de finalisatie is niet afgerond`);
   }

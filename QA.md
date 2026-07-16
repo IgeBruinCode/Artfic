@@ -65,6 +65,10 @@ De fallbackmatrix is opnieuw werkelijk uitgevoerd. Bij geëmuleerd `prefers-redu
 
 Na review is ook de breakpointscope van de validator met teruggedraaide mutaties herbevestigd: een geldige derde module-offset buiten het 980px-desktopblok, een geldige lineaire reset buiten het 979px-mobielblok en een hernoemde desktopmediaquery faalden elk gericht. Dezelfde regels binnen hun balanced-brace-geëxtraheerde mediaqueryblokken slagen.
 
+### 21st.dev Magic MCP-broncontrole
+
+Op 2026-07-16 is via de officiële 21st.dev MCP een gerichte editorial schets gegenereerd en Take 1 verfijnd. De bruikbare output toonde één twaalfkoloms veld met 24px gap, compacte marge-labels, 1px sectierails, de brede hoofdstuktrap 1–8 / 3–10 / 5–12 en korte eenmalige 14px-enters. Deze patronen zijn tegen de statische implementatie gekruist; de doorlopende sectierail is daarbij expliciet toegevoegd en de al aanwezige grid-, label-, module- en motioncontracten zijn behouden. Frameworkcode, gegenereerde copy, afwijkende kleuren en CSS-initiële verborgen inhoud zijn niet overgenomen. De tijdelijke build-time client is verwijderd; repository en runtime bevatten geen 21st.dev-package, configuratie of netwerkverzoek. Na de railwijziging is `/minimalistisch/#platform` opnieuw lokaal bekeken op exact 320, 768 en 1440px: de rail bleef rustig, de modules bleven op klein scherm lineair en op 1440px duidelijk trapsgewijs, zonder zichtbare afsnijding of overflow.
+
 ## Hercontrole compacte blauwdruk `/brutalistisch-a/` — 2026-07-16
 
 Lokaal gecontroleerd met Chromium via de CDP-sidecar op exact 320, 768 en 1440px. Op 1440px bleef alleen de achtergrond full-bleed; de inhoud liep visueel van 128 tot 1312px. De drie even brede platformplaten vormden de trap 128–1112px, 229–1212px en 329–1312px. Op 768 en 320px stonden AI Assistant, AI ToolBox en Conversation Module lineair in DOM-/leesvolgorde; op 320px bleven logo/CTA en alle vier sectieankers zichtbaar in twee commandobar-rijen, zonder zichtbare afsnijding of horizontale scrollbar.

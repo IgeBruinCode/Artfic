@@ -171,6 +171,15 @@ a:hover {
   padding: var(--ruimte-sectie) 0;
 }
 
+.sectie + .sectie {
+  border-top: 1px solid var(--lichtblauw);
+}
+
+.sectie + .sectie--tint,
+.sectie + .sectie--donker {
+  border-top-color: var(--blauw);
+}
+
 .sectie__grid {
   width: 100%;
   max-width: var(--containerbreedte);

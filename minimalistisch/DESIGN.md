@@ -6,6 +6,8 @@ Stijlgids voor de landingspagina op `/minimalistisch/`. Dit document beschrijft 
 
 > **Huisstijlherijking:** de Stitch-provenance hierboven blijft als historische runregistratie letterlijk behouden. De daarin genoemde toenmalige token-snapshot is niet langer de merkbasis; de actuele implementatie en onderstaande kleurregels volgen de twee lokale primaire PDF’s en `assets/brand/brand.json`.
 
+> **Creatieve bron — 21st.dev Magic MCP (2026-07-16):** via de officiële 21st.dev MCP is een gerichte 21st AI-schets gegenereerd en verfijnd als generatie `b8b327ee-b328-41f9-929e-b81c3d246ae9`, Take 1. Daaruit zijn vier rustige patronen handmatig vertaald: één vast twaalfkoloms veld met 24px gap, compacte marge-labels, 1px sectierails en drie brede hoofdstukken op 1–8 / 3–10 / 5–12. De voorgestelde eenmalige 14px-groepsenter is ingekort tot de bestaande 0,48s GSAP-enhancement en veilig gemaakt met `immediateRender: false`; er is geen CSS-initiële verborgen staat. Tailwind/CDN-code, gegenereerde tekst, seriftypografie, extra kleuren, zichtbare kolomguide-elementen en alle frameworkonderdelen uit de schets zijn bewust niet overgenomen. De raadpleging was uitsluitend een build-time creatieve bron; de pagina bevat geen 21st.dev-runtimeverzoek, package of configuratie.
+
 ## Ontwerpprincipes
 
 Rustig en doelbewust: tekst, witruimte en uitlijning dragen de aandacht. Alle acht hoofdsecties gebruiken één gecentreerde `.sectie__grid`; dunne rails en brede open composities nemen de plaats in van cards, dashboards, fotografie en iconengrids. De flow-compositie is het enige abstracte schema. Verder gebruikt de pagina uitsluitend typografie, lijnen, de bevestigde merkkleuren en de officiële logo's.
@@ -44,7 +46,7 @@ De maximale inhoudsbreedte is 1120px binnen een 1216px container inclusief deskt
 
 - **Header:** sticky, wit met 1px lichtblauwe onderrand; blauw logo, vijf sectieankers op brede schermen en een compacte donkere CTA. Alle interactieve doelen zijn minimaal 44px hoog.
 - **CTA's:** rechthoekig, 2px rand, gewicht 600 en minimaal 48px hoog. Primair is donkerblauw met wit; secundair wit met donkerblauw. Op de donkere slotsectie staan geel met donkerblauw en wit omlijnd naast elkaar. Focus is een zichtbare 3px blauwe of gele ring.
-- **Editorial rijen en fasen:** open tekstgroepen tussen hairlines, zonder achtergrondvlak, schaduw of afgeronde kaartvorm. Vanaf 700px benutten de rijen twee kolommen.
+- **Editorial rijen en fasen:** iedere hoofdsectie begint na de hero met een 1px lichtblauwe rail; bij lichtblauwe en donkere banden is die rail blauw. Binnen secties blijven tekstgroepen open tussen hairlines, zonder achtergrondvlak, schaduw of afgeronde kaartvorm. Vanaf 700px benutten de rijen twee kolommen.
 - **Moduletrap:** `.modules` beslaat op desktop alle twaalf kolommen. AI Assistant staat op 1–8, AI ToolBox op 3–10 en Conversation Module op 5–12, elk op een eigen rij. Elke module is een open band met nummerrail, tekst en gedeelde hairline; de gezamenlijke bounds lopen van de linker- tot rechtergridrand.
 - **Flow-compositie:** drie omlijnde tekstblokken met pijlen, verticaal op klein en horizontaal vanaf 700px. Het middelste Artific-blok is donkerblauw gevuld.
 - **Tintbanden:** de controlelaag, governance en bewijssectie gebruiken Artific Light Blue met navy tekst en blauwe scheidingslijnen.
