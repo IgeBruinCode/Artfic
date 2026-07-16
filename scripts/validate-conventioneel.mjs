@@ -3,7 +3,7 @@
 // Gebruik: node scripts/validate-conventioneel.mjs (dependency-vrij, Node-standaardbibliotheek).
 // Gedeelde trust-boundarychecks staan in scripts/lib/variant-checks.mjs; hieronder alleen de
 // variant-specifieke structuur van deze compositie.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -33,10 +33,12 @@ if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
 
 // --- eigen trust-center-structuur: sticky SaaS-header, trust-console, bewijsrail,
 // --- drie modulecards, assurance-matrix en vijf implementatiestappen ---
-// Klasse-tokenmatching: robuust tegen extra modifier-klassen en attribuutvolgorde.
-const openingTags = [...html.matchAll(/<[a-z0-9]+\b[^>]*>/g)].map((m) => m[0]);
-const hasClassToken = (tag, token) => new RegExp(`class="(?:[^"]* )?${token}(?: [^"]*)?"`).test(tag);
-const tagsWithClass = (token) => openingTags.filter((tag) => hasClassToken(tag, token));
+const openingTags = [...html.matchAll(/<[a-z0-9]+\b[^>]*>/g)].map((match) => match[0]);
+const hasAttributeToken = (tag, attribute, token) => {
+  const value = tag.match(new RegExp(`\\s${attribute}="([^"]*)"`))?.[1];
+  return value?.split(/\s+/).includes(token) ?? false;
+};
+const tagsWithClass = (token) => openingTags.filter((tag) => hasAttributeToken(tag, 'class', token));
 
 if (tagsWithClass('saas-header').length !== 1) fail('index.html: saas-header ontbreekt');
 if (!/\.saas-header\s*{[^}]*position:\s*sticky/s.test(css)) fail('styles.css: de saas-header hoort sticky te zijn');
@@ -50,7 +52,10 @@ if (tagsWithClass('trust-console__laag').length !== 3) fail('index.html: de trus
 if (tagsWithClass('bewijsrail').length !== 1) fail('index.html: verwacht exact één bewijsrail');
 const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
 const moduleCardTags = tagsWithClass('module-card');
-if (moduleCardTags.length !== 3 || !moduleClaims.every((id) => moduleCardTags.some((tag) => new RegExp(`data-claim-id="(?:[^"]* )?${id}(?: [^"]*)?"`).test(tag)))) {
+const hasAllModuleClaims = moduleClaims.every((claimId) =>
+  moduleCardTags.some((tag) => hasAttributeToken(tag, 'data-claim-id', claimId))
+);
+if (moduleCardTags.length !== 3 || !hasAllModuleClaims) {
   fail('index.html: verwacht exact drie module-cards met de drie canonieke moduleclaims');
 }
 if (tagsWithClass('assurance-matrix__item').length < 6) fail('index.html: de assurance-matrix hoort minimaal zes onderbouwde items te bevatten');
@@ -65,9 +70,12 @@ if (/<svg/i.test(html)) fail('index.html: inline SVG is niet toegestaan; alleen 
 if (/linear-gradient|radial-gradient|conic-gradient|blur\(|rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: gradients, blur of afgeleide/transparante kleuren zijn niet toegestaan');
 }
-// display:none mag exact één keer voorkomen: de headernavigatie op smalle schermen.
 const displayNones = css.match(/display:\s*none/g) ?? [];
-if (displayNones.length > 1 || (displayNones.length === 1 && !/@media \(max-width: \d+px\) {\s*\.saas-header__nav\s*{\s*display:\s*none;?\s*}/.test(css))) {
+const hasAllowedDisplayNone = displayNones.length === 0 || (
+  displayNones.length === 1 &&
+  /@media \(max-width: \d+px\) {\s*\.saas-header__nav\s*{\s*display:\s*none;?\s*}/.test(css)
+);
+if (!hasAllowedDisplayNone) {
   fail('styles.css: display:none is uitsluitend toegestaan voor .saas-header__nav in één max-width-mediaquery');
 }
 if (/visibility:\s*hidden/.test(css)) fail('styles.css: standaard verborgen inhoud is niet toegestaan');
@@ -119,12 +127,13 @@ if (/data-verbinding/.test(js) && !/\sdata-verbinding[\s>]/.test(html)) fail('in
 if (!/aria-current/.test(js)) fail('main.js: navigatiestatus via aria-current ontbreekt');
 
 // --- ontwerpdocument & oplevergate ---
-checkDesignDoc(root, 'conventioneel/DESIGN.md', () => read('conventioneel/DESIGN.md'),
+const designPath = 'conventioneel/DESIGN.md';
+const designExists = existsSync(join(root, designPath));
+const design = designExists ? read(designPath) : '';
+checkDesignDoc(root, designPath, () => design,
   ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijl', 'Motion', 'Responsief gedrag'], fail);
-// De Stitch-finalisatie moet concreet en afgerond zijn: alleen het woord 'Provenance'
-// met hoofdstukken volstaat niet. Vereist zijn echte Stitch-identifiers en géén open status.
-try {
-  const design = read('conventioneel/DESIGN.md');
+
+if (designExists) {
   if (!/gefinaliseerd via Google Stitch-MCP/i.test(design)) fail('DESIGN.md: provenance verklaart niet dat het document via de Google Stitch-MCP is gefinaliseerd');
   if (!/Stitch-project\s*`\d{15,}`/.test(design)) fail('DESIGN.md: concreet Stitch-project-ID ontbreekt in de provenance');
   if (!/screen\s*`\d{10,}`/.test(design)) fail('DESIGN.md: concreet Stitch-screen-ID ontbreekt in de provenance');
@@ -132,12 +141,12 @@ try {
   if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld/i.test(design)) {
     fail('DESIGN.md: provenance meldt een open of mislukte Stitch-status; de finalisatie is niet afgerond');
   }
-} catch { /* ontbrekend document is al gemeld door checkDesignDoc */ }
+}
 checkBrandGate(brand, 'Conventioneel', fail);
 
 if (errors.length) {
   console.error(`FOUT — ${errors.length} probleem(en):`);
-  for (const e of errors) console.error(`  - ${e}`);
+  for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }
 console.log('Variant Conventioneel: alle structurele controles geslaagd.');

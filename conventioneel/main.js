@@ -6,17 +6,19 @@
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (!window.gsap || !window.ScrollTrigger) return;
 
-  window.gsap.registerPlugin(window.ScrollTrigger);
   var gsap = window.gsap;
+  var ScrollTrigger = window.ScrollTrigger;
 
-  document.querySelectorAll("[data-reveal]").forEach(function (el) {
-    gsap.from(el, {
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.querySelectorAll("[data-reveal]").forEach(function (element) {
+    gsap.from(element, {
       y: 16,
       duration: 0.5,
       ease: "power2.out",
       clearProps: "transform",
       scrollTrigger: {
-        trigger: el,
+        trigger: element,
         start: "top 88%",
         once: true
       }
@@ -43,17 +45,21 @@
   navLinks.forEach(function (link) {
     var doel = document.querySelector(link.getAttribute("href"));
     if (!doel) return;
-    window.ScrollTrigger.create({
+
+    ScrollTrigger.create({
       trigger: doel,
       start: "top center",
       end: "bottom center",
-      onToggle: function (self) {
-        if (self.isActive) {
-          navLinks.forEach(function (ander) { ander.removeAttribute("aria-current"); });
-          link.setAttribute("aria-current", "location");
-        } else if (link.getAttribute("aria-current")) {
-          link.removeAttribute("aria-current");
+      onToggle: function (trigger) {
+        if (!trigger.isActive) {
+          if (link.getAttribute("aria-current")) link.removeAttribute("aria-current");
+          return;
         }
+
+        navLinks.forEach(function (navLink) {
+          navLink.removeAttribute("aria-current");
+        });
+        link.setAttribute("aria-current", "location");
       }
     });
   });
