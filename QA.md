@@ -6,7 +6,7 @@ Uitgevoerd op **2026-07-16** met **Chromium (headless, via CDP-sidecar aangestuu
 
 Na de huisstijlherijking zijn `/` en alle vijf routes opnieuw lokaal geopend op exact 320, 768 en 1440 px. Op 320 px zijn zichtbare content, landmarks, lokale navigatie en canonieke CTA-bestemmingen via de accessibility snapshot gecontroleerd; op 1440 px zijn de logo-oppervlakken en hero's visueel vastgelegd. De blauwe logo's bleven leesbaar op wit, de witte logo's op het nieuwe Deep Navy `#042244`; Artific Yellow is nu `#FFD602`. Alle logo's bleven visueel onvervormd, minimaal 80px breed en met voldoende vrije ruimte rondom; de letter-`a`-clearspace blijft overeenkomstig `logo-clearspace` een handmatige visuele gate. Er was geen zichtbare afsnijding of horizontale uitloop. De vijf rootlinks zijn automatisch tegen hun vaste routes gecontroleerd en de Minimalistisch-link is opnieuw in Chromium aangeklikt.
 
-De fallbackcode en JavaScript zijn niet gewijzigd. De bestaande interactieve reduced-motion/CDN-/JS-uitvalmatrix hieronder blijft daarom de regressiebasis; aanvullend scant `validate-site.mjs` nu alle zes deploybare HTML/CSS/JS-oppervlakken op `.pdf`-runtimeverwijzingen. De lokale browser laadde op de gecontroleerde routes uitsluitend statische sitebestanden en de bestaande gepinde scripts, niet de twee PDF-auditbronnen.
+De interactieve reduced-motion/CDN-/JS-uitvalmatrix hieronder blijft de regressiebasis voor ongewijzigde routes. Brutalistisch B is na haar herontwerp opnieuw volledig via CDP getest; de actuele resultaten staan in de gerichte sectie onderaan. `validate-site.mjs` scant alle zes deploybare HTML/CSS/JS-oppervlakken op `.pdf`-runtimeverwijzingen. De lokale browser laadde uitsluitend statische sitebestanden en de bestaande gepinde scripts, niet de twee PDF-auditbronnen.
 
 ## Responsieve matrix (exact 320 / 768 / 1440 px)
 
@@ -15,7 +15,7 @@ De fallbackcode en JavaScript zijn niet gewijzigd. De bestaande interactieve red
 | `/` (keuzepagina) | ✓ | ✓ | ✓ | Eén kolom op alle breedtes, precies vijf benoemde keuzes, geen horizontale scroll, blauw logo op wit |
 | `/minimalistisch/` | ✓ | ✓ | ✓ | Rustige editorial leeskolom intact; lineaire afbouw op mobiel; geen overflow |
 | `/brutalistisch-a/` | ✓ | ✓ | ✓ | Operationele blauwdruk met sectiecodes/platen intact; harde vlakken stapelen zonder afsnijding |
-| `/brutalistisch-b/` | ✓ | ✓ | ✓ | Tabloidregister met folio's en hoofdstukregister intact; serif-koppen breken netjes op 320 px |
+| `/brutalistisch-b/` | ✓ | ✓ | ✓ | Dominant geel/navy tabloidregister; zes folio's, brede desktoptrap en lineaire mobiele modules zonder overflow |
 | `/conventioneel/` | ✓ | ✓ | ✓ | Trust-center SaaS met trust-console/bewijsrail intact; cards stapelen lineair op mobiel |
 | `/premium/` | ✓ | ✓ | ✓ | Donkere boekdelen, dossierregels, evidence-index, module-sequentie en assurance-ledger; hero 7/4 op desktop, volledig lineair op 320 px zonder horizontale scroll |
 
@@ -36,7 +36,7 @@ Per variant drie afzonderlijke browserruns (echte emulatie/blokkering via CDP), 
 | --- | --- | --- | --- |
 | `/minimalistisch/` | 8 triggers / 9 tweens | **0 ScrollTriggers**, geen animatie; inhoud & CTA's identiek | `window.gsap` ontbreekt; pagina volledig statisch bruikbaar; ankerklik werkt |
 | `/brutalistisch-a/` | 34 / 34 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
-| `/brutalistisch-b/` | 16 / 11 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
+| `/brutalistisch-b/` | 25 triggers / korte transform-entrees | **0 ScrollTriggers**, ook na dynamische omschakeling; inhoud & CTA's identiek | 2 CDN-requests geblokkeerd, `window.gsap` ontbreekt; volledig bruikbaar |
 | `/conventioneel/` | 25 / 21 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
 | `/premium/` | 39 / 49 | **0 ScrollTriggers**; inhoud & CTA's identiek | idem — volledig bruikbaar |
 
@@ -46,7 +46,7 @@ Per variant drie afzonderlijke browserruns (echte emulatie/blokkering via CDP), 
 
 ## Onderlinge vergelijking (eigenheid per variant)
 
-Naast elkaar bekeken op 1440 px: Minimalistisch blijft rustig/editorial (licht, één leeskolom), Brutalistisch A blijft operationele blauwdruk (sectiecodes, harde offsetvlakken), Brutalistisch B blijft tabloidregister (serif-krantentypografie, folio's), Conventioneel blijft trust-center SaaS (afgeronde panelen, sticky header, bewijsrail) en Premium onderscheidt zich duidelijk: donkere navy boekdelen, dossierregels met hairlines en indexnummers, verfijnde lichte koppen, evidence-index, drie door hairlines verbonden modulehoofdstukken en een donker assurance-ledger. Alle vijf stylesheets zijn visueel gemigreerd van de oude donker-/marine- en oranjegele tokens naar één `--navy` en `--geel`; alle route-HTML kreeg controleerbare logo-oppervlakmetadata en alle DESIGN-kleursecties zijn daarmee gesynchroniseerd. De canonieke inhoud, CTA's, routes, secties en `main.js`-bestanden zijn niet gewijzigd.
+Naast elkaar bekeken op 1440 px: Minimalistisch blijft rustig/editorial (licht, één leeskolom), Brutalistisch A blijft operationele blauwdruk (sectiecodes, harde offsetvlakken), Brutalistisch B is het dominante geel/navy tabloidregister (serif-krantentypografie, folio's en brede moduletrap), Conventioneel blijft trust-center SaaS (afgeronde panelen, sticky header, bewijsrail) en Premium onderscheidt zich duidelijk met donkere boekdelen en dossierregels. Alle route-HTML gebruikt controleerbare logo-oppervlakmetadata en de DESIGN-kleursecties volgen de bevestigde merkbasis. De gerichte herontwerpen behouden canonieke inhoud, CTA's en routes.
 
 ## Afsluitende automatische controles
 
@@ -78,3 +78,13 @@ Na specialistreview zijn ook exact 481, 600 en 700px geopend. De commandobar geb
 De accessibilitysnapshot bevestigde de acht secties, vijf canonieke CTA-hrefs, mail-/telefoonlinks en documentvolgorde; de eerste Tab focuste de skiplink en `#platform` werkte lokaal met de mobiele ankeroffset. Externe CTA-bestemmingen zijn wegens de lokale-only QA-regel niet geopend, maar hun exacte href is zowel in de snapshot als validator bevestigd. Tijdelijke lokale kopieën bevestigden volledige zichtbaarheid en bediening met JavaScript verwijderd, met beide CDN-tags verwijderd en met de reduced-motion JavaScript-guard geforceerd. Echte OS-level reduced-motion-emulatie en een exporteerbare netwerklog waren niet beschikbaar in de sidecar; CSS-reduced-motion en de afwezigheid van PDF-/21st.dev-runtimeverwijzingen zijn daarom automatisch en bronmatig gecontroleerd. De tijdelijke kopieën zijn verwijderd.
 
 De variantspecifieke gates zijn daarna met teruggedraaide mutaties herbevestigd: wrapper/sectiecodes, modulevolgorde en -hook, gecentreerd werkvlak, desktoptrap en mobiele reset/commandobar, verboden zustervariantsignatuur en stijlen, transform-only motion, CTA-contract, reduced-motion-guard en afwezigheid van een 21st.dev-runtimeverwijzing faalden elk gericht. Een dependency-vrije VM-stub bevestigde bovendien dat inschakelen van reduced motion tijdens een sessie alle zeven eigen animaties en ScrollTriggers stopt, CTA-tweens doodt en transforms wist. Semantisch gelijke HTML met gewisselde moduleattributen/een extra class en CSS met gewisselde declaratievolgorde bleef terecht slagen. Na herstel slaagden de variant- en setbrede validators opnieuw.
+
+## Hercontrole geel/navy tabloidregister `/brutalistisch-b/` — 2026-07-16
+
+Lokaal uitgevoerd met Chromium via de CDP-sidecar tegen `node scripts/serve.mjs 4173`. Op exact 320, 768 en 1440px waren masthead en register direct Artific Yellow met Deep Navy inhoud; intro/platform/slot waren navy met witte tekst en gele redactionele labels. `scrollWidth === innerWidth` op alle drie breedtes. Op 320 en 768px stonden AI Assistant, AI ToolBox en Conversation Module lineair op respectievelijk x=16–304 en x=38–730. Op 1440px mat de spread x=288–1392; de drie even brede 920px-banden versprongen x=288–1208, 380–1300 en 472–1392. Alleen `.register` rapporteerde `position: sticky`; masthead en alle folio's bleven statisch.
+
+Zeventien Tab-stappen bevestigden de volledige documentvolgorde vanaf skiplink via masthead-CTA, zes hoofdstukken, intro-/slot-CTA's, contactlinks en alle drie footerlinks. Iedere focusring was computed 3px solid: navy op geel of geel op navy. Alle vijf CTA's zijn lokaal onderschept en geklikt; 5/5 wezen exact naar `https://artific.nl/contact-opnemen/`. De zes hoofdstukankers en mailto-/tel-links bleven werkzaam en ongewijzigd.
+
+De fallbackmatrix is werkelijk via CDP uitgevoerd. Met echte `prefers-reduced-motion: reduce` vóór navigatie ontstonden nul ScrollTriggers en nul transforms. Bij inschakelen tijdens een normale sessie daalde het aantal triggers van 25 naar 0, werd een actieve CTA-tween gestopt en maakten latere CTA-mouseenter/-mouseleave-events geen nieuwe tween. De drie spreadbanden zijn tijdens hun mobiele entree ieder 25 actieve animation frames gemeten: `scrollWidth` bleef 320 en alle randen bleven binnen x=8,93–311,07. Met beide jsDelivr-URL's geblokkeerd werden twee requests als geblokkeerd gemeten; afzonderlijke runs blokkeerden GSAP en ScrollTrigger elk één keer en hielden 0 triggers/transforms, zes folio's en nul overflow. Met scriptuitvoering vóór navigatie uitgeschakeld bleven eveneens zes folio's, vijf CTA's en de lineaire modules aanwezig. Runtimebron en validator bevatten geen PDF- of 21st.dev-afhankelijkheid.
+
+De vernieuwde validator slaagde samen met `node scripts/validate-site.mjs`. Teruggedraaide mutaties voor mastheadlogo/-kleur, modulevolgorde, desktopoffset, een extra sticky element, scrub-motion, CTA-drift, ontbrekende CTA-motionguard/cleanup en een onveilige mobiele spreadoffset faalden alle gericht. `git diff --check` slaagde. Er is geen 21st.dev Magic MCP-run geclaimd: deze buildomgeving bood geen geconfigureerde Magic MCP-client of runtimecredential.

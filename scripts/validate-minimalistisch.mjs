@@ -6,54 +6,14 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   checkBrandColors, checkClaims, checkContrastUsage, checkDocumentMetadata, checkImages,
-  checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
+  checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder, extractSingleCssBlock,
+  hasCssRule, parseCssRules,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 const fail = (msg) => errors.push(msg);
 const read = (p) => readFileSync(join(root, p), 'utf8');
-
-function extractSingleCssBlock(source, headerPattern, label) {
-  const matches = [...source.matchAll(headerPattern)];
-  if (matches.length !== 1) {
-    fail(`styles.css: verwacht exact één ${label}-blok, gevonden ${matches.length}`);
-    return '';
-  }
-
-  const openingBrace = matches[0].index + matches[0][0].lastIndexOf('{');
-  let depth = 1;
-  let quote = '';
-  for (let i = openingBrace + 1; i < source.length; i += 1) {
-    const char = source[i];
-    const next = source[i + 1];
-
-    if (quote) {
-      if (char === '\\') i += 1;
-      else if (char === quote) quote = '';
-      continue;
-    }
-    if (char === '/' && next === '*') {
-      const commentEnd = source.indexOf('*/', i + 2);
-      if (commentEnd === -1) {
-        fail(`styles.css: onafgesloten comment in ${label}-blok`);
-        return '';
-      }
-      i = commentEnd + 1;
-      continue;
-    }
-    if (char === '"' || char === "'") {
-      quote = char;
-      continue;
-    }
-    if (char === '{') depth += 1;
-    if (char === '}') depth -= 1;
-    if (depth === 0) return source.slice(openingBrace + 1, i);
-  }
-
-  fail(`styles.css: onafgesloten ${label}-blok`);
-  return '';
-}
 
 const html = read('minimalistisch/index.html');
 const css = read('minimalistisch/styles.css');
@@ -170,30 +130,46 @@ if (tintSectionProperties.some(affectsBottomBorder)) {
   fail('styles.css: .sectie--tint mag geen onderrand toevoegen naast de 1px-bovenrail van de volgende sectie');
 }
 
-const desktopCss = extractSingleCssBlock(
+const desktopModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*min-width\s*:\s*980px\s*\)\s*\{/g,
-  'desktopmediaquery (min-width: 980px)'
-).replace(/\s+/g, ' ');
-const mobileCss = extractSingleCssBlock(
+  'desktopmediaquery (min-width: 980px)',
+  fail
+));
+const mobileModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*max-width\s*:\s*979px\s*\)\s*\{/g,
-  'mobiele mediaquery (max-width: 979px)'
-).replace(/\s+/g, ' ');
+  'mobiele mediaquery (max-width: 979px)',
+  fail
+));
 
 const desktopGridContracts = [
-  /\.sectie__grid\s*\{[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/,
-  /\.sectie__grid\s*>\s*\.modules\s*\{[^}]*grid-column:\s*1\s*\/\s*13[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/,
-  /\.modules\s*>\s*\.module:nth-child\(1\)\s*\{[^}]*grid-column:\s*1\s*\/\s*9[^}]*grid-row:\s*1/,
-  /\.modules\s*>\s*\.module:nth-child\(2\)\s*\{[^}]*grid-column:\s*3\s*\/\s*11[^}]*grid-row:\s*2/,
-  /\.modules\s*>\s*\.module:nth-child\(3\)\s*\{[^}]*grid-column:\s*5\s*\/\s*13[^}]*grid-row:\s*3/,
+  ['.sectie__grid', { 'grid-template-columns': 'repeat(12, minmax(0, 1fr))' }],
+  ['.sectie__grid > .modules', {
+    'grid-column': '1 / 13',
+    'grid-template-columns': 'repeat(12, minmax(0, 1fr))',
+  }],
+  ['.modules > .module:nth-child(1)', { 'grid-column': '1 / 9', 'grid-row': '1' }],
+  ['.modules > .module:nth-child(2)', { 'grid-column': '3 / 11', 'grid-row': '2' }],
+  ['.modules > .module:nth-child(3)', { 'grid-column': '5 / 13', 'grid-row': '3' }],
 ];
-for (const contract of desktopGridContracts) {
-  if (!contract.test(desktopCss)) fail('styles.css: twaalfkoloms grid- of moduletrapcontract ontbreekt binnen de desktopmediaquery');
+for (const [selector, declarations] of desktopGridContracts) {
+  if (!hasCssRule(desktopModel, selector, declarations)) {
+    fail(`styles.css: desktopgrid '${selector}' mist zijn twaalfkoloms- of moduletrapcontract`);
+  }
 }
-if (!/\.modules\s*\{[^}]*display:\s*block[^}]*width:\s*100%/.test(mobileCss)
-    || !/\.modules\s*>\s*\.module,[^{]*\.modules\s*>\s*\.module:nth-child\(3\)\s*\{[^}]*width:\s*100%[^}]*grid-column:\s*auto[^}]*grid-row:\s*auto/.test(mobileCss)) {
-  fail('styles.css: mobiele lineaire reset voor de volledige moduletrap ontbreekt binnen de mobiele mediaquery');
+if (!hasCssRule(mobileModel, '.modules', { display: 'block', width: '100%' })) {
+  fail('styles.css: de modulelijst mist haar lineaire reset binnen de mobiele mediaquery');
+}
+for (const selector of [
+  '.modules > .module',
+  '.modules > .module:nth-child(1)',
+  '.modules > .module:nth-child(2)',
+  '.modules > .module:nth-child(3)',
+]) {
+  if (!hasCssRule(mobileModel, selector, { width: '100%', 'grid-column': 'auto', 'grid-row': 'auto' })) {
+    fail(`styles.css: mobiele module '${selector}' mist een volledige lineaire reset`);
+  }
 }
 
 checkMotionGuards(html, css, js, fail, {

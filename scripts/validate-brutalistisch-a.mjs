@@ -16,6 +16,10 @@ import {
   checkMotionGuards,
   checkNoPdfRuntime,
   checkSectionOrder,
+  extractSingleCssBlock,
+  hasCssRule,
+  normalizeCssSelector as normalizeSelector,
+  normalizeCssValue,
   parseCssRules,
   parseHtmlNodes,
 } from './lib/variant-checks.mjs';
@@ -24,64 +28,6 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 const fail = (msg) => errors.push(msg);
 const read = (p) => readFileSync(join(root, p), 'utf8');
-
-function extractSingleCssBlock(source, headerPattern, label) {
-  const matches = [...source.matchAll(headerPattern)];
-  if (matches.length !== 1) {
-    fail(`styles.css: verwacht exact één ${label}-blok, gevonden ${matches.length}`);
-    return '';
-  }
-
-  const openingBrace = matches[0].index + matches[0][0].lastIndexOf('{');
-  let depth = 1;
-  let quote = '';
-  for (let i = openingBrace + 1; i < source.length; i += 1) {
-    const char = source[i];
-    const next = source[i + 1];
-    if (quote) {
-      if (char === '\\') i += 1;
-      else if (char === quote) quote = '';
-      continue;
-    }
-    if (char === '/' && next === '*') {
-      const commentEnd = source.indexOf('*/', i + 2);
-      if (commentEnd === -1) {
-        fail(`styles.css: onafgesloten comment in ${label}-blok`);
-        return '';
-      }
-      i = commentEnd + 1;
-      continue;
-    }
-    if (char === '"' || char === "'") {
-      quote = char;
-      continue;
-    }
-    if (char === '{') depth += 1;
-    if (char === '}') depth -= 1;
-    if (depth === 0) return source.slice(openingBrace + 1, i);
-  }
-
-  fail(`styles.css: onafgesloten ${label}-blok`);
-  return '';
-}
-
-const normalizeSelector = (selector) => selector.replace(/\s+/g, ' ').replace(/\s*>\s*/g, '>').trim();
-const normalizeCssValue = (value) => value.replace(/\s+/g, '');
-
-function hasExpectedDeclarations(rule, expectedDeclarations) {
-  return Object.entries(expectedDeclarations).every(([property, expected]) => {
-    const actual = rule.declarations.get(property);
-    return actual !== undefined && normalizeCssValue(actual) === normalizeCssValue(expected);
-  });
-}
-
-function hasCssRule(model, selector, expectedDeclarations) {
-  const expectedSelector = normalizeSelector(selector);
-  return model.rules.some((rule) => {
-    const selectorMatches = rule.selectors.some((candidate) => normalizeSelector(candidate) === expectedSelector);
-    return selectorMatches && hasExpectedDeclarations(rule, expectedDeclarations);
-  });
-}
 
 const html = read('brutalistisch-a/index.html');
 const css = read('brutalistisch-a/styles.css');
@@ -220,12 +166,14 @@ for (const selector of ['.blok__binnen', '.commandobar__binnen', '.site-footer__
 const desktopModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*min-width\s*:\s*1000px\s*\)\s*\{/g,
-  'desktopmediaquery (min-width: 1000px)'
+  'desktopmediaquery (min-width: 1000px)',
+  fail
 ));
 const mobileModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*max-width\s*:\s*999px\s*\)\s*\{/g,
-  'mobiele mediaquery (max-width: 999px)'
+  'mobiele mediaquery (max-width: 999px)',
+  fail
 ));
 const desktopPlateContracts = [
   ['.platen', { 'grid-template-columns': 'repeat(12, minmax(0, 1fr))' }],
@@ -250,7 +198,8 @@ for (const selector of ['.platen > .plaat', '.platen > .plaat:nth-child(1)', '.p
 const commandobarMobileModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*max-width\s*:\s*767px\s*\)\s*\{/g,
-  'commandobarmediaquery (max-width: 767px)'
+  'commandobarmediaquery (max-width: 767px)',
+  fail
 ));
 const commandobarContracts = [
   [commandobarMobileModel, '.commandobar__binnen', { display: 'grid', 'grid-template-areas': '"logo cta" "nav nav"' }],
@@ -267,7 +216,8 @@ if (!commandobarContracts.every(([model, selector, declarations]) => hasCssRule(
 const reducedMotionModel = parseCssRules(extractSingleCssBlock(
   css,
   /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/g,
-  'reduced-motionmediaquery'
+  'reduced-motionmediaquery',
+  fail
 ));
 const hiddenRules = cssModel.rules.filter((rule) => normalizeCssValue(rule.declarations.get('display') ?? '') === 'none');
 const onlyProgressIsHidden = hiddenRules.length === 1 &&

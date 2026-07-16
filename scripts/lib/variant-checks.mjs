@@ -147,6 +147,66 @@ export const parseCssRules = (css) => {
   return { rules, variables };
 };
 
+export function extractSingleCssBlock(source, headerPattern, label, fail) {
+  const matches = [...source.matchAll(headerPattern)];
+  if (matches.length !== 1) {
+    fail(`styles.css: verwacht exact één ${label}-blok, gevonden ${matches.length}`);
+    return '';
+  }
+
+  const openingBrace = matches[0].index + matches[0][0].lastIndexOf('{');
+  let depth = 1;
+  let quote = '';
+  for (let index = openingBrace + 1; index < source.length; index += 1) {
+    const char = source[index];
+    const next = source[index + 1];
+    if (quote) {
+      if (char === '\\') index += 1;
+      else if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '/' && next === '*') {
+      const commentEnd = source.indexOf('*/', index + 2);
+      if (commentEnd === -1) {
+        fail(`styles.css: onafgesloten comment in ${label}-blok`);
+        return '';
+      }
+      index = commentEnd + 1;
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '{') depth += 1;
+    if (char === '}') depth -= 1;
+    if (depth === 0) return source.slice(openingBrace + 1, index);
+  }
+
+  fail(`styles.css: onafgesloten ${label}-blok`);
+  return '';
+}
+
+export const normalizeCssSelector = (selector) => selector
+  .replace(/\s+/g, ' ')
+  .replace(/\s*>\s*/g, '>')
+  .trim();
+export const normalizeCssValue = (value) => value.replace(/\s+/g, '');
+
+const hasExpectedDeclarations = (rule, expectedDeclarations) =>
+  Object.entries(expectedDeclarations).every(([property, expected]) => {
+    const actual = rule.declarations.get(property);
+    return actual !== undefined && normalizeCssValue(actual) === normalizeCssValue(expected);
+  });
+
+export function hasCssRule(model, selector, expectedDeclarations) {
+  const expectedSelector = normalizeCssSelector(selector);
+  return model.rules.some((rule) =>
+    rule.selectors.some((candidate) => normalizeCssSelector(candidate) === expectedSelector) &&
+    hasExpectedDeclarations(rule, expectedDeclarations)
+  );
+}
+
 const rulesFor = (model, selector) => model.rules.filter((rule) => rule.selectors.includes(selector));
 const backgroundProperties = ['background-color', 'background'];
 const valuesForProperties = (declarations, properties) => properties
