@@ -1,41 +1,53 @@
 # Artific huisstijlbron
 
-`brand.json` is de enige geldige bron voor kleuren en logo's van de vijf landingspagina-varianten. Varianten mogen geen kleur of logo gebruiken dat hier niet in staat.
+`brand.json` is de canonieke huisstijlbron voor de keuzepagina en alle vijf landingspagina's. De browser leest dit bestand en de PDF's niet; statische HTML/CSS gebruikt alleen de vooraf vastgelegde tokens en lokale logo-assets.
 
-## Status: `verified` — tegen officieel door Artific gepubliceerde documenten
+## Primaire documenten
 
-Elke waarde in `brand.json` is meetbaar geverifieerd tegen vier officieel door Artific zélf gepubliceerde, huisstijldragende PDF-documenten van artific.nl. De twee oorspronkelijk aangewezen interne referentiedocumenten (`260506 Artific brand manual v1.0.pdf` en `260506 Voorbeelden creative materials.pdf`) zijn na herhaalde bouwrondes en uitputtende zoekacties nooit aan de buildomgeving aangeleverd (zie de afwijking hieronder); de officieel gepubliceerde collateral is daarom de vastgelegde verificatiebasis. Zodra de interne documenten alsnog worden aangeleverd, wordt elke waarde en gebruiksregel daartegen hertoetst volgens de procedure onderaan.
+De twee aangeleverde documenten staan in de repository-root en zijn de primaire auditbasis:
 
-Elke kleur en elke logo-uitvoering in `brand.json` draagt `pdfProvenance` met documentId, paginanummer(s) en concrete evidence, verwijzend naar vier officieel door Artific gepubliceerde, huisstijldragende PDF-documenten van artific.nl (whitepaper, brochure, infographic en persbericht — zie `referenceDocuments` met URL, SHA-256 en ophaaldatum per document). De verificatie is meetbaar uitgevoerd, niet visueel geschat:
+| Document-ID | Bestand | Pagina's | SHA-256 | Rol |
+| --- | --- | ---: | --- | --- |
+| `brand-manual` | `260506 Artific brand manual v1.0.pdf` | 15 | `b69b324c3b22c5ac38e793d76646b140617658c7c45854dc8fa60c74d3df9ea6` | normbron voor palet, logo, contrast en gebruik |
+| `creative-materials` | `260506 Voorbeelden creative materials.pdf` | 3 | `63a1b03638a90ffc896e1b8e8755b59fa5fb8591ab854e53a41b988cd287a578` | bevestiging van concrete toepassingen; geen bron voor nieuwe kleurwaarden |
 
-1. De PDF's zijn gedownload van hun officiële artific.nl-URL en per SHA-256 vastgelegd (reproduceerbaar te controleren).
-2. Met mupdf (WASM, alleen build-tooling; geen repository-dependency) zijn per pagina alle vector-fill-, stroke- en tekstkleuroperatoren uitgelezen — dit geeft exacte hexwaarden zoals ze in het document staan.
-3. De logokleur in het persbericht (raster) is per pixel gemeten op een 3x-rendering: dominant exact `#287CEB`.
-4. Elke pagina is daarnaast gerenderd en visueel vergeleken met de logo-SVG's en kleurrollen.
+De bestandsnaam van de manual noemt v1.0; de zichtbare documenttitel binnen de PDF is "Artific Brand Manual v2.2". Provenance gebruikt steeds het rootpad en het zichtbare, 1-gebaseerde PDF-paginanummer.
 
-De vier documenten bevestigen onderling consistent dezelfde kleurenset en dezelfde twee logo-uitvoeringen (wit op donker; blauw `#287CEB` op licht).
+## Auditmethode
 
-## Afwijking: de twee interne referentie-PDF's zijn nooit aangeleverd
+1. SHA-256 en paginatelling zijn op de lokale bytes gecontroleerd.
+2. Contentstreams, ToUnicode-tabellen en exacte kleur-operators zijn dependency-vrij uitgelezen met Node.js en `node:zlib`.
+3. De 15 manual-pagina's zijn paginagewijs op uitgelezen tekst, kleur-operators en ingesloten beelden gecontroleerd. De drie creative-material-pagina's zijn als hun originele ingesloten JPEG's visueel bekeken; de logo-XObjects van manual p. 4 zijn lossless geëxtraheerd en op hoge resolutie vergeleken.
+4. Alleen expliciete paletwaarden en geschreven regels uit de brand manual zijn toegestaan. Foto-, screenshot-, antialiasing- en hulpkleuren zijn niet als merkwaarde geoogst.
+5. De validator herberekent contrast uit de hexwaarden. Daardoor geldt blauw op wit, ondanks de gedrukte `4.6:1` op pagina 7, op basis van `#287CEB` en `#FFFFFF` als `4.06:1` en dus alleen voor grote tekst.
 
-De opdracht wees `260506 Artific brand manual v1.0.pdf` en `260506 Voorbeelden creative materials.pdf` aan als referentie. Beide staan in `.gitignore`, maar zijn in zeven bouwpogingen (laatst 2026-07-16) nooit aan de buildomgeving aangeleverd: niet op het bestandssysteem (volledige schijfscan, ook zonder `.pdf`-extensie en op PDF-magic-bytes), niet in de Git-historie of op enige remote-branch, niet in de volledige openbare WordPress-mediabibliotheek van artific.nl (614 items via de REST-API doorlopen) en niet via sitemaps of andere officiële locaties.
+## Bevestigde tokens
 
-De waarden zijn daarom gedocumenteerd tegen de sterkst beschikbare openbare bron: door Artific zélf gepubliceerde PDF-materialen. Omdat de interne documenten aantoonbaar niet leverbaar bleken, geldt die officieel gepubliceerde collateral als verificatiebasis. De afwijking staat expliciet in het `deviation`-blok van `brand.json`, inclusief de correcties ten opzichte van de eerdere web-afgeleide kandidaten:
+- Artific Blue `#287CEB` — manual p. 6 en 15.
+- Artific Yellow `#FFD602` — manual p. 6 en 15.
+- Deep Navy `#042244` — de expliciete swatch op p. 6, de onderliggende kleuroperator en de quick reference op p. 15. De losse regel `Deep Navy #062244` op p. 6 is intern tegenstrijdig en is daarom niet als extra token toegelaten.
+- Light Blue `#E5EDF8` — manual p. 6 en 15.
+- Neutral Gray `#64748B` — manual p. 6.
+- Wit `#FFFFFF` — bevestigd door de logo-, contrast- en toepassingsregels op p. 4, 5, 7 en 14.
 
-- **exact bevestigd:** `#287CEB`, `#ECA414`, `#FFFFFF`;
-- **gecorrigeerd:** donkerblauw webtoken `#042244` → in de documenten `#0A213D` (whitepaper/brochure) en `#062244` (infographic-achtergrond); lichtblauw webtoken `#C9DAF2` → `#E5EDF8`;
-- **verwijderd:** webtoken `#7790AE` (komt in geen enkel Artific-document voor).
+`brand.json` legt per token de concrete evidence vast. De oude collateralwaarden `#0A213D`, `#062244` en `#ECA414` zijn geen toegestane tokens in de nieuwe primaire basis. Alle zes stylesheets gebruiken dezelfde duidelijke custom-propertynamen `--blauw`, `--geel`, `--navy`, `--lichtblauw` en `--wit`; er zijn geen dubbele donker-/marine- of oranjegele legacy-aliassen.
 
-## Herverificatie zodra de interne PDF's alsnog beschikbaar komen
+## Logo-assets en achtergronden
 
-1. Plaats de twee PDF's lokaal in de repository-root (de `.gitignore`-regels houden ze buiten Git; commit ze nooit en maak runtime nooit van ze afhankelijk).
-2. Inspecteer beide documenten visueel én met PDF-extractietooling (zelfde meetmethode als hierboven).
-3. Vergelijk elke kleur en elk logo in `brand.json`; corrigeer of verwijder afwijkende waarden en voeg ontbrekende goedgekeurde waarden toe.
-4. Vul `pdfProvenance` aan met de interne documenten (voeg ze met `available: true` toe aan `referenceDocuments`), controleer ook de logo-gebruiksregels tegen de brand manual en werk het `deviation`-blok bij.
-5. Corrigeer bij afwijkingen de tokens, logo's en alle varianten en draai `node scripts/validate-content.mjs` tot die slaagt.
+- `artific-logo-blauw.svg` — officiële bestaande SVG, byte-ongewijzigd behouden; hash en vorm/vulling gecontroleerd. Alleen op wit of Light Blue (manual p. 4–5).
+- `artific-logo-wit.svg` — officiële bestaande SVG, byte-ongewijzigd behouden; hash en vorm/vulling gecontroleerd. Alleen op Artific Blue of Deep Navy (manual p. 4–5).
+- `artific-logo-navy.png` — het originele navy logo lossless geëxtraheerd uit RGB-XObject 43 en transparantiemasker 17 op manual p. 4, zonder hertekenen of herkleurwerk. Alleen op Artific Yellow.
 
-## Logo-assets
+De SVG's bevatten alleen paden en geen scripts, fonts, tekstobjecten, externe URL's of PDF-verwijzingen. De PNG is lokaal en transparant. `sha256` in `brand.json` borgt alle drie assets.
 
-- `artific-logo-blauw.svg` — woordmerk + AI-beeldmerk, alle paden `#287CEB`; byte-gelijk overgenomen van het door Artific gepubliceerde SVG en per PDF vergeleken met de briefhoofding van het persbericht (kleur pixel-exact). Voor lichte achtergronden.
-- `artific-logo-wit.svg` — dezelfde uitvoering, alle paden `#fff`; per PDF vergeleken met covers en footerbanden van whitepaper, brochure en infographic. Voor donkere achtergronden.
+`logoUsageRules` legt de manualregels met stabiele IDs en eigen pagina-evidence vast: minimaal 80px digitale renderbreedte, automatische hoogte zonder transform/filter en handmatige clearspace-QA van minimaal één letter-`a` rondom. De validator leest de 80px uit deze structuur, controleert het werkelijke CSS-minimum en verbiedt vervorming/filtering op alle beperkte logoselectors; clearspace blijft expliciet een visuele QA-controle.
 
-Beide SVG's zijn zelfstandig: alleen paden, geen fonts, scripts of externe URL's. Ze worden niet hertekend of herkleurd; `scripts/validate-content.mjs` controleert dit.
+## Contrast- en gebruiksregels
+
+`contrastPairs` bevat directionele paren uit de manual en uit herberekende toepassingen van het bevestigde palet. De validator berekent WCAG opnieuw: bodytekst vereist minimaal 4.5:1, grote tekst minimaal 3:1. Naast navy op wit/lichtblauw/geel zijn wit, lichtblauw en geel op navy canoniek vastgelegd; blauw op wit en wit op blauw zijn beperkt tot grote tekst. De variantvalidators eisen voor iedere niet-decoratieve CSS-tekst- en achtergronddeclaratie een expliciet oppervlaktecontract of een veilig paar in dezelfde regel. Voor ieder HTML-voorkomen controleren ze bovendien dat de voorgrond werkelijk binnen het geregistreerde DOM-oppervlak staat en dat andere klassen op dat element de achtergrond niet overschrijven. Daardoor falen ook een gedupliceerde of verplaatste CTA en hover-, compound- en responsieve overrides die in de uiteindelijke structuur een laag contrast vormen. Kleurvariabelen in border-, outline- en schaduwshorthands worden recursief opgelost; een onbekende of named-color custom property is geen geldige merkwaarde.
+
+Logo-achtergrondregels staan afzonderlijk in `logoBackgrounds`. Iedere logo-tag koppelt logo-ID en achtergrond-ID aan een concrete CSS-oppervlakselector; de validator bewijst via de geparste HTML-ancestry dat het logo werkelijk een descendant van dat oppervlak en elementtype is. Daarna lost hij alle op dat concrete DOM-element toepasselijke `background`-regels inclusief specifieke en hover-overrides op. Globale/gerichte afbeeldingsfilters, logo-eigen achtergronden, te kleine dimensies en vervormende transforms/hoogtes falen. Alleen metadata naar een elders bestaand donker oppervlak laten wijzen is daardoor niet voldoende om een verplaatst logo te laten slagen.
+
+## Build-time gate, geen runtime-afhankelijkheid
+
+`scripts/validate-content.mjs` vereist exact beide root-PDF's, controleert hun hashes en paginatellingen, provenance/paginabereik, unieke IDs, kleur- en logoreferenties, assethashes/-veiligheid en berekende contrastdrempels. `scripts/validate-site.mjs` en de variantvalidators controleren vervolgens de gebruikte kleuren, assets, logo-achtergronden en het ontbreken van `.pdf`-runtimeverwijzingen. Bezoekers hoeven nooit een PDF te laden of te downloaden.

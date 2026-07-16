@@ -4,6 +4,8 @@ Stijlgids voor de landingspagina op `/brutalistisch-b/`. Dit document beschrijft
 
 > **Provenance — gefinaliseerd via Google Stitch-MCP (2026-07-16):** de hieronder vastgelegde, werkelijk geïmplementeerde waarden uit `styles.css`/`main.js` zijn via de Google Stitch-MCP (`stitch.googleapis.com/mcp`, MCP-protocol 2025-03-26) doorgevoerd en gefinaliseerd in een **afzonderlijk** Stitch-project voor deze variant: het document is met `upload_design_md` geüpload naar Stitch-project `10169354303324654831` ("Artific — Brutalistisch B (tabloid register)", screen `9186885638307782`) en met `create_design_system_from_design_md` (DESKTOP) omgezet in design system `assets/ebb8bf2ae57343d6b6557a334acf8510` ("Editorial Tabloid Brutalist"). De door Stitch vastgelegde override-/named colors zijn exact de merktokens uit `assets/brand/brand.json` (primary `#0A213D`, secondary `#287CEB`, tertiary `#ECA414`, neutral `#FFFFFF`, plus de named colors `marine-navy #062244` en `soft-blue-bg #E5EDF8`); de overige door Stitch intern gegenereerde Material-paletwaarden worden **niet** op de pagina gebruikt. De door Stitch teruggegeven stijlrichtlijnen (3px-regels zonder afronding, 2:1-tabloidkolommen, 240px sticky register met 44px-doelen en donkerblauw/oranjegele actieve status, serif/sans-koppeling Georgia/Arial, modulespread en grootboek met 3px/1px-regels, CTA-hover met korte skew, focusringen blauw-op-licht/oranjegeel-op-donker) komen overeen met de implementatie; waar Stitch generieker formuleert blijft de implementatie zoals hieronder beschreven leidend. De gebruikte credential is uitsluitend runtime aangeboden en is niet in broncode, Markdown, configuratie of scripts opgeslagen.
 
+> **Huisstijlherijking:** de Stitch-provenance hierboven blijft als historische runregistratie letterlijk behouden. De daarin genoemde toenmalige token-snapshot is niet langer de merkbasis; de actuele implementatie en onderstaande kleurregels volgen de twee lokale primaire PDF’s en `assets/brand/brand.json`.
+
 ## Ontwerpprincipes
 
 Rauwe "editorial tabloid": de pagina leest als een op groot formaat gedrukt manifest met een krantenregister. Wezenlijk andere compositie dan Brutalistisch A (sticky commandobar, kapitale sans-koppen, sectiecodes, offset-schaduwen, pipeline, moduleplaten) en dan de rustige leeskolom van `/minimalistisch/`: hier een **statische donkere masthead**, op brede schermen een **smal sticky hoofdstukregister links** (Romeinse nummering I–VI), en rechts zes opeenvolgende **folio's** met asymmetrische krantencolommen (2:1), grote gemengde serif/sans-typografie (koppen in zware Georgia-serif, níet kapitaal; register/labels/body in compacte Arial-sans), initiaal-kapitaal in de aanhef, pullquotes tussen dubbele regels, decoratieve cursieve margewoorden, harde 1–3px redactionele regels en één aaneengesloten modulespread. Geen cards, dashboardvakken, sectiecodes, offset-schaduwen, iconengrids, foto's, gradients, blur of afronding; het enige beeldmateriaal is het officiële witte Artific-logo op masthead en footer.
@@ -15,13 +17,12 @@ Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified`). Geen 
 | Kleur | Hex | Rol op deze pagina |
 | --- | --- | --- |
 | Wit | `#FFFFFF` | krantenpapier: achtergrond van alle folio's; tekst op donker |
-| Artific-donkerblauw | `#0A213D` | alle tekst op licht, alle redactionele regels/kaders, gevulde registerlink-status, primaire CTA, footer |
-| Artific-marineblauw | `#062244` | masthead en slotfolio (`#contact`) |
+| Artific-navy | `#042244` | tekst en redactionele regels op licht, registerstatus, primaire CTA en footer; masthead en slotfolio (één CSS-token `--navy`) |
 | Artific-lichtblauw | `#E5EDF8` | achtergrond van het hoofdstukregister; footernoot-tekst op donkerblauw |
 | Artific-blauw | `#287CEB` | grote decoratieve margewoorden en fasenummers (≥ 28px vet), 3px accentlijnen (vragenlijst, lagenketen), focusring op licht, CTA-hoverrand |
-| Artific-oranjegeel | `#ECA414` | accent: 3px mastheadonderrand en toprand van slotfolio/footer, slot-CTA-vlak, actieve registeronderstreping, focusring op donker, skiplink |
+| Artific-geel | `#FFD602` | accent: 3px mastheadonderrand en toprand van slotfolio/footer, slot-CTA-vlak, actieve registeronderstreping, focusring op donker, skiplink |
 
-Contrastregels: lopende tekst is altijd `#0A213D` op wit/lichtblauw of `#FFFFFF` op marine-/donkerblauw (ruim boven WCAG AA 4,5:1). `#287CEB` wordt nooit als kleine tekst op wit gebruikt: alleen als grote vette decoratieve display-tekst (≥ 28px/700, `aria-hidden`), lijnen en focusring (non-text ≥ 3:1). `#ECA414` staat als vlak altijd met `#0A213D`-tekst (± 7,6:1) en als lijn/focusring alleen op donker.
+Contrastregels: lopende tekst is altijd `#042244` op wit/lichtblauw of `#FFFFFF` op marine-/donkerblauw (ruim boven WCAG AA 4,5:1). `#287CEB` wordt nooit als kleine tekst op wit gebruikt: alleen als grote vette decoratieve display-tekst (≥ 28px/700, `aria-hidden`), lijnen en focusring (non-text ≥ 3:1). `#FFD602` staat als vlak altijd met `#042244`-tekst (± 11,3:1) en als lijn/focusring alleen op donker.
 
 ## Spacing
 

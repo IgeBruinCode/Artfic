@@ -4,24 +4,25 @@ Stijlgids voor de landingspagina op `/conventioneel/`. Dit document beschrijft d
 
 > **Provenance — gefinaliseerd via Google Stitch-MCP (2026-07-16):** de hieronder vastgelegde, werkelijk geïmplementeerde waarden uit `styles.css`/`main.js` zijn via de Google Stitch-MCP (`stitch.googleapis.com/mcp`, MCP-protocol 2025-03-26) doorgevoerd en gefinaliseerd in een **afzonderlijk** Stitch-project voor deze variant: het document is met `upload_design_md` geüpload naar Stitch-project `5627763905823275232` ("Artific — Conventioneel (trust-center SaaS)", screen `16895288171644647696`) en met `create_design_system_from_design_md` (DESKTOP) omgezet in design system `assets/3d7545ac2c3843e389918d2d7421e7e1` ("Conventional Trust"). De door Stitch vastgelegde named colors bevatten exact de merktokens uit `assets/brand/brand.json` (`primary_container #0A213D`, `marine-blue #062244`, `surface-light #E5EDF8`, `surface_container_lowest #FFFFFF`); de overige door Stitch intern gegenereerde Material-paletwaarden worden **niet** op de pagina gebruikt. De door Stitch teruggegeven stijlrichtlijnen (wit→lichtblauw→donkerblauw sectieritme, 12-koloms 1200px-grid op 8px-schaal, tonale gelaagdheid zonder schaduwen/gradients, 12–20px afronding, 1–2px effen randen, donkerblauwe primaire en oranjegele accent-CTA's, 2px hover-lift, 3px focusringen, gestapelde trust-console met statuschips) komen overeen met de implementatie; waar Stitch generieker formuleert (zoals de headernavigatie-afbouw, hier op 900px) blijft de implementatie zoals hieronder beschreven leidend. De gebruikte credential is uitsluitend runtime aangeboden en is niet in broncode, Markdown, configuratie of scripts opgeslagen.
 
+> **Huisstijlherijking:** de Stitch-provenance hierboven blijft als historische runregistratie letterlijk behouden. De daarin genoemde toenmalige token-snapshot is niet langer de merkbasis; de actuele implementatie en onderstaande kleurregels volgen de twee lokale primaire PDF’s en `assets/brand/brand.json`.
+
 ## Ontwerpprincipes
 
 Een bewezen, gestructureerde B2B-SaaS-opbouw met rustige vertrouwensopbouw: lichte sticky header, split hero met een tekstuele governance-samenvatting (trust-console), direct daaronder een bewijsrail, daarna visie → positie → product → governance → aanpak → slot-CTA. Afgeronde hoeken, dunne blauwe randen en effen vlakken maken de pagina herkenbaar SaaS/corporate; er zijn geen iconensets, gradients, stockbeelden, dashboardscreenshots of fictieve quotes. De enige beelden zijn de twee officiële logo-uitvoeringen.
 
 ## Kleurgebruik
 
-Uitsluitend de zes waarden uit `assets/brand/brand.json` (status: `verified`). Geen afgeleide tinten, geen transparante merkkleuren, geen gradients of blur.
+Uitsluitend de bevestigde waarden uit `assets/brand/brand.json` (status: `verified`). Geen afgeleide tinten, geen transparante merkkleuren, geen gradients of blur.
 
 | Kleur | Hex | Rol op deze pagina |
 | --- | --- | --- |
 | Wit | `#FFFFFF` | hoofdcanvas, panelen, tekst op donker |
-| Artific-donkerblauw | `#0A213D` | alle lopende tekst en koppen op licht, primaire CTA-vulling, Artific-laag in de trust-console, footer |
-| Artific-marineblauw | `#062244` | donkere slotsectie en hoverstand van de primaire CTA |
-| Artific-blauw | `#287CEB` | grote accenten: randen van trust-console/bewijsrail/modulecards/assurance-items, eyebrow-strepen, stapnummer-prefixen, grote cijfers in de bewijsrail, focusring op licht |
+| Artific-navy | `#042244` | tekst en koppen op licht, primaire CTA, Artific-laag, footer, donkere slotsectie en CTA-hover (één CSS-token `--navy`) |
+| Artific-blauw | `#287CEB` | grote accenten: randen van trust-console/bewijsrail/modulecards/assurance-items, eyebrow-strepen, grote cijfers in de bewijsrail, focusring op licht |
 | Artific-lichtblauw | `#E5EDF8` | tintsecties (vertrouwen, positie, governance), trust-console-achtergrond, scheidingslijnen, selectie |
-| Artific-oranjegeel | `#ECA414` | spaarzaam: accent-CTA en focusring op de donkere slotsectie, conclusieregel-streep |
+| Artific-geel | `#FFD602` | spaarzaam: accent-CTA en focusring op de donkere slotsectie, conclusieregel-streep |
 
-Contrastregels: kleine lopende tekst is altijd `#0A213D` op wit/lichtblauw of `#FFFFFF` op donker (ruim boven WCAG AA). `#287CEB` wordt op wit alleen decoratief of voor grote/vette cijfers en labels gebruikt, nooit voor kleine informatieve tekst. `#ECA414` staat nooit als tekst op wit; als CTA-vulling draagt hij donkerblauwe tekst (AA-veilig). Het blauwe logo staat alleen op de witte header; het witte logo alleen op de donkere footer.
+Contrastregels: kleine lopende tekst is altijd `#042244` op wit/lichtblauw of `#FFFFFF` op donker (ruim boven WCAG AA). `#287CEB` wordt op wit alleen decoratief of voor grote/vette cijfers en labels gebruikt, nooit voor kleine informatieve tekst. `#FFD602` staat nooit als tekst op wit; als CTA-vulling draagt hij donkerblauwe tekst (AA-veilig). Het blauwe logo staat alleen op de witte header; het witte logo alleen op de donkere footer.
 
 ## Spacing
 
@@ -36,7 +37,7 @@ Contrastregels: kleine lopende tekst is altijd `#0A213D` op wit/lichtblauw of `#
 
 ## Componentstijlen
 
-- **Header (`saas-header`):** sticky, wit, 1px lichtblauwe onderrand; blauw logo, lokale sectienavigatie (verborgen < 720px), compacte primaire CTA. Doelen ≥ 44px.
+- **Header (`saas-header`):** sticky, wit, 1px lichtblauwe onderrand; blauw logo, lokale sectienavigatie (verborgen t/m 899px), compacte primaire CTA. Doelen ≥ 44px.
 - **CTA's:** afgerond (12px), 2px rand, ≥ 48px hoog. Primair: donkerblauw vlak/witte tekst; secundair: wit met donkerblauwe rand; op donker: oranjegeel vlak met donkerblauwe tekst respectievelijk witte omlijning. Hover: kleuromslag plus 2px GSAP-lift; focus: 3px ring (blauw op licht, oranjegeel op donker).
 - **Trust-console:** lichtblauw afgerond paneel (20px) met drie gestapelde lagen (AI-modellen → Artific-beheerslaag → jouw processen) als witte/donkerblauwe kaartjes met blauwe verbindingslijnen, plus statuschips die letterlijk de onderbouwde `pos-badges`-claim dragen. Volledig tekst/CSS, geen nagebootst dashboard of verzonnen metingen.
 - **Bewijsrail:** drie witte afgeronde kaarten met groot blauw cijfer/label en de letterlijke bewijsclaims (100+ klanten, award 2025, drie USP's); klantnamen als lopende tekstregel eronder.

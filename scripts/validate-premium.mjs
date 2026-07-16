@@ -7,8 +7,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  checkBrandColors, checkBrandGate, checkClaims, checkDesignDoc, checkDocumentMetadata,
-  checkImages, checkLinksAndCtas, checkMotionGuards, checkSectionOrder,
+  checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkDesignDoc, checkDocumentMetadata,
+  checkImages, checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -116,12 +116,31 @@ checkClaims(html, content, {
 
 // --- links, CTA's, afbeeldingen & kleuren (gedeeld) ---
 checkLinksAndCtas(html, content, { minCtaCount: 5, minCtaHint: 'header, hero (2×), slot (2×)' }, fail);
-checkImages(html, brand, root, 'premium', fail);
+checkImages(html, css, brand, root, 'premium', fail);
 // Logo-uitvoering: op de donkere header en footer hoort uitsluitend het witte logo.
 if (!/premium-header[\s\S]*artific-logo-wit\.svg/.test(html)) fail('index.html: de donkere header hoort het witte logo te dragen');
 if (!/premium-footer[\s\S]*artific-logo-wit\.svg/.test(html)) fail('index.html: de donkere footer hoort het witte logo te dragen');
 if (/artific-logo-blauw\.svg/.test(html)) fail('index.html: het blauwe logo hoort niet op de donkere vlakken van deze variant');
 checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
+checkContrastUsage(html, css, brand, [
+  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.premium-header', backgroundSelector: '.premium-header', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--accent', backgroundSelector: '.cta--accent', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.cta--accent:hover', backgroundSelector: '.cta--accent:hover', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.cta--omlijnd', backgroundSelector: '.boekdeel--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--omlijnd:hover', backgroundSelector: '.boekdeel--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.cta--licht:hover', backgroundSelector: '.cta--licht:hover', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: '.evidence-index__regel dt', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.boekdeel--donker', backgroundSelector: '.boekdeel--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.boekdeel--donker .dossierregel__index', backgroundSelector: '.boekdeel--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.controle-architectuur__laag--artific h3', backgroundSelector: '.controle-architectuur__laag--artific', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.module-sequence__detail', backgroundSelector: '.boekdeel--tint', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: '.begeleiding__stap::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.assurance-ledger__item dt', backgroundSelector: '.boekdeel--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.premium-footer', backgroundSelector: '.premium-footer', pairId: 'wit-op-navy' },
+], fail);
+checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 
 // --- progressive enhancement & motion (gedeeld + variantdoelen) ---
 checkMotionGuards(html, css, js, fail);

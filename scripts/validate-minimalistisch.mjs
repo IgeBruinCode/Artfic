@@ -5,8 +5,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  checkBrandColors, checkClaims, checkDocumentMetadata, checkImages,
-  checkLinksAndCtas, checkMotionGuards, checkSectionOrder,
+  checkBrandColors, checkClaims, checkContrastUsage, checkDocumentMetadata, checkImages,
+  checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -60,8 +60,23 @@ checkLinksAndCtas(html, content, {
   minCtaCount: 3,
   minCtaHint: 'header, hero, slot',
 }, fail);
-checkImages(html, brand, root, 'minimalistisch', fail);
+checkImages(html, css, brand, root, 'minimalistisch', fail);
 checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
+checkContrastUsage(html, css, brand, [
+  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.site-header', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.sectie--tint', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.sectie--donker', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--licht', backgroundSelector: '.cta--licht', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.cta--omlijnd', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.flow__blok--artific', backgroundSelector: '.flow__blok--artific', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.site-footer', backgroundSelector: '.site-footer', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.site-footer__noot', backgroundSelector: '.site-footer', pairId: 'lichtblauw-op-navy' },
+  { foregroundSelector: '.fasen > li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: '.stappen li::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+], fail);
+checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
 }

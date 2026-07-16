@@ -4,10 +4,9 @@
 
 :root {
   --blauw: #287CEB;
-  --donkerblauw: #0A213D;
-  --marineblauw: #062244;
+  --navy: #042244;
   --lichtblauw: #E5EDF8;
-  --oranjegeel: #ECA414;
+  --geel: #FFD602;
   --wit: #FFFFFF;
 
   --ruimte-1: 8px;
@@ -21,6 +20,8 @@
   --radius-l: 20px;
 }
 
+.brand-logo { min-width: 80px; height: auto; transform: none; filter: none; }
+
 * { box-sizing: border-box; }
 
 html {
@@ -30,7 +31,7 @@ html {
 body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: var(--donkerblauw);
+  color: var(--navy);
   background: var(--wit);
   line-height: 1.6;
   font-size: 1.0625rem;
@@ -62,7 +63,7 @@ p { margin: 0 0 var(--ruimte-2); }
   max-width: 64ch;
 }
 
-::selection { background: var(--lichtblauw); }
+::selection { background: var(--lichtblauw); color: var(--navy); }
 
 /* --- toegankelijkheid --- */
 
@@ -70,7 +71,7 @@ p { margin: 0 0 var(--ruimte-2); }
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
   padding: 12px 20px;
   border-radius: 0 0 var(--radius-s) 0;
@@ -88,7 +89,7 @@ p { margin: 0 0 var(--ruimte-2); }
 
 .sectie--donker :focus-visible,
 .saas-footer :focus-visible {
-  outline-color: var(--oranjegeel);
+  outline-color: var(--geel);
 }
 
 section[id] { scroll-margin-top: 88px; }
@@ -134,7 +135,7 @@ section[id] { scroll-margin-top: 88px; }
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--donkerblauw);
+  color: var(--navy);
   text-decoration: none;
   font-weight: 500;
   border-bottom: 2px solid var(--wit);
@@ -156,22 +157,22 @@ section[id] { scroll-margin-top: 88px; }
   border-radius: var(--radius-s);
   font-weight: 600;
   text-decoration: none;
-  border: 2px solid var(--donkerblauw);
+  border: 2px solid var(--navy);
 }
 
 .cta--primair {
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
 }
 
-.cta--primair:hover { background: var(--marineblauw); }
+.cta--primair:hover { background: var(--navy); color: var(--wit); }
 
 .cta--secundair {
   background: var(--wit);
-  color: var(--donkerblauw);
+  color: var(--navy);
 }
 
-.cta--secundair:hover { background: var(--lichtblauw); }
+.cta--secundair:hover { background: var(--lichtblauw); color: var(--navy); }
 
 .cta--compact {
   min-height: 44px;
@@ -180,9 +181,9 @@ section[id] { scroll-margin-top: 88px; }
 }
 
 .cta--accent {
-  background: var(--oranjegeel);
-  border-color: var(--oranjegeel);
-  color: var(--donkerblauw);
+  background: var(--geel);
+  border-color: var(--geel);
+  color: var(--navy);
 }
 
 .cta--accent:hover { border-color: var(--wit); }
@@ -193,7 +194,7 @@ section[id] { scroll-margin-top: 88px; }
   color: var(--wit);
 }
 
-.cta--omlijnd:hover { background: var(--marineblauw); }
+.cta--omlijnd:hover { background: var(--navy); color: var(--wit); }
 
 .acties {
   display: flex;
@@ -209,7 +210,7 @@ section[id] { scroll-margin-top: 88px; }
 .sectie--tint { background: var(--lichtblauw); }
 
 .sectie--donker {
-  background: var(--marineblauw);
+  background: var(--navy);
   color: var(--wit);
 }
 
@@ -218,7 +219,7 @@ section[id] { scroll-margin-top: 88px; }
   letter-spacing: 0.14em;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--donkerblauw);
+  color: var(--navy);
   border-left: 3px solid var(--blauw);
   padding-left: var(--ruimte-1);
   margin-bottom: var(--ruimte-2);
@@ -228,7 +229,7 @@ section[id] { scroll-margin-top: 88px; }
 
 .conclusieregel {
   font-weight: 600;
-  border-left: 3px solid var(--oranjegeel);
+  border-left: 3px solid var(--geel);
   padding-left: var(--ruimte-2);
   margin-top: var(--ruimte-3);
 }
@@ -242,7 +243,7 @@ section[id] { scroll-margin-top: 88px; }
   gap: var(--ruimte-4);
 }
 
-.hero__noot { color: var(--donkerblauw); font-size: 0.9375rem; }
+.hero__noot { color: var(--navy); font-size: 0.9375rem; }
 
 .trust-console {
   background: var(--lichtblauw);
@@ -273,8 +274,8 @@ section[id] { scroll-margin-top: 88px; }
 }
 
 .trust-console__laag--artific {
-  background: var(--donkerblauw);
-  border-color: var(--donkerblauw);
+  background: var(--navy);
+  border-color: var(--navy);
   color: var(--wit);
 }
 
@@ -287,6 +288,7 @@ section[id] { scroll-margin-top: 88px; }
   height: 20px;
   margin-left: var(--ruimte-3);
   background: var(--blauw);
+  --brand-surface-role: decorative;
   transform-origin: top;
 }
 
@@ -379,7 +381,7 @@ section[id] { scroll-margin-top: 88px; }
 
 .stappen__stap h4::before {
   content: counter(stap, decimal-leading-zero) " · ";
-  color: var(--blauw);
+  color: var(--navy);
   font-weight: 700;
 }
 
@@ -402,7 +404,7 @@ section[id] { scroll-margin-top: 88px; }
   letter-spacing: 0.14em;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--donkerblauw);
+  color: var(--navy);
 }
 
 .module-card__detail {
@@ -443,7 +445,7 @@ section[id] { scroll-margin-top: 88px; }
 .sectie--donker .acties { margin-bottom: 0; }
 
 .saas-footer {
-  background: var(--donkerblauw);
+  background: var(--navy);
   color: var(--wit);
   padding-block: var(--ruimte-4);
 }

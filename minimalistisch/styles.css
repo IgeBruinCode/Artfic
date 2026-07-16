@@ -1,9 +1,9 @@
 /* Kleuren uitsluitend uit assets/brand/brand.json — geen afgeleide tinten of transparante merkkleuren. */
 :root {
-  --artific-blauw: #287CEB;
-  --artific-donkerblauw: #0A213D;
-  --artific-lichtblauw: #E5EDF8;
-  --artific-oranjegeel: #ECA414;
+  --blauw: #287CEB;
+  --navy: #042244;
+  --lichtblauw: #E5EDF8;
+  --geel: #FFD602;
   --wit: #FFFFFF;
 
   --ruimte-1: 8px;
@@ -16,6 +16,8 @@
   --paginabreedte: 1120px;
   --gutter: clamp(16px, 5vw, 48px);
 }
+
+.brand-logo { min-width: 80px; height: auto; transform: none; filter: none; }
 
 * {
   box-sizing: border-box;
@@ -30,7 +32,7 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   line-height: 1.6;
-  color: var(--artific-donkerblauw);
+  color: var(--navy);
   background: var(--wit);
   -webkit-font-smoothing: antialiased;
 }
@@ -77,19 +79,19 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--artific-blauw);
+  outline: 3px solid var(--blauw);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
 .sectie--donker :focus-visible,
 .site-footer :focus-visible {
-  outline-color: var(--artific-oranjegeel);
+  outline-color: var(--geel);
 }
 
 ::selection {
-  background: var(--artific-lichtblauw);
-  color: var(--artific-donkerblauw);
+  background: var(--lichtblauw);
+  color: var(--navy);
 }
 
 /* Skiplink */
@@ -99,7 +101,7 @@ a:hover {
   top: var(--ruimte-2);
   z-index: 100;
   padding: 12px 20px;
-  background: var(--artific-donkerblauw);
+  background: var(--navy);
   color: var(--wit);
   text-decoration: none;
   transform: translateY(-200%);
@@ -115,7 +117,7 @@ a:hover {
   top: 0;
   z-index: 50;
   background: var(--wit);
-  border-bottom: 1px solid var(--artific-lichtblauw);
+  border-bottom: 1px solid var(--lichtblauw);
 }
 
 .site-header__binnen {
@@ -156,11 +158,11 @@ a:hover {
   min-height: 44px;
   font-size: 0.95rem;
   text-decoration: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 2px solid var(--wit);
 }
 
 .site-nav a:hover {
-  border-bottom-color: var(--artific-blauw);
+  border-bottom-color: var(--blauw);
 }
 
 /* Secties */
@@ -180,12 +182,12 @@ section[id] {
 
 .sectie--tint {
   background: var(--wit);
-  border-top: 1px solid var(--artific-lichtblauw);
-  border-bottom: 1px solid var(--artific-lichtblauw);
+  border-top: 1px solid var(--lichtblauw);
+  border-bottom: 1px solid var(--lichtblauw);
 }
 
 .sectie--donker {
-  background: var(--artific-donkerblauw);
+  background: var(--navy);
   color: var(--wit);
 }
 
@@ -196,11 +198,11 @@ section[id] {
   text-transform: uppercase;
   margin-bottom: var(--ruimte-3);
   padding-left: var(--ruimte-3);
-  border-left: 3px solid var(--artific-blauw);
+  border-left: 3px solid var(--blauw);
 }
 
 .eyebrow--donker {
-  border-left-color: var(--artific-oranjegeel);
+  border-left-color: var(--geel);
 }
 
 .sectie h2 {
@@ -215,13 +217,13 @@ section[id] {
   margin-top: var(--ruimte-5);
   margin-bottom: var(--ruimte-3);
   padding-top: var(--ruimte-4);
-  border-top: 1px solid var(--artific-lichtblauw);
+  border-top: 1px solid var(--lichtblauw);
 }
 
 .accentregel {
   margin-top: var(--ruimte-4);
   padding-left: var(--ruimte-3);
-  border-left: 3px solid var(--artific-oranjegeel);
+  border-left: 3px solid var(--geel);
   font-weight: 600;
   max-width: 48ch;
 }
@@ -257,7 +259,7 @@ section[id] {
 }
 
 .hero__zij {
-  border-top: 3px solid var(--artific-blauw);
+  border-top: 3px solid var(--blauw);
   padding-top: var(--ruimte-3);
   align-self: start;
 }
@@ -276,7 +278,7 @@ section[id] {
 }
 
 .badges li {
-  border: 1px solid var(--artific-lichtblauw);
+  border: 1px solid var(--lichtblauw);
   padding: 6px 14px;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -291,7 +293,7 @@ section[id] {
   padding: 12px 28px;
   font-weight: 600;
   text-decoration: none;
-  border: 2px solid var(--artific-donkerblauw);
+  border: 2px solid var(--navy);
 }
 
 /* Hover-lift komt via GSAP (main.js); een CSS-transition op transform zou daarmee vechten. */
@@ -301,27 +303,27 @@ section[id] {
 }
 
 .cta--primair {
-  background: var(--artific-donkerblauw);
+  background: var(--navy);
   color: var(--wit);
 }
 
 .cta--secundair {
   background: var(--wit);
-  color: var(--artific-donkerblauw);
+  color: var(--navy);
 }
 
 .cta--klein {
   min-height: 44px;
   padding: 8px 20px;
   font-size: 0.95rem;
-  background: var(--artific-donkerblauw);
+  background: var(--navy);
   color: var(--wit);
 }
 
 .cta--licht {
-  background: var(--artific-oranjegeel);
-  color: var(--artific-donkerblauw);
-  border-color: var(--artific-oranjegeel);
+  background: var(--geel);
+  color: var(--navy);
+  border-color: var(--geel);
 }
 
 .cta--omlijnd {
@@ -340,11 +342,11 @@ section[id] {
   display: grid;
   gap: var(--ruimte-1);
   padding: var(--ruimte-3) 0;
-  border-top: 1px solid var(--artific-lichtblauw);
+  border-top: 1px solid var(--lichtblauw);
 }
 
 .rijen .rij:last-child {
-  border-bottom: 1px solid var(--artific-lichtblauw);
+  border-bottom: 1px solid var(--lichtblauw);
 }
 
 /* Genummerde fasen en lagen */
@@ -362,7 +364,7 @@ section[id] {
   column-gap: var(--ruimte-3);
   align-items: start;
   padding: var(--ruimte-3) 0;
-  border-top: 1px solid var(--artific-lichtblauw);
+  border-top: 1px solid var(--lichtblauw);
 }
 
 .fasen > li::before {
@@ -370,7 +372,7 @@ section[id] {
   font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
   font-weight: 600;
   line-height: 1.15;
-  color: var(--artific-blauw);
+  color: var(--blauw);
   min-width: 2.2ch;
 }
 
@@ -396,18 +398,19 @@ section[id] {
   grid-template-columns: auto 1fr;
   column-gap: var(--ruimte-4);
   padding: var(--ruimte-4) 0;
-  border-top: 1px solid var(--artific-lichtblauw);
+  border-top: 1px solid var(--lichtblauw);
 }
 
 .modules .module:last-child {
-  border-bottom: 1px solid var(--artific-lichtblauw);
+  border-bottom: 1px solid var(--lichtblauw);
 }
 
 .module__nummer {
   font-size: clamp(2.5rem, 2rem + 3vw, 4.5rem);
   font-weight: 600;
   line-height: 1;
-  color: var(--artific-lichtblauw);
+  color: var(--lichtblauw);
+  --brand-text-role: decorative;
   min-width: 2.4ch;
 }
 
@@ -425,7 +428,7 @@ section[id] {
 }
 
 .module__toepassingen li {
-  border: 1px solid var(--artific-lichtblauw);
+  border: 1px solid var(--lichtblauw);
   padding: 4px 12px;
   font-size: 0.9rem;
 }
@@ -442,15 +445,15 @@ section[id] {
   display: grid;
   gap: 4px;
   padding: var(--ruimte-3);
-  border: 1px solid var(--artific-blauw);
+  border: 1px solid var(--blauw);
   text-align: center;
   align-content: center;
 }
 
 .flow__blok--artific {
-  background: var(--artific-donkerblauw);
+  background: var(--navy);
   color: var(--wit);
-  border-color: var(--artific-donkerblauw);
+  border-color: var(--navy);
 }
 
 .flow__kop {
@@ -465,7 +468,8 @@ section[id] {
   text-align: center;
   align-self: center;
   font-size: 1.5rem;
-  color: var(--artific-blauw);
+  color: var(--blauw);
+  --brand-text-role: decorative;
   transform: rotate(90deg);
 }
 
@@ -480,7 +484,7 @@ section[id] {
 .tweeluik h4 {
   margin-bottom: var(--ruimte-1);
   padding-bottom: var(--ruimte-1);
-  border-bottom: 2px solid var(--artific-blauw);
+  border-bottom: 2px solid var(--blauw);
   display: inline-block;
 }
 
@@ -492,7 +496,7 @@ section[id] {
 
 .lijst li {
   padding: 10px 0 10px var(--ruimte-3);
-  border-left: 2px solid var(--artific-lichtblauw);
+  border-left: 2px solid var(--lichtblauw);
 }
 
 /* Stappen */
@@ -511,13 +515,13 @@ section[id] {
   align-items: baseline;
   gap: var(--ruimte-2);
   padding: var(--ruimte-2) 0;
-  border-top: 1px solid var(--artific-lichtblauw);
+  border-top: 1px solid var(--lichtblauw);
 }
 
 .stappen li::before {
   content: counter(stap);
   font-weight: 600;
-  color: var(--artific-blauw);
+  color: var(--navy);
   font-size: 1.25rem;
   min-width: 1.5ch;
 }
@@ -529,7 +533,7 @@ section[id] {
 }
 
 .quote {
-  border-left: 3px solid var(--artific-blauw);
+  border-left: 3px solid var(--blauw);
   padding-left: var(--ruimte-3);
   max-width: 52ch;
 }
@@ -552,9 +556,9 @@ section[id] {
 
 /* Footer */
 .site-footer {
-  background: var(--artific-donkerblauw);
+  background: var(--navy);
   color: var(--wit);
-  border-top: 1px solid var(--artific-blauw);
+  border-top: 1px solid var(--blauw);
 }
 
 .site-footer__binnen {
@@ -586,7 +590,7 @@ section[id] {
 
 .site-footer__noot {
   font-size: 0.85rem;
-  color: var(--artific-lichtblauw);
+  color: var(--lichtblauw);
 }
 
 /* Breekpunten */
@@ -609,7 +613,7 @@ section[id] {
   }
 
   .rijen .rij:nth-last-child(2) {
-    border-bottom: 1px solid var(--artific-lichtblauw);
+    border-bottom: 1px solid var(--lichtblauw);
   }
 
   .site-footer__binnen {

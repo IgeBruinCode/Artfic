@@ -7,8 +7,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  checkBrandColors, checkBrandGate, checkClaims, checkDesignDoc, checkDocumentMetadata,
-  checkImages, checkLinksAndCtas, checkMotionGuards, checkSectionOrder,
+  checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkDesignDoc, checkDocumentMetadata,
+  checkImages, checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -93,10 +93,26 @@ checkClaims(html, content, {
 
 // --- links, CTA's, afbeeldingen & kleuren (gedeeld) ---
 checkLinksAndCtas(html, content, { minCtaCount: 3, minCtaHint: 'masthead, intro, slot' }, fail);
-checkImages(html, brand, root, 'brutalistisch-b', fail);
+checkImages(html, css, brand, root, 'brutalistisch-b', fail);
 // Logo-uitvoering: masthead en footer zijn donker, dus uitsluitend het witte logo.
 if (/artific-logo-blauw\.svg/.test(html)) fail('index.html: het blauwe logo hoort niet op de donkere vlakken van deze variant');
 checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
+checkContrastUsage(html, css, brand, [
+  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.masthead', backgroundSelector: '.masthead', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--masthead', backgroundSelector: '.cta--masthead', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.register__lijst a', backgroundSelector: '.register', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: '.register__lijst a[aria-current="location"]', backgroundSelector: '.register__lijst a[aria-current="location"]', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.margewoord', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: '.reis li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: '.spread__folio', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.folio--slot', backgroundSelector: '.folio--slot', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.folio--slot .cta--zwaar', backgroundSelector: '.folio--slot .cta--zwaar', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.colofonvoet', backgroundSelector: '.colofonvoet', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.colofonvoet__noot', backgroundSelector: '.colofonvoet', pairId: 'lichtblauw-op-navy' },
+], fail);
+checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
 }

@@ -30,4 +30,4 @@ node scripts/validate-brutalistisch-a.mjs
 
 De drie fallbackmodi zijn getest via tijdelijke, niet-gecommitte kopieën van `index.html` (map `qa-temp/`, na afloop verwijderd) die alleen de scriptlading manipuleerden; styles.css/main.js zelf waren de originele bestanden.
 
-Openstaand buiten deze QA: geen. De brand-gate is gesloten op basis van officieel gepubliceerde Artific-collateral (`brand.json` = `verified`; de interne PDF's blijven als deviation gedocumenteerd voor hertoetsing zodra ze worden aangeleverd). De Stitch-gate is gesloten: `DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document).
+Openstaand buiten deze QA: geen. De brand-gate is gesloten op basis van de twee aanwezige primaire PDF's (`brand.json` = `verified`, inclusief hashes en pagina-provenance). De Stitch-gate is gesloten: `DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (historische provenance in het document).

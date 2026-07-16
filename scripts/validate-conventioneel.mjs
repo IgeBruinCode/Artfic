@@ -7,8 +7,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  checkBrandColors, checkBrandGate, checkClaims, checkDesignDoc, checkDocumentMetadata,
-  checkImages, checkLinksAndCtas, checkMotionGuards, checkSectionOrder,
+  checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkDesignDoc, checkDocumentMetadata,
+  checkImages, checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -114,11 +114,39 @@ checkClaims(html, content, {
 
 // --- links, CTA's, afbeeldingen & kleuren (gedeeld) ---
 checkLinksAndCtas(html, content, { minCtaCount: 5, minCtaHint: 'header, hero (2×), slot (2×)' }, fail);
-checkImages(html, brand, root, 'conventioneel', fail);
+checkImages(html, css, brand, root, 'conventioneel', fail);
 // Logo-uitvoering: blauw logo alleen in de lichte header, wit logo alleen in de donkere footer.
 if (!/saas-header[\s\S]*artific-logo-blauw\.svg/.test(html)) fail('index.html: de lichte header hoort het blauwe logo te dragen');
 if (!/saas-footer[\s\S]*artific-logo-wit\.svg/.test(html)) fail('index.html: de donkere footer hoort het witte logo te dragen');
 checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
+checkContrastUsage(html, css, brand, [
+  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
+  { foregroundSelector: '::selection', backgroundSelector: '::selection', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: '.saas-header__nav a', backgroundSelector: '.saas-header', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.cta--primair', backgroundSelector: '.cta--primair', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--primair:hover', backgroundSelector: '.cta--primair:hover', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--secundair:hover', backgroundSelector: '.cta--secundair:hover', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: '.cta--accent', backgroundSelector: '.cta--accent', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.cta--omlijnd', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--omlijnd:hover', backgroundSelector: '.cta--omlijnd:hover', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.eyebrow', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.hero__noot', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.sectie--tint', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: 'body', backgroundSelector: '.trust-console', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: 'body', backgroundSelector: '.trust-console__laag', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.trust-console__laag--artific', backgroundSelector: '.trust-console__laag--artific', pairId: 'wit-op-navy' },
+  { foregroundSelector: 'body', backgroundSelector: '.trust-console__status li', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.paneel', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.assurance-matrix__item', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.stappen__stap h4::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.module-card__nummer', backgroundSelector: '.module-card', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.sectie--donker', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.saas-footer', backgroundSelector: '.saas-footer', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.saas-footer__links a', backgroundSelector: '.saas-footer', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.bewijsrail__cijfer', backgroundSelector: '.bewijsrail__item', pairId: 'blauw-op-wit-groot' },
+], fail);
+checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 
 // --- progressive enhancement & motion (gedeeld + variantdoelen) ---
 checkMotionGuards(html, css, js, fail);

@@ -4,23 +4,25 @@ Stijlgids voor de landingspagina op `/minimalistisch/`. Dit document beschrijft 
 
 > **Provenance — gefinaliseerd via Google Stitch-MCP (2026-07-16):** de in dit document vastgelegde, werkelijk geïmplementeerde waarden uit `styles.css`/`main.js` zijn via de Google Stitch-MCP (`stitch.googleapis.com/mcp`, MCP-protocol 2025-03-26) gefinaliseerd in een **afzonderlijk** Stitch-project voor deze variant: het document is met `upload_design_md` geüpload naar Stitch-project `10126708337972370583` ("Artific — Minimalistisch (rustige editorial)", screen `17171847500156386945`) en met `create_design_system_from_design_md` (DESKTOP) omgezet in design system `assets/f503f899b0534601b77f334f334c4d98` ("Artific Minimalist"). De door Stitch vastgelegde named colors bevatten exact de merktokens uit `assets/brand/brand.json` (`artific-blauw #287CEB`, `artific-donkerblauw #0A213D`, `artific-lichtblauw #E5EDF8`, `artific-oranjegeel #ECA414`, `surface_container_lowest #FFFFFF`); de overige door Stitch intern gegenereerde Material-paletwaarden worden **niet** op de pagina gebruikt. Er zijn bij deze finalisatie geen ontwerpwaarden gewijzigd die niet in de bestaande CSS/JS staan; de implementatie blijft leidend. De gebruikte credential is uitsluitend runtime aangeboden en is niet in broncode, Markdown, configuratie of scripts opgeslagen.
 
+> **Huisstijlherijking:** de Stitch-provenance hierboven blijft als historische runregistratie letterlijk behouden. De daarin genoemde toenmalige token-snapshot is niet langer de merkbasis; de actuele implementatie en onderstaande kleurregels volgen de twee lokale primaire PDF’s en `assets/brand/brand.json`.
+
 ## Ontwerpprincipes
 
 Rustig en doelbewust: de inhoud draagt de aandacht. Eén kolom leestekst met ruime ademruimte, editorial lijnen in plaats van cards of iconengrids, geen foto's of illustraties. Het enige beeldmateriaal is het officiële Artific-logo (blauw op licht, wit op donker) en één abstracte flow-compositie ("AI-modellen → Artific → jouw processen") die volledig uit typografie, lijnen en merkkleuren is opgebouwd.
 
 ## Kleurgebruik
 
-Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified` — per waarde meetbaar geverifieerd tegen officieel door Artific gepubliceerde PDF-documenten; hertoetsing tegen de interne brand manual volgt zodra die wordt aangeleverd, zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
+Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified` — per waarde meetbaar geverifieerd tegen de twee aanwezige primaire PDF-documenten, met pagina-evidence in `brand.json`). Geen afgeleide tinten, geen transparante merkkleuren.
 
 | Kleur | Hex | Rol op deze pagina |
 | --- | --- | --- |
 | Wit | `#FFFFFF` | hoofdcanvas, tekst op donkere vlakken |
-| Artific-donkerblauw | `#0A213D` | alle lopende tekst en koppen, primaire CTA-vulling, donkere contactsectie en footer |
-| Artific-blauw | `#287CEB` | herkenbaar maar beperkt accent: eyebrow-streep, onderstrepingen, stap- en fasenummers, flow-pijlen, rand van flow-blokken, focusring op licht |
+| Artific-donkerblauw | `#042244` | alle lopende tekst en koppen, primaire CTA-vulling, donkere contactsectie en footer |
+| Artific-blauw | `#287CEB` | herkenbaar maar beperkt accent: eyebrow-streep, onderstrepingen, grote fasenummers en flow-pijlen, rand van flow-blokken, focusring op licht |
 | Artific-lichtblauw | `#E5EDF8` | rustige scheidingslijnen, badge-randen, decoratieve modulenummers, selectie-achtergrond |
-| Artific-oranjegeel | `#ECA414` | spaarzaam: accentregels, primaire CTA en focusring op de donkere sectie (daar AA-contrastveilig) |
+| Artific-geel | `#FFD602` | spaarzaam: accentregels, primaire CTA en focusring op de donkere sectie (daar AA-contrastveilig) |
 
-Contrastregels: kleine lopende tekst is altijd `#0A213D` op wit/lichtblauw of `#FFFFFF` op donkerblauw (ruim boven WCAG AA). `#287CEB` haalt op wit géén 4,5:1 en wordt daarom alleen decoratief of op grote cijfers gebruikt, nooit voor kleine informatieve tekst. `#ECA414` wordt nooit als tekstkleur op wit gebruikt; op `#0A213D` haalt het ruim WCAG AA.
+Contrastregels: kleine lopende tekst is altijd `#042244` op wit/lichtblauw of `#FFFFFF` op donkerblauw (ruim boven WCAG AA). `#287CEB` haalt op wit géén 4,5:1 en wordt daarom alleen decoratief of op grote cijfers gebruikt, nooit voor kleine informatieve tekst. `#FFD602` wordt nooit als tekstkleur op wit gebruikt; op `#042244` haalt het ruim WCAG AA.
 
 ## Spacing
 

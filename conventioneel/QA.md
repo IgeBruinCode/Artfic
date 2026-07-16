@@ -14,7 +14,7 @@ Datum: 2026-07-16 · Browser: Chromium (headless CDP-sidecar) via `node scripts/
 - Eerste Tab toont de skiplink ("Direct naar de inhoud") zichtbaar linksboven; deze springt naar `main#inhoud` (tabindex="-1").
 - Focusvolgorde volgt de documentvolgorde: logo → sectienav → header-CTA → hero-CTA's → slot-CTA's → footerlinks. `:focus-visible` toont een 3 px blauwe ring op licht en oranjegele ring op de donkere sectie/footer.
 - Landmarks: header, nav (aria-label), main, aside (trust-console met aria-label), footer. Kopoutline: exact één H1, H2 per hoofdsectie, geneste H3/H4 zonder niveausprongen (structuur bewaakt door `scripts/validate-conventioneel.mjs`).
-- Module-nummerlabels staan in donkerblauw (`#0A213D`) zodat ook deze kleine kapitaaltekst ruim WCAG AA haalt; blauw blijft beperkt tot grote cijfers, randen en decoratie.
+- Module-nummerlabels staan in Deep Navy (`#042244`) zodat ook deze kleine kapitaaltekst ruim WCAG AA haalt; blauw blijft beperkt tot grote cijfers, randen en decoratie.
 
 ## CTA's
 

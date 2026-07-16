@@ -4,22 +4,23 @@ Stijlgids voor de landingspagina op `/premium/`. Dit document beschrijft de daad
 
 > **Provenance — gefinaliseerd via Google Stitch-MCP (2026-07-16):** de hieronder vastgelegde, werkelijk geïmplementeerde waarden uit `styles.css`/`main.js` zijn via de Google Stitch-MCP (`stitch.googleapis.com/mcp`, MCP-protocol 2025-03-26) doorgevoerd en gefinaliseerd in een **afzonderlijk** Stitch-project voor deze variant: eerst is met `create_project` en `generate_screen_from_text` (DESKTOP) een eigen conceptproject "Artific — Premium (executive evidence dossier)" opgezet met uitsluitend de centrale merktokens en logo-regels (concept-design-system `assets/28218d7c736747be98cad0364c23a049`, "Executive Evidence Dossier": hairline-dossierpanelen, tonale gelaagdheid zonder schaduwen, rechthoekige knoppen, evidence-definitielijsten en genummerde indexrail); daarna is dit document met `upload_design_md` geüpload naar Stitch-project `2405762213270064179` (screen `13176217260320799308`) en met `create_design_system_from_design_md` (DESKTOP) omgezet in design system `assets/e0d0eb0396fc4e77b869197f47796338`. De door Stitch vastgelegde named colors bevatten exact de merktokens uit `assets/brand/brand.json` (`accent-focus #ECA414`, `background-tint #E5EDF8`, `primary_container #062244`, `surface_container_lowest #FFFFFF`); de overige door Stitch intern gegenereerde Material-paletwaarden worden **niet** op de pagina gebruikt. Waar de Stitch-richtlijnen generieker formuleren (zoals een sticky indexrail op mobiel; deze pagina houdt de dossierregel bewust in de contentflow) blijft de implementatie zoals hieronder beschreven leidend. De gebruikte credential is uitsluitend runtime aangeboden en is niet in broncode, Markdown, configuratie of scripts opgeslagen.
 
+> **Huisstijlherijking:** de Stitch-provenance hierboven blijft als historische runregistratie letterlijk behouden. De daarin genoemde toenmalige token-snapshot is niet langer de merkbasis; de actuele implementatie en onderstaande kleurregels volgen de twee lokale primaire PDF’s en `assets/brand/brand.json`.
+
 ## Ontwerpprincipes
 
 Een high-end "executive evidence dossier": de pagina leest als een zorgvuldig gebonden bestuursdocument. Donkere marineblauwe boekdelen openen en sluiten de route (hero, governance, slot), lichte en getinte boekdelen dragen de bewijsvoering. Elke sectie begint met een dossierregel — decoratief indexnummer, hairline en sectielabel — die de doorlopende scroll als hoofdstukken markeert. Autoriteit komt uit ritme, typografische precisie en bewijsgerichte inhoud; er zijn geen goud-/luxemotieven, gradients, schaduwen, afgeronde cards, glas-effecten, stockbeelden of AI-illustraties. Het enige beeldmateriaal is het witte Artific-logo op de donkere header en footer.
 
 ## Kleurgebruik
 
-Uitsluitend de zes waarden uit `assets/brand/brand.json` (status: `verified`). Geen afgeleide tinten, geen transparante merkkleuren, geen gradients of blur.
+Uitsluitend de bevestigde waarden uit `assets/brand/brand.json` (status: `verified`). Geen afgeleide tinten, geen transparante merkkleuren, geen gradients of blur.
 
-- `#062244` (marineblauw) — donkere boekdelen: header, hero (`#intro`), governance (`#governance`), slot (`#contact`) en footer.
-- `#0A213D` (donkerblauw) — lopende tekst op licht, structurele hairlines op lichte vlakken en de Artific-laag in de controle-architectuur.
+- `#042244` (Artific Navy) — donkere boekdelen: header, hero (`#intro`), governance (`#governance`), slot (`#contact`) en footer; daarnaast lopende tekst/hairlines op licht en de Artific-laag (één CSS-token `--navy`).
 - `#FFFFFF` (wit) — lichte boekdelen (`#bewijs`, `#controlelaag`, `#aanpak`) en tekst op donker.
 - `#E5EDF8` (lichtblauw) — getinte boekdelen (`#visie`, `#platform`) en subtiele scheidingslijnen in de evidence-index.
 - `#287CEB` (blauw) — uitsluitend lijnen en decoratieve, `aria-hidden` indexnummers op licht, hairlines, dunne CTA- en hero-margeranden; nooit als kleine betekenisvolle tekst op licht (contrast onder AA).
-- `#ECA414` (oranjegeel) — schaars accent: primaire CTA (`.cta--accent`), indexnummers en ledger-termen op donker, conclusiestreep en de focusring op donkere oppervlakken. Nadrukkelijk een Artific-accent, geen luxe-goudmotief.
+- `#FFD602` (Artific-geel) — schaars accent: primaire CTA (`.cta--accent`), indexnummers en ledger-termen op donker, conclusiestreep en de focusring op donkere oppervlakken. Nadrukkelijk een Artific-accent, geen luxe-goudmotief.
 
-Contrast (oppervlakte-afhankelijke regel): kleine betekenisvolle tekst is altijd donkerblauw op wit/lichtblauw (≥ 12:1) of wit/oranjegeel op marineblauw; helder blauw `#287CEB` is op lichte vlakken gereserveerd voor lijnen en decoratieve indexcijfers omdat het bij kleine tekst onder WCAG AA blijft (≈ 4,06:1 op wit, ≈ 3,44:1 op lichtblauw). De evidence-termen en maturity-koppen zijn daarom donkerblauw. De oranjegele CTA draagt marineblauwe tekst (contrast ≈ 8,6:1).
+Contrast (oppervlakte-afhankelijke regel): kleine betekenisvolle tekst is altijd donkerblauw op wit/lichtblauw (≥ 12:1) of wit/oranjegeel op marineblauw; helder blauw `#287CEB` is op lichte vlakken gereserveerd voor lijnen en decoratieve indexcijfers omdat het bij kleine tekst onder WCAG AA blijft (≈ 4,06:1 op wit, ≈ 3,44:1 op lichtblauw). De evidence-termen en maturity-koppen zijn daarom donkerblauw. De oranjegele CTA draagt marineblauwe tekst (contrast ≈ 11,3:1).
 
 ## Spacing
 

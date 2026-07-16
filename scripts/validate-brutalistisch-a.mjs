@@ -4,6 +4,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkBrandColors, checkContrastUsage, checkImages, checkNoPdfRuntime } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -162,22 +163,35 @@ const ctaAttrTotal = (html.match(/data-cta-id="/g) ?? []).length;
 if (ctaAttrTotal !== ctaCount) fail(`index.html: ${ctaAttrTotal} data-cta-id-attributen gevonden maar slechts ${ctaCount} als anchor gevalideerd`);
 if (ctaCount < 3) fail(`index.html: verwacht minimaal 3 CTA-voorkomens (commandobar, hero, slot), gevonden: ${ctaCount}`);
 
-// --- afbeeldingen: alleen goedgekeurde lokale logo's ---
-const allowedImages = new Set(brand.logos.map((l) => `../assets/brand/${l.file}`));
-for (const [, src] of html.matchAll(/<img[^>]*\ssrc="([^"]+)"/g)) {
-  if (!allowedImages.has(src)) fail(`index.html: afbeelding '${src}' is geen goedgekeurd lokaal logo`);
-  if (!existsSync(join(root, 'brutalistisch-a', src))) fail(`index.html: afbeelding '${src}' bestaat niet`);
-}
+// --- afbeeldingen: alleen canonieke logo-/achtergrondcombinaties ---
+checkImages(html, css, brand, root, 'brutalistisch-a', fail);
 // Logo-uitvoering: op de donkere commandobar en footer hoort uitsluitend het witte logo.
 if (/artific-logo-blauw\.svg/.test(html)) fail('index.html: het blauwe logo hoort niet op de donkere vlakken van deze variant');
 
 // --- kleuren: uitsluitend uit brand.json, in CSS én HTML ---
-const allowedHex = new Set(brand.colors.map((c) => c.value.toUpperCase()));
-for (const [file, text] of [['styles.css', css], ['index.html', html], ['main.js', js]]) {
-  for (const [hex] of text.matchAll(/#[0-9a-fA-F]{6}\b/g)) {
-    if (!allowedHex.has(hex.toUpperCase())) fail(`${file}: kleur '${hex}' staat niet in brand.json`);
-  }
-}
+checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
+checkContrastUsage(html, css, brand, [
+  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.commandobar', backgroundSelector: '.commandobar', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.commandobar__nav a', backgroundSelector: '.commandobar', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--bar', backgroundSelector: '.cta--bar', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.cta--primair', backgroundSelector: '.cta--primair', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.cta--signaal', backgroundSelector: '.cta--signaal', pairId: 'navy-op-geel' },
+  { foregroundSelector: '.sectiecode', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.blok--donker', backgroundSelector: '.blok--donker', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.blok--donker .sectiecode', backgroundSelector: '.blok--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.pipeline__koppeling', backgroundSelector: '.blok--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: 'body', backgroundSelector: '.plaat', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: 'body', backgroundSelector: '.plaat__lijst li', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.specsheet__rij h4', backgroundSelector: '.blok--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.strakke-lijst li::before', backgroundSelector: '.blok--donker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.site-footer', backgroundSelector: '.site-footer', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.site-footer__links a', backgroundSelector: '.site-footer', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.fasen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: '.stappen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+], fail);
+checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
 }

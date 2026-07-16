@@ -1,128 +1,118 @@
 {
   "status": "verified",
-  "statusToelichting": "Elke kleur en elke logo-uitvoering hieronder is meetbaar geverifieerd tegen vier officieel door Artific zélf gepubliceerde, huisstijldragende PDF-documenten van artific.nl (pdfProvenance per waarde; vector-kleuroperatoren uitgelezen en logokleuren per pixel gemeten; elk document met URL en SHA-256 reproduceerbaar). De vier documenten bevestigen onderling consistent dezelfde kleurenset en dezelfde twee logo-uitvoeringen. Deze officieel gepubliceerde collateral is de vastgelegde verificatiebasis, omdat de twee oorspronkelijk aangewezen interne referentie-PDF's na herhaalde bouwrondes en uitputtende zoekacties nooit aan de buildomgeving zijn aangeleverd (zie deviation). Zodra die interne documenten alsnog worden aangeleverd, wordt elke waarde en gebruiksregel daartegen hertoetst volgens assets/brand/README.md.",
+  "statusToelichting": "De twee aangeleverde PDF's in de repository-root zijn de primaire huisstijlbron. Alle toegestane kleuren, logo-uitvoeringen, logo-achtergronden en contrastregels hieronder verwijzen naar concrete, 1-gebaseerde pagina's in die documenten.",
   "checkedAt": "2026-07-16",
-  "extractionMethod": "PDF's gedownload van artific.nl (URL + SHA-256 per document hieronder) en geïnspecteerd met mupdf (WASM, alleen build-tooling buiten deze repository): per pagina zijn alle vector-fill-, stroke- en tekstkleuroperatoren uitgelezen via een display-device, en de logokleur in het persbericht is per pixel gemeten op een 3x-rendering (dominant #287CEB, 3900 pixels). Pagina's zijn daarnaast paginagewijs gerenderd en visueel gecontroleerd.",
+  "extractionMethod": "Beide lokale PDF's zijn met SHA-256 vastgelegd. PDF-contentstreams en ToUnicode-tabellen zijn dependency-vrij met Node.js en node:zlib paginagewijs uitgelezen; expliciete kleurwaarden, gebruiksregels en ingesloten logo-XObjects zijn onderling vergeleken. De drie pagina's met creative materials zijn als hun originele ingesloten JPEG's geëxtraheerd en visueel gecontroleerd. Alleen expliciete paletwaarden uit de brand manual zijn als kleur opgenomen.",
   "referenceDocuments": [
     {
-      "id": "whitepaper-pentest",
-      "filename": "250923-Whitepaper-penetratietest-Artific-AI-platform.pdf",
-      "url": "https://artific.nl/inhoud/uploads/250923-Whitepaper-penetratietest-Artific-AI-platform.pdf",
-      "sha256": "f25ca468a4c87c0e2d22ff76113d2dac9a79d39a5acddee762e861882de674a9",
-      "pages": 11,
-      "fetchedAt": "2026-07-15",
-      "role": "officieel gepubliceerde Artific-whitepaper in huisstijl: wit logo, donkerblauwe koppenbanden, lichtblauwe panelen, blauwe footerband",
+      "id": "brand-manual",
+      "filename": "260506 Artific brand manual v1.0.pdf",
+      "path": "260506 Artific brand manual v1.0.pdf",
+      "sha256": "b69b324c3b22c5ac38e793d76646b140617658c7c45854dc8fa60c74d3df9ea6",
+      "pages": 15,
+      "role": "primaire normbron voor expliciete kleurwaarden, logo-uitvoeringen, logo-achtergronden, contrast en gebruik",
+      "primary": true,
       "available": true
     },
     {
-      "id": "brochure-virtuele-medewerkers",
-      "filename": "Wij-bouwen-virtuele-medewerkers-Artific.pdf",
-      "url": "https://artific.nl/inhoud/uploads/Wij-bouwen-virtuele-medewerkers-Artific.pdf",
-      "sha256": "72fbed3bf816b5575004c5a682c338a5565eccc4f4bc0fc02492b7e588e0039a",
-      "pages": 8,
-      "fetchedAt": "2026-07-15",
-      "role": "officieel gepubliceerde Artific-brochure (januari 2026) in huisstijl: wit logo op donkerblauw, dezelfde kleurenset als de whitepaper",
-      "available": true
-    },
-    {
-      "id": "infographic-virtuele-medewerkers",
-      "filename": "Infographic-Wij-bouwen-virtuele-medewerkers.pdf",
-      "url": "https://artific.nl/inhoud/uploads/Infographic-Wij-bouwen-virtuele-medewerkers.pdf",
-      "sha256": "cdc56039737ae8e58870ce754ee1077970da516bd9415233c585b0b272b9b60b",
-      "pages": 1,
-      "fetchedAt": "2026-07-15",
-      "role": "officieel gepubliceerde Artific-infographic: wit logo, blauwe kaarten, oranjegeel accent op donker marineblauw",
-      "available": true
-    },
-    {
-      "id": "persbericht-taigur",
-      "filename": "260203-Persbericht-Artific-verwelkomt-Taigur-als-nieuwe-partner.pdf",
-      "url": "https://artific.nl/inhoud/uploads/260203-Persbericht-Artific-verwelkomt-Taigur-als-nieuwe-partner.pdf",
-      "sha256": "4e5ae226482feb5f5e140a2fa3b72fec72593b1f554fcb720804f7d50724618b",
-      "pages": 2,
-      "fetchedAt": "2026-07-15",
-      "role": "officieel Artific-persbericht op briefpapier: blauw logo op witte achtergrond (de uitvoering voor lichte achtergronden)",
+      "id": "creative-materials",
+      "filename": "260506 Voorbeelden creative materials.pdf",
+      "path": "260506 Voorbeelden creative materials.pdf",
+      "sha256": "63a1b03638a90ffc896e1b8e8755b59fa5fb8591ab854e53a41b988cd287a578",
+      "pages": 3,
+      "role": "primaire toepassingsbron; bevestigt combinaties en logo-gebruik, maar introduceert geen kleurwaarden",
+      "primary": true,
       "available": true
     }
   ],
-  "deviation": {
-    "requestedDocuments": [
-      { "filename": "260506 Artific brand manual v1.0.pdf", "available": false },
-      { "filename": "260506 Voorbeelden creative materials.pdf", "available": false }
-    ],
-    "reason": "De twee oorspronkelijk aangewezen interne referentie-PDF's zijn in zeven bouwpogingen (laatst 2026-07-16) nooit aan de buildomgeving aangeleverd: niet op het bestandssysteem (volledige schijfscan, ook zonder .pdf-extensie en op PDF-magic-bytes), niet in de Git-historie of op enige remote-branch, niet in de volledige openbare WordPress-mediabibliotheek van artific.nl (614 items via REST-API doorlopen) en niet via sitemaps of andere officiële downloadlocaties. De waarden hieronder zijn gedocumenteerd tegen de sterkst beschikbare openbare bron (door Artific zélf gepubliceerde, huisstijldragende PDF-documenten van artific.nl; alle vier bevestigen onderling dezelfde kleurenset en dezelfde twee logo-uitvoeringen). Omdat de interne documenten aantoonbaar niet leverbaar bleken, geldt deze officieel gepubliceerde collateral als verificatiebasis; bij alsnog aanleveren van de interne PDF's wordt elke waarde daartegen hertoetst.",
-    "correctionsAgainstWebCandidates": "De eerdere web-afgeleide kandidaten zijn tegen de PDF-documenten gecontroleerd en waar nodig gecorrigeerd of verwijderd: #287CEB, #ECA414 en #FFFFFF zijn exact bevestigd; donkerblauw is gecorrigeerd van webtoken #042244 naar de in de documenten gebruikte waarden #0A213D en #062244; lichtblauw is gecorrigeerd van webtoken #C9DAF2 naar #E5EDF8; webtoken #7790AE komt in geen enkel Artific-document voor en is verwijderd.",
-    "upgradePath": "Zodra de opdrachtgever de twee interne PDF's alsnog aanlevert (lokaal in de repository-root; .gitignore houdt ze buiten Git): elke kleur, logo-uitvoering en gebruiksregel hertoetsen volgens assets/brand/README.md, pdfProvenance aanvullen of corrigeren, beide documenten met available: true aan referenceDocuments toevoegen en dit deviation-blok bijwerken; bij afwijkingen worden de tokens, logo's en alle varianten daarop gecorrigeerd."
-  },
   "rules": [
-    "Varianten gebruiken uitsluitend kleuren en logo's uit dit bestand; niets wordt ad-hoc van de live sites of uit aannames toegevoegd.",
-    "Elke waarde draagt pdfProvenance met documentId en paginanummer(s) naar een beschikbaar referentiedocument; scripts/validate-content.mjs dwingt dit af. De verificatiebasis is officieel door Artific gepubliceerde huisstijl-collateral; zodra de twee interne PDF's ('260506 Artific brand manual v1.0.pdf' en '260506 Voorbeelden creative materials.pdf') alsnog worden aangeleverd, wordt elke waarde daartegen hertoetst.",
-    "De logo-SVG's zijn zelfstandig (alleen paden, geen fonts, scripts of externe URL's) en worden niet hertekend of herkleurd.",
-    "De referentie-PDF's worden nooit gecommit en zijn geen runtime-afhankelijkheid; ze zijn via de vastgelegde URL's en SHA-256-hashes reproduceerbaar te controleren.",
-    "Typografie is per variant vrij (zie groepsafspraak); de themafonts hieronder zijn alleen ter referentie."
+    "Varianten gebruiken uitsluitend kleuren en logo's uit dit bestand; screenshots en fotografie leveren geen nieuwe merkkleuren op.",
+    "De PDF's en brand.json zijn uitsluitend build- en auditbronnen; geen deploybare HTML, CSS of JavaScript verwijst er runtime naar.",
+    "Contrastverhoudingen worden uit de bevestigde hexwaarden berekend. De in de manual gedrukte ratio voor blauw op wit is niet overgenomen: #287CEB op #FFFFFF berekent tot 4.06:1 en geldt daarom alleen voor grote tekst."
+  ],
+  "logoUsageRules": [
+    {
+      "id": "logo-minimum-digital-width",
+      "minDigitalWidthPx": 80,
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4], "evidence": "De tabel Gebruiksregels schrijft voor digitaal een minimale logobreedte van 80px voor." }
+      ]
+    },
+    {
+      "id": "logo-preserve-artwork",
+      "requireAutoHeight": true,
+      "forbiddenCssProperties": ["filter", "transform"],
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [5], "evidence": "Niet uitrekken, roteren, in andere kleuren zetten of schaduw toevoegen." }
+      ]
+    },
+    {
+      "id": "logo-clearspace",
+      "manualQa": true,
+      "requirement": "Minimaal de hoogte van de letter a rondom het logo, aan alle zijden.",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4], "evidence": "De tabel Gebruiksregels definieert de minimale witruimte als de hoogte van de letter a rondom het logo." }
+      ]
+    }
   ],
   "colors": [
     {
       "id": "artific-blauw",
       "value": "#287CEB",
       "mode": "hex",
-      "role": "primair (logokleur, primaire accenten, CTA's)",
+      "role": "dominante hoofdkleur voor grote vlakken, hero's, logo en buttons",
       "pdfProvenance": [
-        { "documentId": "infographic-virtuele-medewerkers", "pages": [1], "evidence": "vector-vulkleur van de blauwe informatiekaarten" },
-        { "documentId": "whitepaper-pentest", "pages": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "evidence": "vector-vulkleur van de footerband met wit logo" },
-        { "documentId": "brochure-virtuele-medewerkers", "pages": [2, 3, 4, 5, 6, 7, 8], "evidence": "vector-vulkleur van de footerband" },
-        { "documentId": "persbericht-taigur", "pages": [1], "evidence": "pixel-gemeten kleur van het blauwe logo in de briefhoofding (dominant #287CEB)" }
-      ],
-      "corroboration": "Identiek aan alle fills van het door Artific gepubliceerde logo-SVG en aan het primary-designtoken op vision.artific.nl en product.artific.nl."
-    },
-    {
-      "id": "artific-donkerblauw",
-      "value": "#0A213D",
-      "mode": "hex",
-      "role": "donker: koppenbanden, donkere vlakken en tekst op licht",
-      "pdfProvenance": [
-        { "documentId": "whitepaper-pentest", "pages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "evidence": "vector-vulkleur van cover, donkere koppenbanden en lopende tekst" },
-        { "documentId": "brochure-virtuele-medewerkers", "pages": [1, 2, 3, 4, 5, 6, 7, 8], "evidence": "vector-vulkleur van cover, donkere vlakken en lopende tekst" }
+        { "documentId": "brand-manual", "pages": [6, 15], "evidence": "Expliciete swatch ARTIFIC BLUE / BLUE met HEX #287CEB; pagina 6 noemt de kleur primair en dominant." },
+        { "documentId": "creative-materials", "pages": [1, 2], "evidence": "Blauwe LinkedIn-visuals en pitchdeck-cover bevestigen de dominante toepassing." }
       ]
     },
     {
-      "id": "artific-marineblauw",
-      "value": "#062244",
+      "id": "artific-geel",
+      "value": "#FFD602",
       "mode": "hex",
-      "role": "donker alternatief: diepe paginaachtergrond (infographic-stijl)",
+      "role": "steunkleur voor CTA's, highlights, focus en accenten",
       "pdfProvenance": [
-        { "documentId": "infographic-virtuele-medewerkers", "pages": [1], "evidence": "vector-vulkleur van de donkere paginaachtergrond" }
+        { "documentId": "brand-manual", "pages": [6, 15], "evidence": "Expliciete swatch ARTIFIC YELLOW / YELLOW met HEX #FFD602; omschreven als steunkleur voor CTA's en accenten." },
+        { "documentId": "creative-materials", "pages": [1, 2, 3], "evidence": "Gele labels, highlights en accentregels bevestigen het spaarzame accentgebruik." }
+      ]
+    },
+    {
+      "id": "artific-navy",
+      "value": "#042244",
+      "mode": "hex",
+      "role": "Deep Navy voor tekst en donkere achtergronden",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [6, 15], "evidence": "Expliciete DEEP NAVY/NAVY-swatch en quick reference vermelden #042244. De kleuroperator van de swatch is eveneens #042244." },
+        { "documentId": "creative-materials", "pages": [1, 2, 3], "evidence": "Donkerblauwe koppen en lopende tekst op lichte materialen bevestigen deze rol." }
       ]
     },
     {
       "id": "artific-lichtblauw",
       "value": "#E5EDF8",
       "mode": "hex",
-      "role": "licht: zachte achtergrondpanelen en tinten",
+      "role": "lichte achtergrond voor secties, cards en highlights",
       "pdfProvenance": [
-        { "documentId": "whitepaper-pentest", "pages": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "evidence": "vector-vulkleur van de lichte tekstpanelen" },
-        { "documentId": "brochure-virtuele-medewerkers", "pages": [2, 3, 4, 5, 6, 7, 8], "evidence": "vector-vulkleur van de lichte tekstpanelen" }
+        { "documentId": "brand-manual", "pages": [6, 15], "evidence": "Expliciete LIGHT BLUE-swatch met HEX #E5EDF8." },
+        { "documentId": "creative-materials", "pages": [1, 3], "evidence": "Lichtblauwe casevisuals bevestigen toepassing als rustig licht vlak." }
       ]
     },
     {
-      "id": "artific-oranjegeel",
-      "value": "#ECA414",
+      "id": "artific-grijs",
+      "value": "#64748B",
       "mode": "hex",
-      "role": "secundair accent (spaarzaam gebruiken)",
+      "role": "Neutral Gray voor captions, metadata en subtekst",
       "pdfProvenance": [
-        { "documentId": "infographic-virtuele-medewerkers", "pages": [1], "evidence": "vector-vulkleur van de accentkaart 'Naadloze integratie' en oranje accenttekst in koppen" }
-      ],
-      "corroboration": "Identiek aan het secondary-designtoken op vision.artific.nl en product.artific.nl."
+        { "documentId": "brand-manual", "pages": [6], "evidence": "Expliciete NEUTRAL GRAY-swatch met HEX #64748B en de rol captions, metadata en subtekst." }
+      ]
     },
     {
       "id": "wit",
       "value": "#FFFFFF",
       "mode": "hex",
-      "role": "logokleur op donkere achtergronden; lichte achtergrond en tekst op donker",
+      "role": "lichte achtergrond en tekst/logo op donkere merkvlakken",
       "pdfProvenance": [
-        { "documentId": "infographic-virtuele-medewerkers", "pages": [1], "evidence": "wit logo en witte tekst op donker marineblauw" },
-        { "documentId": "whitepaper-pentest", "pages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "evidence": "witte paginaachtergrond, wit logo op cover en footerband" },
-        { "documentId": "brochure-virtuele-medewerkers", "pages": [1, 2, 3, 4, 5, 6, 7, 8], "evidence": "wit logo op cover en witte tekst op donkere vlakken" }
+        { "documentId": "brand-manual", "pages": [4, 5, 7, 14], "evidence": "Logo- en contrastpagina's tonen wit als achtergrond en als logo/tekst op Artific Blue en navy; pagina 14 schrijft witte content op blauw voor." },
+        { "documentId": "creative-materials", "pages": [1, 2, 3], "evidence": "Materialen tonen witte logo's en displaytekst op blauw en witte contentvlakken." }
       ]
     }
   ],
@@ -130,33 +120,162 @@
     {
       "id": "logo-blauw",
       "file": "artific-logo-blauw.svg",
-      "background": "licht",
-      "description": "Artific-woordmerk met AI-beeldmerk, alle paden #287CEB; de uitvoering die Artific in de briefhoofding van het persbericht op witte achtergrond gebruikt.",
-      "exportMethod": "Ongewijzigde download van het door Artific gepubliceerde SVG (byte-gelijk aan bron); alleen paden, geen fonts of externe verwijzingen. Vorm en kleur gecontroleerd tegen de PDF-weergave (pixel-gemeten #287CEB).",
+      "mediaType": "image/svg+xml",
+      "sha256": "aa9dd2935ef63ea6c4884a6d781721dd091a2b036095c795987888e766e2fb06",
+      "description": "Blauw Artific-woordmerk met AI-beeldmerk.",
+      "exportMethod": "Bestaande officiële, zelfstandige SVG byte-ongewijzigd behouden nadat vorm, verhouding en #287CEB-vulling visueel zijn vergeleken met de primaire logo-uitvoering in de brand manual.",
       "pdfProvenance": [
-        { "documentId": "persbericht-taigur", "pages": [1], "evidence": "identiek woordmerk + AI-beeldmerk in blauw op witte achtergrond; kleur pixel-gemeten dominant #287CEB" }
-      ],
-      "sourceAsset": "https://vision.artific.nl/clients/artific/logo.svg (identiek op product.artific.nl), opgehaald 2026-07-15",
-      "usage": "Op lichte/witte achtergronden en op tint artific-lichtblauw."
+        { "documentId": "brand-manual", "pages": [4, 5], "evidence": "Primair blauw woordmerk op wit en lichtblauw; vorm en kleur komen overeen." },
+        { "documentId": "creative-materials", "pages": [1, 3], "evidence": "Blauw woordmerk toegepast op witte en lichtblauwe casevisuals." }
+      ]
     },
     {
       "id": "logo-wit",
       "file": "artific-logo-wit.svg",
-      "background": "donker",
-      "description": "Artific-woordmerk met AI-beeldmerk, alle paden #fff; de uitvoering die Artific op de covers en footerbanden van whitepaper, brochure en infographic gebruikt.",
-      "exportMethod": "Ongewijzigde download van het door Artific gepubliceerde SVG (byte-gelijk aan bron); alleen paden, geen fonts of externe verwijzingen. Vorm gecontroleerd tegen de PDF-weergaven op donkere covers en blauwe footerbanden.",
+      "mediaType": "image/svg+xml",
+      "sha256": "8735f58f7c16c15c8ba5eb133c3d920cf604a338db077babf25afbf1eaa859f4",
+      "description": "Wit Artific-woordmerk met AI-beeldmerk.",
+      "exportMethod": "Bestaande officiële, zelfstandige SVG byte-ongewijzigd behouden nadat vorm, verhouding en witte vulling visueel zijn vergeleken met de primaire logo-uitvoering in de brand manual.",
       "pdfProvenance": [
-        { "documentId": "whitepaper-pentest", "pages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "evidence": "wit logo op donkerblauwe cover en op blauwe footerband van elke pagina" },
-        { "documentId": "brochure-virtuele-medewerkers", "pages": [1], "evidence": "wit logo op donkerblauwe cover" },
-        { "documentId": "infographic-virtuele-medewerkers", "pages": [1], "evidence": "wit logo bovenaan op donker marineblauw" }
-      ],
-      "sourceAsset": "https://artific.nl/inhoud/uploads/Logo.svg, opgehaald 2026-07-15",
-      "usage": "Op donkere achtergronden zoals artific-donkerblauw, artific-marineblauw en artific-blauw."
+        { "documentId": "brand-manual", "pages": [4, 5], "evidence": "Wit woordmerk op Artific Blue en Deep Navy; vorm komt overeen." },
+        { "documentId": "creative-materials", "pages": [1, 2], "evidence": "Wit woordmerk toegepast op blauwe LinkedIn- en pitchdeckvlakken." }
+      ]
+    },
+    {
+      "id": "logo-navy",
+      "file": "artific-logo-navy.png",
+      "mediaType": "image/png",
+      "sha256": "d77170b6920cd645a751a4fb56bd55a7a9b0ff8b4e83b1d6afd2e1b56c894a7d",
+      "description": "Deep Navy Artific-woordmerk met AI-beeldmerk voor de gele merkachtergrond.",
+      "exportMethod": "Lossless geëxtraheerd uit brand-manual pagina 4: RGB-XObject 43 en transparantiemasker XObject 17 zijn zonder kleurwijziging samengevoegd en als RGBA-PNG opgeslagen.",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4], "evidence": "De variant 'Navy · op geel'; het ingebedde originele logo-XObject is lossless geëxtraheerd." }
+      ]
+    }
+  ],
+  "logoBackgrounds": [
+    {
+      "id": "logo-blauw-op-wit",
+      "logoId": "logo-blauw",
+      "backgroundColorId": "wit",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4, 5], "evidence": "Primair blauw logo op wit is de voorkeurscombinatie." }
+      ]
+    },
+    {
+      "id": "logo-blauw-op-lichtblauw",
+      "logoId": "logo-blauw",
+      "backgroundColorId": "artific-lichtblauw",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4, 5], "evidence": "Primair blauw logo op lichtblauw is expliciet getoond en als voorkeur genoemd." }
+      ]
+    },
+    {
+      "id": "logo-wit-op-blauw",
+      "logoId": "logo-wit",
+      "backgroundColorId": "artific-blauw",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4, 5, 14], "evidence": "Wit logo op blauw is expliciet getoond en voorgeschreven voor blauwe headers." },
+        { "documentId": "creative-materials", "pages": [1, 2], "evidence": "Wit logo op blauwe social- en pitchdeckvlakken." }
+      ]
+    },
+    {
+      "id": "logo-wit-op-navy",
+      "logoId": "logo-wit",
+      "backgroundColorId": "artific-navy",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4, 5], "evidence": "Wit logo op navy is expliciet getoond en toegestaan op donkerblauw." }
+      ]
+    },
+    {
+      "id": "logo-navy-op-geel",
+      "logoId": "logo-navy",
+      "backgroundColorId": "artific-geel",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4], "evidence": "Navy logo op geel is als afzonderlijke logo-uitvoering getoond." }
+      ]
+    }
+  ],
+  "contrastPairs": [
+    {
+      "id": "navy-op-wit",
+      "foregroundColorId": "artific-navy",
+      "backgroundColorId": "wit",
+      "usage": "body-text",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [7], "evidence": "Tabel 'Toegankelijke combinaties': Navy op wit voldoet aan AAA." }
+      ]
+    },
+    {
+      "id": "navy-op-lichtblauw",
+      "foregroundColorId": "artific-navy",
+      "backgroundColorId": "artific-lichtblauw",
+      "usage": "body-text",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [7], "evidence": "Tabel 'Toegankelijke combinaties': Navy op lichtblauw voldoet aan AAA." }
+      ]
+    },
+    {
+      "id": "navy-op-geel",
+      "foregroundColorId": "artific-navy",
+      "backgroundColorId": "artific-geel",
+      "usage": "body-text",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [7, 14], "evidence": "Navy op geel voldoet volgens de contrasttabel aan AAA en is voorgeschreven voor gele CTA-knoppen." }
+      ]
+    },
+    {
+      "id": "blauw-op-wit-groot",
+      "foregroundColorId": "artific-blauw",
+      "backgroundColorId": "wit",
+      "usage": "large-text-only",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [7], "evidence": "De manual toont blauw op wit; herberekend uit de expliciete hexwaarden is dit 4.06:1 en daarom conservatief beperkt tot grote tekst." }
+      ]
+    },
+    {
+      "id": "wit-op-blauw-groot",
+      "foregroundColorId": "wit",
+      "backgroundColorId": "artific-blauw",
+      "usage": "large-text-only",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [7], "evidence": "De manual staat wit op blauw uitsluitend voor grote tekst toe." }
+      ]
+    },
+    {
+      "id": "wit-op-navy",
+      "foregroundColorId": "wit",
+      "backgroundColorId": "artific-navy",
+      "usage": "body-text",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [4, 5], "evidence": "De logo- en gebruikspagina's tonen de witte uitvoering op Deep Navy en schrijven wit op donker voor." }
+      ]
+    },
+    {
+      "id": "lichtblauw-op-navy",
+      "foregroundColorId": "artific-lichtblauw",
+      "backgroundColorId": "artific-navy",
+      "usage": "body-text",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [6, 7], "evidence": "Light Blue en Deep Navy vormen het aanvullende rust-/dieptepalet; de contrastmethodiek op pagina 7 wordt uit de bevestigde hexwaarden herberekend." }
+      ]
+    },
+    {
+      "id": "geel-op-navy",
+      "foregroundColorId": "artific-geel",
+      "backgroundColorId": "artific-navy",
+      "usage": "body-text",
+      "pdfProvenance": [
+        { "documentId": "brand-manual", "pages": [11, 14], "evidence": "Gele accenten worden op koele blauwe merkvlakken en Artific Blue-toepassingen voorgeschreven; de directionele ratio wordt uit de bevestigde hexwaarden berekend." }
+      ]
     }
   ],
   "typographyReference": {
-    "note": "Alleen ter referentie; typografie is per variant vrij. Artific-thema op vision/product gebruikt:",
-    "heading": "\"Houschka Pro\", \"Helvetica Neue\", Arial, sans-serif",
-    "body": "\"Forma DJR Micro\", \"Helvetica Neue\", Arial, sans-serif"
+    "note": "Alleen ter referentie; typografie blijft per variant vrij.",
+    "heading": "Inter, sans-serif",
+    "body": "Inter, sans-serif",
+    "pdfProvenance": [
+      { "documentId": "brand-manual", "pages": [8], "evidence": "Inter wordt als display- en bodylettertype voorgeschreven." }
+    ]
   }
 }

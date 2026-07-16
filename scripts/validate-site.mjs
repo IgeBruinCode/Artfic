@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkBrandColors, checkContrastUsage, checkImages, checkNoPdfRuntime } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -25,6 +26,7 @@ if (((rootHtml.match(/<title>([^<]*)<\/title>/)?.[1]) ?? '').length < 10) fail('
 if (((rootHtml.match(/<meta name="description" content="([^"]+)"/)?.[1]) ?? '').length < 50) fail('index.html (root): meta-description ontbreekt of is te kort');
 if ((rootHtml.match(/<h1[\s>]/g) ?? []).length !== 1) fail('index.html (root): verwacht exact één <h1>');
 if (!/Kies een Artific-ontwerprichting/.test(rootHtml)) fail('index.html (root): H1 "Kies een Artific-ontwerprichting" ontbreekt');
+checkImages(rootHtml, keuzeCss, brand, root, '.', fail);
 if (!/assets\/brand\/artific-logo-blauw\.svg/.test(rootHtml)) fail('index.html (root): het blauwe logo op lichte achtergrond ontbreekt');
 if (/<script/i.test(rootHtml)) fail('index.html (root): de keuzepagina hoort geen JavaScript nodig te hebben');
 if (/aanbevolen|voorkeur|badge/i.test(rootHtml)) fail('index.html (root): keuzes horen neutraal te zijn, zonder voorkeurslabel');
@@ -45,11 +47,20 @@ for (const [naam, href] of expectedChoices) {
   if (!anchor) fail(`index.html (root): keuze naar '${href}' ontbreekt`);
   else if (!anchor[1].includes(naam)) fail(`index.html (root): keuze '${href}' draagt niet de naam '${naam}'`);
 }
-const allowedHex = new Set(brand.colors.map((c) => c.value.toUpperCase()));
-for (const [hex] of keuzeCss.matchAll(/#[0-9a-fA-F]{6}\b/g)) {
-  if (!allowedHex.has(hex.toUpperCase())) fail(`keuze.css: kleur '${hex}' staat niet in brand.json`);
-}
+checkBrandColors([['keuze.css', keuzeCss], ['index.html', rootHtml]], brand, fail);
 if (!/:focus-visible/.test(keuzeCss)) fail('keuze.css: zichtbare focusstijl ontbreekt');
+checkContrastUsage(rootHtml, keuzeCss, brand, [
+  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: '.keuze__naam', backgroundSelector: 'body', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.keuze__optie:hover', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: '.keuze__optie:hover .keuze__naam', backgroundSelector: '.keuze__optie:hover', pairId: 'navy-op-lichtblauw' },
+], fail);
+
+const runtimeFiles = [['index.html', rootHtml], ['keuze.css', keuzeCss]];
+for (const variant of ['minimalistisch', 'brutalistisch-a', 'brutalistisch-b', 'conventioneel', 'premium']) {
+  for (const file of ['index.html', 'styles.css', 'main.js']) runtimeFiles.push([`${variant}/${file}`, read(`${variant}/${file}`)]);
+}
+checkNoPdfRuntime(runtimeFiles, fail);
 
 // --- per variant: route, H1, kernclaims, beide officiële conversie-CTA's, ontwerpdocument ---
 const variants = ['minimalistisch', 'brutalistisch-a', 'brutalistisch-b', 'conventioneel', 'premium'];
