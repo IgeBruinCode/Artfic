@@ -129,7 +129,7 @@ export function checkLinksAndCtas(html, content, { minCtaCount, minCtaHint }, fa
   if (ctaCount < minCtaCount) fail(`index.html: verwacht minimaal ${minCtaCount} CTA-voorkomens (${minCtaHint}), gevonden: ${ctaCount}`);
 }
 
-const parseCss = (css) => {
+export const parseCssRules = (css) => {
   const rules = [];
   const variables = new Map();
   const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -154,7 +154,7 @@ const valuesForProperties = (declarations, properties) => properties
 
 const voidElements = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
 
-const parseHtml = (html) => {
+export const parseHtmlNodes = (html) => {
   const root = { tagName: '#document', parent: null };
   const nodes = [];
   const stack = [root];
@@ -305,7 +305,7 @@ const selectorStaysLarge = (model, selector) => {
 };
 
 export function checkImages(html, css, brand, root, variantDir, fail) {
-  const model = parseCss(css);
+  const model = parseCssRules(css);
   const logosById = new Map(brand.logos.map((logo) => [logo.id, logo]));
   const allowedCombinations = new Set(
     brand.logoBackgrounds.map((rule) => `${rule.logoId}:${rule.backgroundColorId}`)
@@ -313,7 +313,7 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
   const minWidth = (brand.logoUsageRules ?? []).find((rule) => rule.id === 'logo-minimum-digital-width')?.minDigitalWidthPx;
   const artworkRule = (brand.logoUsageRules ?? []).find((rule) => rule.id === 'logo-preserve-artwork');
   const expectedPrefix = variantDir === '.' ? 'assets/brand/' : '../assets/brand/';
-  const imageNodes = parseHtml(html).filter((node) => node.tagName === 'img');
+  const imageNodes = parseHtmlNodes(html).filter((node) => node.tagName === 'img');
   if (imageNodes.length === 0) fail('index.html: een canoniek Artific-logo ontbreekt');
   if (!Number.isInteger(minWidth)) fail('brand.json: gestructureerde minimale digitale logobreedte ontbreekt');
 
@@ -403,8 +403,8 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
 }
 
 export function checkContrastUsage(html, css, brand, surfaces, fail) {
-  const model = parseCss(css);
-  const htmlNodes = parseHtml(html);
+  const model = parseCssRules(css);
+  const htmlNodes = parseHtmlNodes(html);
   const pairsById = new Map(brand.contrastPairs.map((pair) => [pair.id, pair]));
   const configuredForegrounds = new Set(surfaces.map((surface) => surface.foregroundSelector));
   const configuredBackgrounds = new Map(surfaces.map((surface) => [surface.backgroundSelector, surface]));
@@ -542,7 +542,7 @@ export function checkBrandColors(files, brand, fail) {
     }
     if (!file.endsWith('.css')) continue;
 
-    const model = parseCss(text);
+    const model = parseCssRules(text);
     for (const rule of model.rules) {
       const variables = new Map(model.variables);
       for (const [property, value] of rule.declarations) {

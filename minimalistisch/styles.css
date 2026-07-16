@@ -195,7 +195,6 @@ section[id] {
   background: var(--lichtblauw);
   color: var(--navy);
   border-top: 1px solid var(--blauw);
-  border-bottom: 1px solid var(--blauw);
 }
 
 .sectie--donker {

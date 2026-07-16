@@ -8,7 +8,7 @@
   window.gsap.registerPlugin(window.ScrollTrigger);
   var gsap = window.gsap;
 
-  function enter(elements, trigger, stagger) {
+  function revealOnScroll(elements, trigger, stagger) {
     gsap.from(elements, {
       opacity: 0,
       y: 14,
@@ -25,12 +25,12 @@
     });
   }
 
-  document.querySelectorAll("[data-reveal]").forEach(function (el) {
-    enter(el, el, 0);
+  document.querySelectorAll("[data-reveal]").forEach(function (element) {
+    revealOnScroll(element, element, 0);
   });
 
   document.querySelectorAll("[data-reveal-group]").forEach(function (group) {
-    enter(group.querySelectorAll(".module"), group, 0.08);
+    revealOnScroll(group.querySelectorAll(".module"), group, 0.08);
   });
 
   var flowPijlen = document.querySelectorAll(".flow__pijl");

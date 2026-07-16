@@ -4,7 +4,21 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkBrandColors, checkContrastUsage, checkImages, checkNoPdfRuntime } from './lib/variant-checks.mjs';
+import {
+  checkBrandColors,
+  checkBrandGate,
+  checkClaims,
+  checkContrastUsage,
+  checkDesignDoc,
+  checkDocumentMetadata,
+  checkImages,
+  checkLinksAndCtas,
+  checkMotionGuards,
+  checkNoPdfRuntime,
+  checkSectionOrder,
+  parseCssRules,
+  parseHtmlNodes,
+} from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -51,93 +65,61 @@ function extractSingleCssBlock(source, headerPattern, label) {
   return '';
 }
 
+function hasCssRule(source, selector, expectedDeclarations) {
+  return parseCssRules(source).rules.some((rule) => rule.selectors.includes(selector) &&
+    Object.entries(expectedDeclarations).every(([property, expected]) => {
+      const actual = rule.declarations.get(property) ?? '';
+      return typeof expected === 'string' ? actual === expected : expected.test(actual);
+    }));
+}
+
 const html = read('brutalistisch-a/index.html');
 const css = read('brutalistisch-a/styles.css');
 const js = read('brutalistisch-a/main.js');
 const content = JSON.parse(read('content/artific-content.nl.json'));
 const brand = JSON.parse(read('assets/brand/brand.json'));
 
-// --- document & metadata ---
-if (!/<html[^>]*\slang="nl"/.test(html)) fail('index.html: documenttaal is niet nl');
-const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
-if (!title || /in aanbouw/i.test(title)) fail('index.html: unieke paginatitel ontbreekt of is nog de statustitel');
-const desc = html.match(/<meta name="description" content="([^"]+)"/)?.[1] ?? '';
-if (desc.length < 50) fail('index.html: Nederlandse meta-description ontbreekt of is te kort');
-if (/noindex/i.test(html)) fail('index.html: noindex-markering hoort niet op de opgeleverde variant');
-if (!/<meta name="viewport"/.test(html)) fail('index.html: viewport-metadata ontbreekt');
-
-const h1s = html.match(/<h1[\s>]/g) ?? [];
-if (h1s.length !== 1) fail(`index.html: verwacht exact één <h1>, gevonden: ${h1s.length}`);
-
-// --- sectievolgorde ---
+// --- document & structure ---
+checkDocumentMetadata(html, fail);
 const requiredSections = ['intro', 'visie', 'controlelaag', 'platform', 'controle', 'aanpak', 'bewijs', 'contact'];
-let cursor = -1;
-for (const id of requiredSections) {
-  const idx = html.indexOf(`id="${id}"`);
-  if (idx === -1) fail(`index.html: sectie '#${id}' ontbreekt`);
-  else if (idx < cursor) fail(`index.html: sectie '#${id}' staat niet in de vereiste volgorde`);
-  else cursor = idx;
-}
+checkSectionOrder(html, requiredSections, fail);
 if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.test(html)) {
   fail('index.html: landmarks header/main/footer zijn niet compleet');
 }
 if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
-// Brutalistische structuurkenmerken: zichtbare sectiecodes, binnenwrappers en moduleplaten.
-if ((html.match(/class="sectiecode"/g) ?? []).length < 8) fail('index.html: elke sectie hoort een zichtbare sectiecode te dragen');
-const innerWrapperCount = (html.match(/class="blok__binnen"/g) ?? []).length;
-if (innerWrapperCount !== 8) fail(`index.html: verwacht exact acht .blok__binnen-wrappers, gevonden ${innerWrapperCount}`);
+
+const htmlNodes = parseHtmlNodes(html);
+const sections = htmlNodes.filter((node) => node.tagName === 'section' && node.classes.has('blok'));
+const innerWrappers = htmlNodes.filter((node) => node.classes.has('blok__binnen'));
+if (innerWrappers.length !== 8) fail(`index.html: verwacht exact acht .blok__binnen-wrappers, gevonden ${innerWrappers.length}`);
 for (const sectionId of requiredSections) {
-  const sectionStart = new RegExp(`<section[^>]+id="${sectionId}"[^>]*>\\s*<div class="blok__binnen">`);
-  if (!sectionStart.test(html)) fail(`index.html: sectie #${sectionId} begint niet direct met de gedeelde .blok__binnen-wrapper`);
+  const section = sections.find((node) => node.attributes.get('id') === sectionId);
+  const directWrappers = innerWrappers.filter((node) => node.parent === section);
+  if (directWrappers.length !== 1) fail(`index.html: sectie #${sectionId} moet exact één directe .blok__binnen-wrapper hebben`);
 }
 
-const moduleLists = html.match(/<ol class="platen"[^>]*>[\s\S]*?<\/ol>/g) ?? [];
+const sectionCodes = [...html.matchAll(/<p\b(?=[^>]*\bclass="[^"]*\bsectiecode\b[^"]*")[^>]*>([^<]+)<\/p>/g)]
+  .map((match) => match[1].trim());
+const requiredSectionCodes = ['00 / INTRO', '01 / VISIE', '02 / POSITIE', '03 / PLATFORM', '04 / CONTROLE', '05 / AANPAK', '06 / BEWIJS', '07 / CONTACT'];
+if (sectionCodes.join('|') !== requiredSectionCodes.join('|')) {
+  fail(`index.html: sectiecodes moeten zichtbaar in de volgorde ${requiredSectionCodes.join(' → ')} staan`);
+}
+
+const plateLists = htmlNodes.filter((node) => node.tagName === 'ol' && node.classes.has('platen'));
 const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-if (moduleLists.length !== 1) {
-  fail(`index.html: verwacht exact één .platen-lijst, gevonden ${moduleLists.length}`);
+if (plateLists.length !== 1) {
+  fail(`index.html: verwacht exact één .platen-lijst, gevonden ${plateLists.length}`);
 } else {
-  const foundClaims = [...moduleLists[0].matchAll(/<li class="plaat"\s+data-claim-id="([^"]+)"/g)].map((match) => match[1]);
-  if (foundClaims.length !== 3) fail(`index.html: verwacht exact drie .plaat-items, gevonden ${foundClaims.length}`);
-  if (foundClaims.join('|') !== moduleClaims.join('|')) {
-    fail(`index.html: modulevolgorde moet ${moduleClaims.join(' → ')} zijn`);
+  const moduleItems = htmlNodes.filter((node) => node.tagName === 'li' && node.classes.has('plaat') && node.parent === plateLists[0]);
+  const foundClaims = moduleItems.map((node) => node.attributes.get('data-claim-id'));
+  if (moduleItems.length !== 3) fail(`index.html: verwacht exact drie .plaat-items, gevonden ${moduleItems.length}`);
+  if (foundClaims.join('|') !== moduleClaims.join('|')) fail(`index.html: modulevolgorde moet ${moduleClaims.join(' → ')} zijn`);
+  if (moduleItems.some((node) => !node.attributes.has('data-plaat'))) {
+    fail('index.html: iedere moduleplaat moet de gerichte data-plaat-motionhook behouden');
   }
 }
 
 // --- claims ---
-const knownClaims = new Map();
-for (const topic of Object.values(content.topics)) {
-  for (const claim of topic.claims) knownClaims.set(claim.id, claim);
-}
-const usedClaims = new Set(
-  [...html.matchAll(/data-claim-id="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/)).filter(Boolean)
-);
-for (const id of usedClaims) {
-  if (!knownClaims.has(id)) fail(`index.html: onbekende data-claim-id '${id}'`);
-}
-
-// Strikte claims: de zichtbare varianttekst ligt hier vast, zodat inhoudelijke drift
-// (cijfers, compliance) de check laat falen in plaats van alleen het claim-ID.
-const normalize = (s) => s.replace(/<!--[\s\S]*?-->/g, ' ').replace(/&amp;/g, '&').replace(/&nbsp;|\s+/g, ' ').trim();
-const claimScopes = new Map();
-for (const m of html.matchAll(/<([a-z0-9]+)\b[^>]*\sdata-claim-id="([^"]+)"[^>]*>/g)) {
-  const [openTag, tag, ids] = m;
-  const start = m.index + openTag.length;
-  const tokenRe = new RegExp(`<${tag}\\b[^>]*>|</${tag}>`, 'g');
-  tokenRe.lastIndex = start;
-  let depth = 1;
-  let end = html.length;
-  let t;
-  while ((t = tokenRe.exec(html))) {
-    depth += t[0].startsWith('</') ? -1 : 1;
-    if (depth === 0) { end = t.index; break; }
-  }
-  if (depth !== 0) fail(`index.html: sluittag voor <${tag} data-claim-id="${ids}"> niet gevonden`);
-  const inner = normalize(html.slice(start, end).replace(/<[^>]+>/g, ' '));
-  for (const id of ids.split(/\s+/).filter(Boolean)) {
-    if (!claimScopes.has(id)) claimScopes.set(id, []);
-    claimScopes.get(id).push(inner);
-  }
-}
 const strictVariantTexts = {
   'pos-besparing-30': ['Bespaar 30% van je tijd met één AI-platform.'],
   'pos-nederlands': ['Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.'],
@@ -152,24 +134,6 @@ const strictVariantTexts = {
   'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken', 'Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.'],
   'bw-klantnamen': ['Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
 };
-for (const id of usedClaims) {
-  if (!knownClaims.get(id)?.strict) continue;
-  const snippets = strictVariantTexts[id];
-  if (!snippets) { fail(`index.html: strikte claim '${id}' heeft geen vastgelegde varianttekst in deze validator`); continue; }
-  const scopes = (claimScopes.get(id) ?? []).map(normalize);
-  // Ieder voorkomen wordt afzonderlijk gecontroleerd: één geldig voorkomen mag
-  // een tweede, afwijkend voorkomen van dezelfde strikte claim niet maskeren.
-  for (const scope of scopes) {
-    if (!snippets.some((snippet) => scope.includes(normalize(snippet)))) {
-      fail(`index.html: een voorkomen van strikte claim '${id}' bevat geen van de vastgelegde variantteksten: '${scope.slice(0, 80)}…'`);
-    }
-  }
-  for (const snippet of snippets) {
-    if (!scopes.some((scope) => scope.includes(normalize(snippet)))) {
-      fail(`index.html: zichtbare tekst binnen het element met strikte claim '${id}' wijkt af van de vastgelegde varianttekst: '${snippet}'`);
-    }
-  }
-}
 const requiredClaims = [
   'pos-belofte', 'pos-agentic-platform', 'pos-badges',
   'dm-kop', 'vvt-veilig', 'vvt-voorspelbaar', 'vvt-transparant',
@@ -180,42 +144,8 @@ const requiredClaims = [
   'cc-een-plek', 'sec-ontwerp', 'sec-eu', 'sec-iso', 'sec-audit',
   'pm-markt', 'bo-vijf-stappen', 'bw-100-klanten', 'cv-versnellen',
 ];
-for (const id of requiredClaims) {
-  if (!usedClaims.has(id)) fail(`index.html: vereiste claim '${id}' wordt niet gebruikt`);
-}
-
-// --- links & CTA's ---
-if (/href="#"[\s>]/.test(html)) fail('index.html: kale href="#" gevonden');
-if (/vision\.artific\.nl|product\.artific\.nl/.test(html)) {
-  fail('index.html: inhoudelijke doorlink naar vision-/productsubpagina is niet toegestaan');
-}
-const allowedExternal = new Set([
-  ...Object.values(content.ctas.navigation['artific.nl-footer'].links),
-  ...Object.values(content.ctas.canonical)
-    .map((c) => c.destination)
-    .filter((d) => typeof d === 'string' && /^https?:/.test(d)),
-]);
-for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
-  if (href.startsWith('#') || href === 'styles.css') continue;
-  if (!allowedExternal.has(href)) fail(`index.html: niet-toegestane externe link '${href}'`);
-}
-
-const ctaCard = content.ctas.canonical;
-const ctaRe = /<a\b([^>]*\sdata-cta-id="([^"]+)"[^>]*)>([\s\S]*?)<\/a>/g;
-let ctaCount = 0;
-for (const [, attrs, ctaId, inner] of html.matchAll(ctaRe)) {
-  ctaCount += 1;
-  const entry = ctaCard[ctaId];
-  if (!entry) { fail(`index.html: data-cta-id '${ctaId}' staat niet in de CTA-kaart`); continue; }
-  const label = inner.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-  if (label !== entry.label) fail(`index.html: CTA '${ctaId}' heeft label '${label}' i.p.v. '${entry.label}'`);
-  const href = attrs.match(/href="([^"]+)"/)?.[1];
-  if (href !== entry.destination) fail(`index.html: CTA '${ctaId}' wijst naar '${href}' i.p.v. '${entry.destination}'`);
-  if (/target=/.test(attrs)) fail(`index.html: CTA '${ctaId}' mag geen target-attribuut hebben (zelfde tabblad)`);
-}
-const ctaAttrTotal = (html.match(/data-cta-id="/g) ?? []).length;
-if (ctaAttrTotal !== ctaCount) fail(`index.html: ${ctaAttrTotal} data-cta-id-attributen gevonden maar slechts ${ctaCount} als anchor gevalideerd`);
-if (ctaCount < 3) fail(`index.html: verwacht minimaal 3 CTA-voorkomens (commandobar, hero, slot), gevonden: ${ctaCount}`);
+checkClaims(html, content, { strictVariantTexts, requiredClaims }, fail);
+checkLinksAndCtas(html, content, { minCtaCount: 3, minCtaHint: 'commandobar, hero, slot' }, fail);
 
 // --- afbeeldingen: alleen canonieke logo-/achtergrondcombinaties ---
 checkImages(html, css, brand, root, 'brutalistisch-a', fail);
@@ -246,7 +176,7 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: '.stappen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
 ], fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
-if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
+if (/rgba?\(|hsla?\(|color-mix|\btransparent\b|opacity:\s*0(?:\D|$)|visibility\s*:\s*hidden/.test(css)) {
   fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
 }
 if (/border-radius|(?:linear|radial|conic)-gradient|blur\(|filter\s*:/.test(css)) {
@@ -299,6 +229,29 @@ if (!/\.platen\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)[^}]*width:\s
 if (/\.commandobar__nav\s*\{[^}]*display:\s*none/.test(compactCss)) {
   fail('styles.css: de lokale commandobarnavigatie mag op mobiel niet worden verborgen');
 }
+const commandobarMobileCss = extractSingleCssBlock(
+  css,
+  /@media\s*\(\s*max-width\s*:\s*480px\s*\)\s*\{/g,
+  'commandobarmediaquery (max-width: 480px)'
+).replace(/\s+/g, ' ');
+if (!/\.commandobar__binnen\s*\{[^}]*display:\s*grid[^}]*grid-template-areas:\s*"logo cta"\s*"nav nav"/.test(commandobarMobileCss)
+    || !/\.commandobar__nav\s*\{[^}]*grid-area:\s*nav[^}]*width:\s*100%/.test(commandobarMobileCss)
+    || !/\.commandobar__nav a\s*\{[^}]*width:\s*100%/.test(commandobarMobileCss)
+    || !/\.commandobar__nav a\s*\{[^}]*min-height:\s*44px/.test(compactCss)) {
+  fail('styles.css: de commandobar mist de zichtbare, tweerijige mobiele navigatie met 44px-doelen');
+}
+const reducedMotionCss = extractSingleCssBlock(
+  css,
+  /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/g,
+  'reduced-motionmediaquery'
+).replace(/\s+/g, ' ');
+const displayNoneCount = (css.match(/display\s*:\s*none/g) ?? []).length;
+if (displayNoneCount !== 1 || !/\.commandobar__voortgang\s*\{[^}]*display:\s*none/.test(reducedMotionCss)) {
+  fail('styles.css: alleen de decoratieve voortgangsbalk mag uitsluitend bij reduced motion worden verborgen');
+}
+if (/21st\.dev|magic-mcp/i.test(`${html}\n${css}\n${js}`)) {
+  fail('brutalistisch-a: 21st.dev mag geen runtime-afhankelijkheid zijn');
+}
 
 // --- progressive enhancement & motion ---
 if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/gsap\.min\.js/.test(html)) fail('index.html: gepinde GSAP-CDN ontbreekt');
@@ -309,6 +262,9 @@ if (/data-plaat/.test(js) && !/\sdata-plaat[\s>]/.test(html)) {
 }
 if (/opacity/.test(js)) fail('main.js: deze variant animeert alleen transforms; opacity-animaties zijn niet toegestaan');
 if (/\b(?:pin|snap|scrollTo|autoScroll|parallax)\b/.test(js)) fail('main.js: pinning, snap, automatische scroll en parallax zijn niet toegestaan');
+if (/\b(?:width|height|top|right|bottom|left|margin|padding|filter)\s*:/.test(js)) {
+  fail('main.js: motion mag geen layout- of filterproperty animeren');
+}
 if (!/immediateRender:\s*false/.test(js) || !/once:\s*true/.test(js) || !/overwrite:\s*"auto"/.test(js)) {
   fail('main.js: transform-entrees missen immediateRender/once/overwrite-afspraken');
 }

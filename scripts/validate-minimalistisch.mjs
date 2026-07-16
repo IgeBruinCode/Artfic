@@ -82,10 +82,10 @@ const moduleLists = html.match(/<ol class="modules"[^>]*>[\s\S]*?<\/ol>/g) || []
 if (moduleLists.length !== 1) {
   fail(`index.html: verwacht exact één .modules-lijst, gevonden ${moduleLists.length}`);
 } else {
-  const modules = moduleLists[0].match(/<li class="module"\s+data-claim-id="([^"]+)"/g) || [];
-  if (modules.length !== 3) fail(`index.html: verwacht exact drie .module-items, gevonden ${modules.length}`);
-  const moduleClaims = [...moduleLists[0].matchAll(/<li class="module"\s+data-claim-id="([^"]+)"/g)].map((match) => match[1]);
+  const moduleItems = [...moduleLists[0].matchAll(/<li class="module"\s+data-claim-id="([^"]+)"/g)];
+  const moduleClaims = moduleItems.map((match) => match[1]);
   const canonicalModuleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
+  if (moduleItems.length !== 3) fail(`index.html: verwacht exact drie .module-items, gevonden ${moduleItems.length}`);
   if (moduleClaims.join('|') !== canonicalModuleClaims.join('|')) {
     fail(`index.html: modulevolgorde moet ${canonicalModuleClaims.join(' → ')} zijn`);
   }
@@ -152,6 +152,22 @@ if (/(?:box-shadow\s*:|(?:linear|radial|conic)-gradient\s*\()/i.test(css)) {
 if (!/\.sectie\s*\+\s*\.sectie\s*\{[^}]*border-top:\s*1px solid var\(--lichtblauw\)/s.test(css)
     || !/\.sectie\s*\+\s*\.sectie--tint\s*,\s*\.sectie\s*\+\s*\.sectie--donker\s*\{[^}]*border-top-color:\s*var\(--blauw\)/s.test(css)) {
   fail('styles.css: de doorlopende 1px-sectierails ontbreken of gebruiken niet de gedocumenteerde merkkleuren');
+}
+const tintSectionRules = [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+  .filter((match) => match[1].split(',').some((selector) => selector.trim() === '.sectie--tint'))
+  .map((match) => match[2]);
+const bottomBorderProperties = new Set([
+  'border', 'border-width', 'border-style', 'border-color',
+  'border-block', 'border-block-width', 'border-block-style', 'border-block-color',
+  'border-block-end', 'border-bottom',
+]);
+const affectsBottomBorder = (property) =>
+  bottomBorderProperties.has(property) || property.startsWith('border-block-end-') || property.startsWith('border-bottom-');
+const tintSectionProperties = tintSectionRules.flatMap((rule) =>
+  [...rule.matchAll(/(?:^|;)\s*([\w-]+)\s*:/g)].map((match) => match[1])
+);
+if (tintSectionProperties.some(affectsBottomBorder)) {
+  fail('styles.css: .sectie--tint mag geen onderrand toevoegen naast de 1px-bovenrail van de volgende sectie');
 }
 
 const desktopCss = extractSingleCssBlock(

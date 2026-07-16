@@ -176,9 +176,10 @@ a { color: inherit; }
 .blok {
   padding-block: var(--sectieruimte);
   border-bottom: var(--lijn);
-  scroll-margin-top: 96px;
   position: relative;
 }
+#inhoud,
+.blok { scroll-margin-top: 96px; }
 .blok__binnen {
   width: 100%;
   max-width: var(--werkvlak);
@@ -609,7 +610,7 @@ a { color: inherit; }
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 720px) {
   .commandobar__binnen {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -633,7 +634,11 @@ a { color: inherit; }
     letter-spacing: 0.04em;
   }
   .cta--bar { grid-area: cta; font-size: 0.75rem; padding: 4px 10px; }
+  #inhoud,
   .blok { scroll-margin-top: 116px; }
+}
+
+@media (max-width: 480px) {
   .plaat { box-shadow: 6px 6px 0 0 var(--blauw); }
   .cta--primair, .cta--signaal { box-shadow: 6px 6px 0 0 var(--blauw); }
   .fasen li { grid-template-columns: 1fr; }
