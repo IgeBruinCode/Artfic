@@ -148,16 +148,19 @@ export function checkBrandColors(files, brand, fail) {
   }
 }
 
-export function checkMotionGuards(html, css, js, fail) {
+export function checkMotionGuards(html, css, js, fail, {
+  allowOpacity = false,
+  requireClearProps = true,
+} = {}) {
   if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/gsap\.min\.js/.test(html)) fail('index.html: gepinde GSAP-CDN ontbreekt');
   if (!/cdn\.jsdelivr\.net\/npm\/gsap@3\.\d+\.\d+\/dist\/ScrollTrigger\.min\.js/.test(html)) fail('index.html: gepinde ScrollTrigger-CDN ontbreekt');
   if ((html.match(/<script[^>]*\sdefer/g) ?? []).length < 3) fail('index.html: scripts moeten met defer laden');
-  if (/opacity/.test(js)) fail('main.js: deze variant animeert alleen transforms; opacity-animaties zijn niet toegestaan');
+  if (!allowOpacity && /opacity/.test(js)) fail('main.js: deze variant animeert alleen transforms; opacity-animaties zijn niet toegestaan');
   if (!/prefers-reduced-motion/.test(js)) fail('main.js: reduced-motion-guard ontbreekt');
   if (!/window\.gsap\s*&&\s*window\.ScrollTrigger|!window\.gsap\s*\|\|\s*!window\.ScrollTrigger/.test(js)) {
     fail('main.js: guard op ontbrekende GSAP/ScrollTrigger ontbreekt');
   }
-  if (!/clearProps/.test(js)) fail('main.js: clearProps-opruiming van inline transforms ontbreekt');
+  if (requireClearProps && !/clearProps/.test(js)) fail('main.js: clearProps-opruiming van inline transforms ontbreekt');
   if (!/@media \(prefers-reduced-motion: reduce\)/.test(css)) fail('styles.css: prefers-reduced-motion-blok ontbreekt');
   if (!/:focus-visible/.test(css)) fail('styles.css: zichtbare focusstijl ontbreekt');
   if (!/scroll-margin-top/.test(css)) fail('styles.css: scroll-margin-top voor ankersecties ontbreekt');
