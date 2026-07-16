@@ -1,0 +1,679 @@
+/* Kleuren uitsluitend uit assets/brand/brand.json — geen afgeleide tinten of transparante merkkleuren. */
+:root {
+  --artific-blauw: #287CEB;
+  --artific-donkerblauw: #0A213D;
+  --artific-lichtblauw: #E5EDF8;
+  --artific-oranjegeel: #ECA414;
+  --wit: #FFFFFF;
+
+  --ruimte-1: 8px;
+  --ruimte-2: 16px;
+  --ruimte-3: 24px;
+  --ruimte-4: 40px;
+  --ruimte-5: 64px;
+  --ruimte-sectie: clamp(64px, 12vw, 144px);
+  --leesbreedte: 62ch;
+  --paginabreedte: 1120px;
+  --gutter: clamp(16px, 5vw, 48px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  line-height: 1.6;
+  color: var(--artific-donkerblauw);
+  background: var(--wit);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 1.5rem + 4vw, 4rem);
+  font-weight: 600;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem);
+  font-weight: 600;
+  max-width: 24ch;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  font-weight: 600;
+}
+
+h4 {
+  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.2rem);
+  font-weight: 600;
+}
+
+p, ul, ol {
+  max-width: var(--leesbreedte);
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--artific-blauw);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.sectie--donker :focus-visible,
+.site-footer :focus-visible {
+  outline-color: var(--artific-oranjegeel);
+}
+
+::selection {
+  background: var(--artific-lichtblauw);
+  color: var(--artific-donkerblauw);
+}
+
+/* Skiplink */
+.skiplink {
+  position: absolute;
+  left: var(--ruimte-2);
+  top: var(--ruimte-2);
+  z-index: 100;
+  padding: 12px 20px;
+  background: var(--artific-donkerblauw);
+  color: var(--wit);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skiplink:focus-visible {
+  transform: none;
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--wit);
+  border-bottom: 1px solid var(--artific-lichtblauw);
+}
+
+.site-header__binnen {
+  max-width: var(--paginabreedte);
+  margin: 0 auto;
+  padding: var(--ruimte-2) var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: var(--ruimte-3);
+}
+
+.site-header__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.site-header__logo img {
+  width: clamp(104px, 12vw, 136px);
+  height: auto;
+  display: block;
+}
+
+.site-nav {
+  margin-left: auto;
+}
+
+.site-nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: clamp(12px, 2vw, 28px);
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover {
+  border-bottom-color: var(--artific-blauw);
+}
+
+/* Secties */
+.sectie {
+  padding: var(--ruimte-sectie) var(--gutter);
+}
+
+.sectie > * {
+  max-width: var(--paginabreedte);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+.sectie--tint {
+  background: var(--wit);
+  border-top: 1px solid var(--artific-lichtblauw);
+  border-bottom: 1px solid var(--artific-lichtblauw);
+}
+
+.sectie--donker {
+  background: var(--artific-donkerblauw);
+  color: var(--wit);
+}
+
+.eyebrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: var(--ruimte-3);
+  padding-left: var(--ruimte-3);
+  border-left: 3px solid var(--artific-blauw);
+}
+
+.eyebrow--donker {
+  border-left-color: var(--artific-oranjegeel);
+}
+
+.sectie h2 {
+  margin-bottom: var(--ruimte-3);
+}
+
+.leestekst {
+  margin-bottom: var(--ruimte-4);
+}
+
+.tussenkop {
+  margin-top: var(--ruimte-5);
+  margin-bottom: var(--ruimte-3);
+  padding-top: var(--ruimte-4);
+  border-top: 1px solid var(--artific-lichtblauw);
+}
+
+.accentregel {
+  margin-top: var(--ruimte-4);
+  padding-left: var(--ruimte-3);
+  border-left: 3px solid var(--artific-oranjegeel);
+  font-weight: 600;
+  max-width: 48ch;
+}
+
+.voetnoot {
+  margin-top: var(--ruimte-3);
+  font-size: 0.95rem;
+}
+
+/* Hero */
+.hero {
+  padding-top: clamp(56px, 10vw, 120px);
+}
+
+.hero__grid {
+  display: grid;
+  gap: var(--ruimte-5);
+  max-width: var(--paginabreedte);
+  margin: 0 auto;
+}
+
+.hero__intro {
+  margin-top: var(--ruimte-4);
+  margin-bottom: var(--ruimte-3);
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
+}
+
+.hero__acties {
+  margin-top: var(--ruimte-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ruimte-2);
+}
+
+.hero__zij {
+  border-top: 3px solid var(--artific-blauw);
+  padding-top: var(--ruimte-3);
+  align-self: start;
+}
+
+.hero__voetnoot {
+  margin-top: var(--ruimte-3);
+  font-size: 0.95rem;
+}
+
+.badges {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ruimte-1);
+}
+
+.badges li {
+  border: 1px solid var(--artific-lichtblauw);
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* CTA's */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 28px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--artific-donkerblauw);
+}
+
+/* Hover-lift komt via GSAP (main.js); een CSS-transition op transform zou daarmee vechten. */
+.cta:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.cta--primair {
+  background: var(--artific-donkerblauw);
+  color: var(--wit);
+}
+
+.cta--secundair {
+  background: var(--wit);
+  color: var(--artific-donkerblauw);
+}
+
+.cta--klein {
+  min-height: 44px;
+  padding: 8px 20px;
+  font-size: 0.95rem;
+  background: var(--artific-donkerblauw);
+  color: var(--wit);
+}
+
+.cta--licht {
+  background: var(--artific-oranjegeel);
+  color: var(--artific-donkerblauw);
+  border-color: var(--artific-oranjegeel);
+}
+
+.cta--omlijnd {
+  background: none;
+  color: var(--wit);
+  border-color: var(--wit);
+}
+
+/* Editorial rijen */
+.rijen {
+  display: grid;
+  gap: 0;
+}
+
+.rij {
+  display: grid;
+  gap: var(--ruimte-1);
+  padding: var(--ruimte-3) 0;
+  border-top: 1px solid var(--artific-lichtblauw);
+}
+
+.rijen .rij:last-child {
+  border-bottom: 1px solid var(--artific-lichtblauw);
+}
+
+/* Genummerde fasen en lagen */
+.fasen {
+  list-style: none;
+  padding: 0;
+  counter-reset: fase;
+  max-width: none;
+}
+
+.fasen > li {
+  counter-increment: fase;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--ruimte-3);
+  align-items: start;
+  padding: var(--ruimte-3) 0;
+  border-top: 1px solid var(--artific-lichtblauw);
+}
+
+.fasen > li::before {
+  content: counter(fase, decimal-leading-zero);
+  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--artific-blauw);
+  min-width: 2.2ch;
+}
+
+.fasen > li > h3,
+.fasen > li > h4 {
+  grid-column: 2;
+}
+
+.fasen > li > p {
+  grid-column: 2;
+  margin-top: var(--ruimte-1);
+}
+
+/* Modules */
+.modules {
+  list-style: none;
+  padding: 0;
+  max-width: none;
+}
+
+.module {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--ruimte-4);
+  padding: var(--ruimte-4) 0;
+  border-top: 1px solid var(--artific-lichtblauw);
+}
+
+.modules .module:last-child {
+  border-bottom: 1px solid var(--artific-lichtblauw);
+}
+
+.module__nummer {
+  font-size: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--artific-lichtblauw);
+  min-width: 2.4ch;
+}
+
+.module p {
+  margin-top: var(--ruimte-1);
+}
+
+.module__toepassingen {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--ruimte-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ruimte-1);
+}
+
+.module__toepassingen li {
+  border: 1px solid var(--artific-lichtblauw);
+  padding: 4px 12px;
+  font-size: 0.9rem;
+}
+
+/* Flow-compositie: modellen → Artific → processen */
+.flow {
+  display: grid;
+  gap: var(--ruimte-2);
+  align-items: stretch;
+  margin: var(--ruimte-4) auto;
+}
+
+.flow__blok {
+  display: grid;
+  gap: 4px;
+  padding: var(--ruimte-3);
+  border: 1px solid var(--artific-blauw);
+  text-align: center;
+  align-content: center;
+}
+
+.flow__blok--artific {
+  background: var(--artific-donkerblauw);
+  color: var(--wit);
+  border-color: var(--artific-donkerblauw);
+}
+
+.flow__kop {
+  font-weight: 600;
+}
+
+.flow__sub {
+  font-size: 0.9rem;
+}
+
+.flow__pijl {
+  text-align: center;
+  align-self: center;
+  font-size: 1.5rem;
+  color: var(--artific-blauw);
+  transform: rotate(90deg);
+}
+
+/* Tweeluik */
+.tweeluik {
+  display: grid;
+  gap: var(--ruimte-4);
+  margin-top: var(--ruimte-4);
+}
+
+.tweeluik h3,
+.tweeluik h4 {
+  margin-bottom: var(--ruimte-1);
+  padding-bottom: var(--ruimte-1);
+  border-bottom: 2px solid var(--artific-blauw);
+  display: inline-block;
+}
+
+/* Lijsten */
+.lijst {
+  list-style: none;
+  padding: 0;
+}
+
+.lijst li {
+  padding: 10px 0 10px var(--ruimte-3);
+  border-left: 2px solid var(--artific-lichtblauw);
+}
+
+/* Stappen */
+.stappen {
+  list-style: none;
+  padding: 0;
+  counter-reset: stap;
+  display: grid;
+  gap: var(--ruimte-1);
+  max-width: var(--leesbreedte);
+}
+
+.stappen li {
+  counter-increment: stap;
+  display: flex;
+  align-items: baseline;
+  gap: var(--ruimte-2);
+  padding: var(--ruimte-2) 0;
+  border-top: 1px solid var(--artific-lichtblauw);
+}
+
+.stappen li::before {
+  content: counter(stap);
+  font-weight: 600;
+  color: var(--artific-blauw);
+  font-size: 1.25rem;
+  min-width: 1.5ch;
+}
+
+/* Bewijs */
+.klantnamen {
+  font-size: 0.95rem;
+  margin-bottom: var(--ruimte-4);
+}
+
+.quote {
+  border-left: 3px solid var(--artific-blauw);
+  padding-left: var(--ruimte-3);
+  max-width: 52ch;
+}
+
+.quote p {
+  font-size: clamp(1.15rem, 1rem + 0.75vw, 1.4rem);
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.quote footer {
+  margin-top: var(--ruimte-2);
+  font-size: 0.95rem;
+}
+
+/* Contact */
+.contactgegevens {
+  margin-top: var(--ruimte-4);
+}
+
+/* Footer */
+.site-footer {
+  background: var(--artific-donkerblauw);
+  color: var(--wit);
+  border-top: 1px solid var(--artific-blauw);
+}
+
+.site-footer__binnen {
+  max-width: var(--paginabreedte);
+  margin: 0 auto;
+  padding: var(--ruimte-5) var(--gutter);
+  display: grid;
+  gap: var(--ruimte-3);
+}
+
+.site-footer img {
+  width: 128px;
+  height: auto;
+}
+
+.site-footer__links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ruimte-3);
+}
+
+.site-footer__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.site-footer__noot {
+  font-size: 0.85rem;
+  color: var(--artific-lichtblauw);
+}
+
+/* Breekpunten */
+@media (min-width: 700px) {
+  .flow {
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+  }
+
+  .flow__pijl {
+    transform: none;
+  }
+
+  .tweeluik {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rijen {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--ruimte-5);
+  }
+
+  .rijen .rij:nth-last-child(2) {
+    border-bottom: 1px solid var(--artific-lichtblauw);
+  }
+
+  .site-footer__binnen {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+
+  .site-footer__noot {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 980px) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    align-items: end;
+  }
+
+  .sectie h2,
+  .sectie .eyebrow {
+    margin-left: 0;
+  }
+
+  .module {
+    grid-template-columns: minmax(120px, 1fr) minmax(0, 3fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .site-nav {
+    display: none;
+  }
+
+  .site-header__binnen {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 400px) {
+  .site-header__binnen {
+    gap: var(--ruimte-1);
+    padding: var(--ruimte-1) var(--gutter);
+  }
+
+  .site-header__logo img {
+    width: 88px;
+  }
+
+  .cta--klein {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Minder beweging: geen transities, geen smooth scroll */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

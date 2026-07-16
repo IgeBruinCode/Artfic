@@ -1,0 +1,64 @@
+/* Neutrale keuzepagina op / — uitsluitend merkkleuren uit assets/brand/brand.json. */
+:root {
+  --blauw: #287CEB;
+  --donkerblauw: #0A213D;
+  --lichtblauw: #E5EDF8;
+  --oranjegeel: #ECA414;
+  --wit: #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--donkerblauw);
+  background: var(--wit);
+}
+
+/* Donkerblauwe focusindicator: ≥ 3:1 tegen het witte oppervlak (oranjegeel haalt dat niet). */
+:focus-visible {
+  outline: 3px solid var(--donkerblauw);
+  outline-offset: 3px;
+}
+
+.keuze {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(32px, 8vh, 96px) 20px 64px;
+}
+
+.keuze__kop h1 {
+  margin-top: 32px;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.keuze__kop p { margin-top: 16px; max-width: 62ch; }
+
+.keuze__lijst {
+  list-style: none;
+  margin-top: 48px;
+  border-top: 1px solid var(--donkerblauw);
+}
+
+.keuze__optie {
+  display: block;
+  padding: 24px 8px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--lichtblauw);
+  text-decoration: none;
+  color: inherit;
+}
+.keuze__lijst li:last-child .keuze__optie { border-bottom: 1px solid var(--donkerblauw); }
+.keuze__optie:hover { background: var(--lichtblauw); }
+
+.keuze__naam {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1875rem;
+  color: var(--blauw);
+}
+.keuze__omschrijving { display: block; margin-top: 4px; font-size: 0.9375rem; }
