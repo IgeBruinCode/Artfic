@@ -9,7 +9,7 @@ Statische HTML-website met vijf onafhankelijk bekijkbare, klantgerichte landings
 | Minimalistisch | `/minimalistisch/` | **Gebouwd, oplevering geblokkeerd** — volledige landingspagina met eigen stijlgids (`minimalistisch/DESIGN.md`); definitieve oplevering wacht op de twee interne merk-PDF's en de Google Stitch-MCP (zie hieronder) |
 | Brutalistisch A | `/brutalistisch-a/` | **Gebouwd** — volledige landingspagina; `brutalistisch-a/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document zelf). Alleen de merkverificatie tegen de twee interne PDF's staat nog open (zie hieronder) |
 | Brutalistisch B | `/brutalistisch-b/` | **Gebouwd** — volledige landingspagina ("tabloid register") met eigen stijlgids en QA-log; `brutalistisch-b/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
-| Conventioneel (SaaS) | `/conventioneel/` | gereserveerde statuspagina |
+| Conventioneel (SaaS) | `/conventioneel/` | **Gebouwd** — volledige landingspagina ("trust-center SaaS") met eigen stijlgids en QA-log (`conventioneel/QA.md`); `conventioneel/DESIGN.md` is handmatig vastgelegd omdat de Google Stitch-MCP in de buildomgeving niet beschikbaar was — de Stitch-finalisatie staat expliciet open (provenance in het document zelf) |
 | Premium | `/premium/` | gereserveerde statuspagina |
 
 Lokaal bekijken:
@@ -42,11 +42,14 @@ node scripts/validate-content.mjs
 node scripts/validate-minimalistisch.mjs
 node scripts/validate-brutalistisch-a.mjs
 node scripts/validate-brutalistisch-b.mjs
+node scripts/validate-conventioneel.mjs
 ```
 
 Controleert JSON-syntax, unieke claim-IDs, oplosbaarheid van alle bronankers, de verplichte themagroepen, exact drie benoemde modules, de volledige CTA-kaart met veilige bestemmingen, het demo-besluit, de huisstijlbron en de vijf routebestanden. Dependency-vrij (Node-standaardbibliotheek).
 
 Handmatige browser-QA is reproduceerbaar via `node scripts/serve.mjs 4173` vanuit de root (dependency-vrij; `python3 -m http.server` kan ook); de uitgevoerde matrix (320/768/1440 px, toetsenbord, reduced motion, JS/CDN-uitval, regressie op `/minimalistisch/`) staat vastgelegd in `brutalistisch-a/QA.md`.
+
+`validate-conventioneel.mjs` bewaakt variant Conventioneel op dezelfde manier, aangevuld met de eigen trust-center-SaaS-structuur (sticky SaaS-header met lokale navigatie, exact één trust-console met drie lagen, één bewijsrail, exact drie module-cards, minimaal zes assurance-items, exact vijf implementatiestappen) en een verbod op signaturen van de drie zustervarianten (commandobar, sectiecodes, platen, folio's, register, spread), inline SVG, gradients/blur/transparante kleuren en standaard verborgen inhoud. De uitgevoerde handmatige QA-matrix staat in `conventioneel/QA.md`.
 
 `validate-brutalistisch-b.mjs` bewaakt variant Brutalistisch B op dezelfde manier, aangevuld met de eigen tabloid-registerstructuur (statische masthead, hoofdstukregister naar exact zes folio's, één aaneengesloten modulespread, security-grootboek) en een verbod op Brutalistisch A-signaturen (commandobar, sectiecodes, platen, pipeline, offset-schaduwen). De uitgevoerde handmatige QA-matrix staat in `brutalistisch-b/QA.md`.
 
