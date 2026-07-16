@@ -11,7 +11,9 @@
 
   --lijn: 4px solid var(--navy);
   --lijn-wit: 4px solid var(--wit);
-  --gutter: clamp(16px, 5vw, 72px);
+  --werkvlak: 1280px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --sectieruimte: clamp(64px, 6vw, 88px);
   --r-1: 8px;
   --r-2: 16px;
   --r-3: 32px;
@@ -19,7 +21,7 @@
   --r-5: 96px;
 }
 
-.brand-logo { min-width: 80px; height: auto; transform: none; filter: none; }
+.brand-logo { min-width: 80px; height: auto; transform: none; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -87,6 +89,9 @@ a { color: inherit; }
   align-items: center;
   gap: var(--r-2);
   flex-wrap: wrap;
+  width: 100%;
+  max-width: var(--werkvlak);
+  margin-inline: auto;
   padding: var(--r-1) var(--gutter);
   min-height: 56px;
 }
@@ -169,10 +174,16 @@ a { color: inherit; }
 
 /* --- blokken --- */
 .blok {
-  padding: var(--r-5) var(--gutter);
+  padding-block: var(--sectieruimte);
   border-bottom: var(--lijn);
   scroll-margin-top: 96px;
   position: relative;
+}
+.blok__binnen {
+  width: 100%;
+  max-width: var(--werkvlak);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 .blok--donker {
   background: var(--navy);
@@ -216,7 +227,7 @@ a { color: inherit; }
 .blok__kop--slot { max-width: 24ch; }
 
 .hero__kop {
-  font-size: clamp(3.25rem, 10vw, 9rem);
+  font-size: clamp(3.25rem, 8vw, 7rem);
   line-height: 0.95;
   font-weight: 900;
   text-transform: uppercase;
@@ -280,7 +291,7 @@ a { color: inherit; }
   font-size: 0.95rem;
 }
 .tussenkop {
-  margin-top: var(--r-5);
+  margin-top: var(--r-4);
   margin-bottom: var(--r-3);
   font-size: clamp(1.5rem, 3.5vw, 2.5rem);
   font-weight: 900;
@@ -412,7 +423,7 @@ a { color: inherit; }
   padding: var(--r-4) var(--r-3) var(--r-3);
   position: relative;
   box-shadow: 12px 12px 0 0 var(--blauw);
-  max-width: 860px;
+  width: 100%;
 }
 .plaat__nummer {
   position: absolute;
@@ -523,12 +534,16 @@ a { color: inherit; }
 .site-footer {
   background: var(--navy);
   color: var(--wit);
-  padding: var(--r-4) var(--gutter);
+  padding-block: var(--r-4);
   border-top: 4px solid var(--geel);
 }
 .site-footer__binnen {
   display: grid;
   gap: var(--r-3);
+  width: 100%;
+  max-width: var(--werkvlak);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 .site-footer__links {
   list-style: none;
@@ -559,8 +574,14 @@ a { color: inherit; }
 
 @media (min-width: 1000px) {
   .hero__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); align-items: start; }
-  .plaat--verschoven { margin-left: clamp(48px, 12vw, 220px); }
-  .plaat:last-child { margin-left: clamp(24px, 6vw, 110px); }
+  .platen {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--r-2);
+    row-gap: var(--r-4);
+  }
+  .platen > .plaat:nth-child(1) { grid-column: 1 / 11; grid-row: 1; }
+  .platen > .plaat:nth-child(2) { grid-column: 2 / 12; grid-row: 2; }
+  .platen > .plaat:nth-child(3) { grid-column: 3 / 13; grid-row: 3; }
   .pipeline {
     grid-template-columns: auto auto auto auto auto;
     align-items: stretch;
@@ -572,11 +593,47 @@ a { color: inherit; }
   .pipeline__koppeling::before { font-size: 2rem; }
 }
 
+@media (max-width: 999px) {
+  .platen {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .platen > .plaat,
+  .platen > .plaat:nth-child(1),
+  .platen > .plaat:nth-child(2),
+  .platen > .plaat:nth-child(3) {
+    grid-column: auto;
+    grid-row: auto;
+    margin: 0;
+    width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
-  .commandobar__nav { display: none; }
-  .commandobar__binnen { gap: var(--r-1); }
+  .commandobar__binnen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "logo cta" "nav nav";
+    gap: 0 var(--r-1);
+    padding-block: 4px;
+  }
+  .commandobar__logo { grid-area: logo; }
   .commandobar__logo img { width: 96px; }
-  .cta--bar { font-size: 0.75rem; padding: 4px 10px; }
+  .commandobar__nav {
+    grid-area: nav;
+    margin-left: 0;
+    width: 100%;
+  }
+  .commandobar__nav ul { gap: 0; width: 100%; }
+  .commandobar__nav li { flex: 1 1 25%; }
+  .commandobar__nav a {
+    justify-content: center;
+    width: 100%;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+  }
+  .cta--bar { grid-area: cta; font-size: 0.75rem; padding: 4px 10px; }
+  .blok { scroll-margin-top: 116px; }
   .plaat { box-shadow: 6px 6px 0 0 var(--blauw); }
   .cta--primair, .cta--signaal { box-shadow: 6px 6px 0 0 var(--blauw); }
   .fasen li { grid-template-columns: 1fr; }

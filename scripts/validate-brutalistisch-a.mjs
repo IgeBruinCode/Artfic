@@ -11,6 +11,46 @@ const errors = [];
 const fail = (msg) => errors.push(msg);
 const read = (p) => readFileSync(join(root, p), 'utf8');
 
+function extractSingleCssBlock(source, headerPattern, label) {
+  const matches = [...source.matchAll(headerPattern)];
+  if (matches.length !== 1) {
+    fail(`styles.css: verwacht exact één ${label}-blok, gevonden ${matches.length}`);
+    return '';
+  }
+
+  const openingBrace = matches[0].index + matches[0][0].lastIndexOf('{');
+  let depth = 1;
+  let quote = '';
+  for (let i = openingBrace + 1; i < source.length; i += 1) {
+    const char = source[i];
+    const next = source[i + 1];
+    if (quote) {
+      if (char === '\\') i += 1;
+      else if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '/' && next === '*') {
+      const commentEnd = source.indexOf('*/', i + 2);
+      if (commentEnd === -1) {
+        fail(`styles.css: onafgesloten comment in ${label}-blok`);
+        return '';
+      }
+      i = commentEnd + 1;
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '{') depth += 1;
+    if (char === '}') depth -= 1;
+    if (depth === 0) return source.slice(openingBrace + 1, i);
+  }
+
+  fail(`styles.css: onafgesloten ${label}-blok`);
+  return '';
+}
+
 const html = read('brutalistisch-a/index.html');
 const css = read('brutalistisch-a/styles.css');
 const js = read('brutalistisch-a/main.js');
@@ -42,11 +82,25 @@ if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.te
   fail('index.html: landmarks header/main/footer zijn niet compleet');
 }
 if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
-// Brutalistische structuurkenmerken: zichtbare sectiecodes en moduleplaten.
+// Brutalistische structuurkenmerken: zichtbare sectiecodes, binnenwrappers en moduleplaten.
 if ((html.match(/class="sectiecode"/g) ?? []).length < 8) fail('index.html: elke sectie hoort een zichtbare sectiecode te dragen');
+const innerWrapperCount = (html.match(/class="blok__binnen"/g) ?? []).length;
+if (innerWrapperCount !== 8) fail(`index.html: verwacht exact acht .blok__binnen-wrappers, gevonden ${innerWrapperCount}`);
+for (const sectionId of requiredSections) {
+  const sectionStart = new RegExp(`<section[^>]+id="${sectionId}"[^>]*>\\s*<div class="blok__binnen">`);
+  if (!sectionStart.test(html)) fail(`index.html: sectie #${sectionId} begint niet direct met de gedeelde .blok__binnen-wrapper`);
+}
+
+const moduleLists = html.match(/<ol class="platen"[^>]*>[\s\S]*?<\/ol>/g) ?? [];
 const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-if ((html.match(/class="plaat[\s"]/g) ?? []).length !== 3 || !moduleClaims.every((id) => new RegExp(`class="plaat[^"]*"[^>]*data-claim-id="${id}"`).test(html))) {
-  fail('index.html: de drie oversized moduleplaten ontbreken of zijn onvolledig');
+if (moduleLists.length !== 1) {
+  fail(`index.html: verwacht exact één .platen-lijst, gevonden ${moduleLists.length}`);
+} else {
+  const foundClaims = [...moduleLists[0].matchAll(/<li class="plaat"\s+data-claim-id="([^"]+)"/g)].map((match) => match[1]);
+  if (foundClaims.length !== 3) fail(`index.html: verwacht exact drie .plaat-items, gevonden ${foundClaims.length}`);
+  if (foundClaims.join('|') !== moduleClaims.join('|')) {
+    fail(`index.html: modulevolgorde moet ${moduleClaims.join(' → ')} zijn`);
+  }
 }
 
 // --- claims ---
@@ -195,8 +249,55 @@ checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], 
 if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
   fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
 }
-if (/border-radius|linear-gradient|radial-gradient|blur\(/.test(css)) {
-  fail('styles.css: afronding, gradients of blur passen niet in deze brutalistische variant');
+if (/border-radius|(?:linear|radial|conic)-gradient|blur\(|filter\s*:/.test(css)) {
+  fail('styles.css: afronding, gradients, blur of filters passen niet in deze brutalistische variant');
+}
+if (/\b(?:masthead|folio|spread|trust-console|module-card|bewijsrail|boekdeel|dossierregel|evidence-index|assurance-ledger)\b/i.test(`${html}\n${css}\n${js}`)) {
+  fail('brutalistisch-a: runtime bevat een verboden signatuur van een zustervariant');
+}
+const shadowValues = [...css.matchAll(/box-shadow\s*:\s*([^;}]+)/g)].map((match) => match[1].trim());
+if (!shadowValues.length || shadowValues.some((value) => !/^(?:6|8|12)px\s+(?:6|8|12)px\s+0\s+0\s+var\(--blauw\)$/.test(value))) {
+  fail('styles.css: offsetschaduwen moeten harde effen blauwe schaduwen zonder blur zijn');
+}
+
+const compactCss = css.replace(/\s+/g, ' ');
+if (!/--werkvlak:\s*1280px/.test(compactCss)
+    || !/--gutter:\s*clamp\(16px,\s*4vw,\s*48px\)/.test(compactCss)
+    || !/--sectieruimte:\s*clamp\(64px,\s*6vw,\s*88px\)/.test(compactCss)) {
+  fail('styles.css: het compacte 1280px-werkvlak met 48px-gutter en 64–88px sectieritme ontbreekt');
+}
+for (const selector of ['.blok__binnen', '.commandobar__binnen', '.site-footer__binnen']) {
+  const escaped = selector.replace('.', '\\.');
+  if (!new RegExp(`${escaped}\\s*\\{[^}]*max-width:\\s*var\\(--werkvlak\\)[^}]*margin-inline:\\s*auto`).test(compactCss)) {
+    fail(`styles.css: ${selector} deelt het gecentreerde werkvlak niet`);
+  }
+}
+
+const desktopCss = extractSingleCssBlock(
+  css,
+  /@media\s*\(\s*min-width\s*:\s*1000px\s*\)\s*\{/g,
+  'desktopmediaquery (min-width: 1000px)'
+).replace(/\s+/g, ' ');
+const mobileCss = extractSingleCssBlock(
+  css,
+  /@media\s*\(\s*max-width\s*:\s*999px\s*\)\s*\{/g,
+  'mobiele mediaquery (max-width: 999px)'
+).replace(/\s+/g, ' ');
+const desktopPlateContracts = [
+  /\.platen\s*\{[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/,
+  /\.platen\s*>\s*\.plaat:nth-child\(1\)\s*\{[^}]*grid-column:\s*1\s*\/\s*11[^}]*grid-row:\s*1/,
+  /\.platen\s*>\s*\.plaat:nth-child\(2\)\s*\{[^}]*grid-column:\s*2\s*\/\s*12[^}]*grid-row:\s*2/,
+  /\.platen\s*>\s*\.plaat:nth-child\(3\)\s*\{[^}]*grid-column:\s*3\s*\/\s*13[^}]*grid-row:\s*3/,
+];
+for (const contract of desktopPlateContracts) {
+  if (!contract.test(desktopCss)) fail('styles.css: twaalfkoloms 01–03-plaattrap ontbreekt binnen de desktopmediaquery');
+}
+if (!/\.platen\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)[^}]*width:\s*100%/.test(mobileCss)
+    || !/\.platen\s*>\s*\.plaat,[^{]*\.platen\s*>\s*\.plaat:nth-child\(3\)\s*\{[^}]*grid-column:\s*auto[^}]*grid-row:\s*auto[^}]*margin:\s*0[^}]*width:\s*100%/.test(mobileCss)) {
+  fail('styles.css: volledige lineaire reset van de plaattrap ontbreekt binnen de mobiele mediaquery');
+}
+if (/\.commandobar__nav\s*\{[^}]*display:\s*none/.test(compactCss)) {
+  fail('styles.css: de lokale commandobarnavigatie mag op mobiel niet worden verborgen');
 }
 
 // --- progressive enhancement & motion ---
@@ -207,6 +308,11 @@ if (/data-plaat/.test(js) && !/\sdata-plaat[\s>]/.test(html)) {
   fail('index.html: main.js animeert data-plaat-doelen maar de pagina bevat er geen');
 }
 if (/opacity/.test(js)) fail('main.js: deze variant animeert alleen transforms; opacity-animaties zijn niet toegestaan');
+if (/\b(?:pin|snap|scrollTo|autoScroll|parallax)\b/.test(js)) fail('main.js: pinning, snap, automatische scroll en parallax zijn niet toegestaan');
+if (!/immediateRender:\s*false/.test(js) || !/once:\s*true/.test(js) || !/overwrite:\s*"auto"/.test(js)) {
+  fail('main.js: transform-entrees missen immediateRender/once/overwrite-afspraken');
+}
+if (/querySelectorAll\("\[data-plaat\]"\)/.test(js)) fail('main.js: generieke beweging van alle data-plaat-vakken is niet toegestaan');
 if (!/prefers-reduced-motion/.test(js)) fail('main.js: reduced-motion-guard ontbreekt');
 if (!/window\.gsap\s*&&\s*window\.ScrollTrigger|!window\.gsap\s*\|\|\s*!window\.ScrollTrigger/.test(js)) {
   fail('main.js: guard op ontbrekende GSAP/ScrollTrigger ontbreekt');

@@ -13,6 +13,7 @@
     gsap.to(voortgang, {
       scaleX: 1,
       ease: "none",
+      overwrite: "auto",
       scrollTrigger: {
         trigger: document.body,
         start: "top top",
@@ -22,44 +23,51 @@
     });
   }
 
-  document.querySelectorAll(".sectiecode, [data-reveal]").forEach(function (el) {
+  document.querySelectorAll(".sectiecode, .blok__kop").forEach(function (el) {
     gsap.from(el, {
-      x: -24,
-      duration: 0.4,
+      x: -18,
+      duration: 0.35,
       ease: "power2.out",
+      immediateRender: false,
       clearProps: "transform",
+      overwrite: "auto",
       scrollTrigger: { trigger: el, start: "top 90%", once: true }
     });
   });
 
-  document.querySelectorAll("[data-plaat]").forEach(function (el) {
-    gsap.from(el, {
-      y: 28,
-      duration: 0.45,
+  var plaatOffsets = [-18, -12, -6];
+  document.querySelectorAll(".platen .plaat").forEach(function (plaat, index) {
+    gsap.from(plaat, {
+      x: plaatOffsets[index],
+      duration: 0.4,
       ease: "power2.out",
+      immediateRender: false,
       clearProps: "transform",
-      scrollTrigger: { trigger: el, start: "top 92%", once: true }
+      overwrite: "auto",
+      scrollTrigger: { trigger: plaat, start: "top 92%", once: true }
     });
   });
 
   var koppelingen = document.querySelectorAll(".pipeline__koppeling");
   if (koppelingen.length) {
     gsap.from(koppelingen, {
-      scale: 0.5,
-      duration: 0.3,
-      stagger: 0.15,
+      scale: 0.75,
+      duration: 0.25,
+      stagger: 0.1,
       ease: "power1.out",
+      immediateRender: false,
       clearProps: "transform",
+      overwrite: "auto",
       scrollTrigger: { trigger: ".pipeline", start: "top 85%", once: true }
     });
   }
 
   document.querySelectorAll(".cta").forEach(function (cta) {
     cta.addEventListener("mouseenter", function () {
-      gsap.to(cta, { x: -3, y: -3, duration: 0.14, ease: "power1.out" });
+      gsap.to(cta, { x: -3, y: -3, duration: 0.14, ease: "power1.out", overwrite: "auto" });
     });
     cta.addEventListener("mouseleave", function () {
-      gsap.to(cta, { x: 0, y: 0, duration: 0.14, ease: "power1.out", clearProps: "transform" });
+      gsap.to(cta, { x: 0, y: 0, duration: 0.14, ease: "power1.out", clearProps: "transform", overwrite: "auto" });
     });
   });
 })();

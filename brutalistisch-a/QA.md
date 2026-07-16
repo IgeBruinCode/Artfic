@@ -1,33 +1,28 @@
 # QA-log — variant Brutalistisch A
 
-Reproduceerbaar reviewcommando (vanuit de repositoryroot, geen dependencies — alleen Node):
+Reproduceerbaar vanuit de repositoryroot:
 
 ```bash
 node scripts/serve.mjs 4173
-# open vervolgens:
-#   http://localhost:4173/brutalistisch-a/
-#   http://localhost:4173/minimalistisch/   (regressie)
 node scripts/validate-brutalistisch-a.mjs
+node scripts/validate-site.mjs
 ```
 
-(`python3 -m http.server 4173` werkt ook, maar Python is niet in elke reviewomgeving aanwezig; `scripts/serve.mjs` is dependency-vrij op Node-stdlib.)
+## Hercontrole compacte blauwdruk (2026-07-16)
 
-## Uitgevoerde matrix (2026-07-15, Chromium via lokale http.server)
+Lokaal uitgevoerd met Chromium via de CDP-sidecar tegen `node scripts/serve.mjs 4173`.
 
-| Controle | Resultaat |
+| Controle | Feitelijk resultaat |
 | --- | --- |
-| 320 px (volledige scroll) | OK — één kolom, geen horizontale overflow, hero-kop breekt binnen het scherm, logo + skiplink + bar-CTA aanwezig, alle acht secties en CTA's bereikbaar |
-| 768 px (volledige scroll) | OK — wel/niet-vakken en specsheet in twee kolommen, pipeline gecentreerd verticaal, geen overflow |
-| 1440 px (volledige scroll) | OK — 7/4-hero, horizontale pipeline met →, verspringende moduleplaten, sectiecodes/zijstructuur zichtbaar |
-| Toetsenbord | OK — eerste Tab toont de oranjegele skiplink linksboven; daarna logo → navigatie → bar-CTA → hero-CTA's → contactlinks in documentvolgorde; 3px focusring (blauw op licht, oranjegeel op donker) |
-| Ankeroffsets | OK — `#platform` e.d. landen onder de sticky commandobar (`scroll-margin-top: 96px`) |
-| CTA's | OK — alle `data-cta-id`-anchors dragen exact het canonieke label en `https://artific.nl/contact-opnemen/`, zelfde tabblad; footer alleen officiële mail/tel/contactlinks (door validator afgedwongen én visueel gecontroleerd) |
-| JavaScript uit | OK — daadwerkelijk uitgevoerd in Chromium (1440 px en 320 px, volledige scroll) tegen een tijdelijke kopie van de pagina waaruit alle drie `<script>`-tags zijn verwijderd: rendering is pixel-identiek aan de baseline op de (decoratieve, `aria-hidden`) voortgangsbalk na, alle acht secties, koppen, platen, pipeline en CTA's volledig zichtbaar, geen layoutverschuiving of verborgen tekst |
-| CDN geblokkeerd | OK — daadwerkelijk uitgevoerd in Chromium (1440 px, volledige scroll) tegen een kopie waaruit alleen de twee jsDelivr-tags zijn verwijderd terwijl `main.js` wél draait: de `window.gsap`/`window.ScrollTrigger`-guard stopt het script zonder console-afhankelijke bijwerkingen, rendering identiek aan JS-uit |
-| Reduced motion | OK — daadwerkelijk uitgevoerd in Chromium (1440 px, volledige scroll) tegen een kopie die `window.matchMedia` vóór het laden van GSAP/`main.js` dwingt om `prefers-reduced-motion: reduce` te rapporteren: `main.js` keert direct terug, er draait geen enkele animatie en de rendering is identiek aan JS-uit. (De CSS-`@media`-tak zelf is niet via deze override te activeren omdat de QA-browser geen OS-emulatie biedt; die tak schakelt uitsluitend smooth scroll/transities uit en verbergt de voortgangsbalk.) |
-| Contrast | OK — alle kleine tekst ≥ 7,49:1 (donkerblauw/wit 16,2; wit/marine 15,9; donkerblauw/oranjegeel 7,6; oranjegeel/marine 7,5); `#287CEB` alleen voor vlakken, grote vette cijfers (≥ 24px, 4,06:1 ≥ 3:1) en focusring |
-| Regressie `/minimalistisch/` | OK — pagina laadt ongewijzigd, inhoud en CTA-bestemmingen intact, compositie duidelijk anders dan Brutalistisch A |
+| 320 px | OK — logo en demo-CTA staan op de eerste commandobar-rij; Visie, Platform, Controle en Contact blijven zichtbaar op de tweede rij. De hero, CTA's en platen vallen binnen de 16px gutter; de moduletekst staat in de canonieke volgorde 01 AI Assistant → 02 AI ToolBox → 03 Conversation Module. In de viewport-screenshot was geen afsnijding of horizontale scrollbar zichtbaar. |
+| 768 px | OK — de compositie gebruikt circa 31px gutters, alle vier commandobar-ankers en de CTA passen op één rij en de platen staan lineair 01–03. In de viewport-screenshot was geen afsnijding of horizontale scrollbar zichtbaar. |
+| 1440 px | OK — lichte en donkere buitenbanden lopen viewportbreed; de inhoud begint/eindigt visueel op 128/1312px. De moduleplaten vormen drie even brede treden van circa 128–1112px, 229–1212px en 329–1312px. |
+| Inhoud en links | OK — browser-accessibilitysnapshot toont alle acht secties, de canonieke modulevolgorde, vijf CTA-voorkomens met `https://artific.nl/contact-opnemen/`, plus de ongewijzigde `mailto:`- en `tel:`-links. Externe CTA's zijn conform de lokale-only QA-regel niet geopend. |
+| Sectieankers | OK — `#platform` is lokaal aangeklikt op 320px en wijzigde de route naar `/brutalistisch-a/#platform`; de 116px mobiele ankeroffset houdt rekening met de tweerijenbar. |
+| Toetsenbord en focus | OK — de eerste Tab focust de skiplink volgens de accessibilitysnapshot. De snapshot toont daarna logo, vier lokale navlinks, bar-CTA, hero-CTA's en contact/footerlinks in documentvolgorde; CSS levert overal een 3px `:focus-visible`-ring. |
+| JavaScript uit | OK — op 320px geladen uit een tijdelijke lokale kopie zonder alle drie scripttags; alle secties, modules, navigatie en links bleven direct zichtbaar en bereikbaar. |
+| CDN uit | OK — op 1440px geladen uit een tijdelijke lokale kopie zonder de twee jsDelivr-tags maar met origineel `main.js`; de ontbrekende-global guard liet de volledige statische pagina zichtbaar en bereikbaar. |
+| Reduced motion | OK voor de JavaScript-guard — op 1440px geladen met een tijdelijke `matchMedia(...).matches === true`-override vóór de originele scripts; alle inhoud en links bleven statisch zichtbaar. De sidecar bood geen OS-level media-emulatie; de CSS-tak is daarom bronmatig/automatisch gecontroleerd en niet als echte OS-emulatie geclaimd. |
+| Runtimeverzoeken | Bronmatig OK — HTML/CSS/JS bevatten geen PDF- of 21st.dev-runtimeverwijzing; de validator borgt PDF-afwezigheid. De sidecar bood geen exporteerbare netwerklog. |
 
-De drie fallbackmodi zijn getest via tijdelijke, niet-gecommitte kopieën van `index.html` (map `qa-temp/`, na afloop verwijderd) die alleen de scriptlading manipuleerden; styles.css/main.js zelf waren de originele bestanden.
-
-Openstaand buiten deze QA: geen. De brand-gate is gesloten op basis van de twee aanwezige primaire PDF's (`brand.json` = `verified`, inclusief hashes en pagina-provenance). De Stitch-gate is gesloten: `DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (historische provenance in het document).
+De tijdelijke fallbackkopieën zijn na de controle verwijderd. Er zijn geen nieuwe dependencies, assets, MCP-configuraties of credentials toegevoegd. Magic MCP was in deze buildomgeving niet als tool beschikbaar en wordt daarom niet als uitgevoerde provenance geclaimd.
