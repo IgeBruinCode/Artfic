@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// Regressiecontrole van variant Brutalistisch B (tabloid register) tegen de gedeelde bron.
-// Gebruik: node scripts/validate-brutalistisch-b.mjs (dependency-vrij, Node-standaardbibliotheek).
+// Regressiecontrole van de geel/navy-relatiedeckvariant Brutalistisch B.
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,332 +13,463 @@ import {
   checkDocumentMetadata,
   checkImages,
   checkLinksAndCtas,
-  checkMotionGuards,
   checkNoPdfRuntime,
   checkSectionOrder,
-  extractSingleCssBlock,
-  hasCssRule,
-  normalizeCssSelector as normalizeSelector,
-  normalizeCssValue,
   parseCssRules,
   parseHtmlNodes,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
-const fail = (msg) => errors.push(msg);
+const fail = (message) => errors.push(message);
 const read = (path) => readFileSync(join(root, path), 'utf8');
 
 const html = read('brutalistisch-b/index.html');
 const css = read('brutalistisch-b/styles.css');
 const js = read('brutalistisch-b/main.js');
+const design = read('brutalistisch-b/DESIGN.md');
 const content = JSON.parse(read('content/artific-content.nl.json'));
 const brand = JSON.parse(read('assets/brand/brand.json'));
-const htmlNodes = parseHtmlNodes(html);
+const nodes = parseHtmlNodes(html);
 const cssModel = parseCssRules(css);
 
-// --- Document en tabloidstructuur ---
+const textContent = (source) => source.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+const directChildren = (parent, tagName) => nodes.filter((node) => node.parent === parent && (!tagName || node.tagName === tagName));
+const declarations = (selector, property) => cssModel.rules
+  .filter((rule) => rule.selectors.includes(selector) && rule.declarations.has(property))
+  .map((rule) => rule.declarations.get(property));
+
+// Document, landmarks en nieuwe sectievolgorde.
 checkDocumentMetadata(html, fail);
-const requiredSections = ['intro', 'visie', 'platform', 'organisatie', 'bewijs', 'contact'];
-checkSectionOrder(html, requiredSections, fail);
-const landmarkTags = new Set(htmlNodes.map((node) => node.tagName));
-if (!['header', 'aside', 'main', 'footer'].every((tagName) => landmarkTags.has(tagName))) {
-  fail('index.html: landmarks header/aside/main/footer zijn niet compleet');
+const sectionOrder = ['intro', 'bewijs', 'visie', 'platform', 'organisatie', 'contact'];
+checkSectionOrder(html, sectionOrder, fail);
+for (const tagName of ['header', 'main', 'footer']) {
+  if (!nodes.some((node) => node.tagName === tagName)) fail(`index.html: landmark <${tagName}> ontbreekt`);
 }
-if (!htmlNodes.some((node) => node.classes.has('skiplink'))) fail('index.html: skiplink ontbreekt');
-if ((html.match(/<h1\b/g) ?? []).length !== 1) fail('index.html: de tabloid hoort exact één H1 te hebben');
-
-const mastheads = htmlNodes.filter((node) => node.tagName === 'header' && node.classes.has('masthead'));
-if (mastheads.length !== 1) fail(`index.html: verwacht exact één statische masthead, gevonden ${mastheads.length}`);
-const registers = htmlNodes.filter((node) => node.tagName === 'aside' && node.classes.has('register'));
-if (registers.length !== 1) fail(`index.html: verwacht exact één hoofdstukregister, gevonden ${registers.length}`);
-const registerLists = htmlNodes.filter((node) => node.tagName === 'ol' && node.classes.has('register__lijst'));
-const registerAnchors = registerLists.length === 1
-  ? htmlNodes.filter((node) => node.tagName === 'a' && node.parent?.parent === registerLists[0])
-    .map((node) => (node.attributes.get('href') ?? '').replace(/^#/, ''))
-  : [];
-if (registerLists.length !== 1 || registerAnchors.join('|') !== requiredSections.join('|')) {
-  fail(`index.html: het register moet exact naar ${requiredSections.join(' → ')} verwijzen`);
+if (!nodes.some((node) => node.classes.has('skiplink'))) fail('index.html: skiplink ontbreekt');
+if (!/<main\s+id="inhoud"[^>]*tabindex="-1"/.test(html)) fail('index.html: focusbaar main#inhoud ontbreekt');
+const sections = nodes.filter((node) => node.tagName === 'section' && sectionOrder.includes(node.attributes.get('id')));
+if (sections.length !== 6 || sections.map((node) => node.attributes.get('id')).join('|') !== sectionOrder.join('|')) {
+  fail(`index.html: verwacht zes semantische hoofdsecties in volgorde ${sectionOrder.join(' → ')}`);
 }
-
-const folios = htmlNodes.filter((node) => node.tagName === 'article' && node.classes.has('folio'));
-const folioIds = folios.map((node) => node.attributes.get('id'));
-if (folios.length !== 6 || folioIds.join('|') !== requiredSections.join('|')) {
-  fail('index.html: verwacht exact zes folio-artikelen in registervolgorde');
-}
-const expectedFolioClasses = new Map([
-  ['intro', 'folio--donker'],
-  ['visie', 'folio--geel'],
-  ['platform', 'folio--donker'],
-  ['organisatie', 'folio--geel'],
-  ['bewijs', 'folio--geel'],
-  ['contact', 'folio--slot'],
-]);
-for (const folio of folios) {
-  const id = folio.attributes.get('id');
-  if (!folio.classes.has(expectedFolioClasses.get(id))) {
-    fail(`index.html: folio #${id} mist oppervlakklasse '${expectedFolioClasses.get(id)}'`);
+for (const section of sections) {
+  const id = section.attributes.get('id');
+  const labelledBy = section.attributes.get('aria-labelledby');
+  if (!labelledBy || !nodes.some((node) => node.attributes.get('id') === labelledBy && /^h[12]$/.test(node.tagName))) {
+    fail(`index.html: sectie #${id} mist een geldige koprelatie`);
   }
-  const directNumbers = htmlNodes.filter((node) => node.classes.has('folio__nummer') && node.parent === folio);
-  if (directNumbers.length !== 1) fail(`index.html: folio #${id} moet exact één direct folionummer hebben`);
-}
-if (htmlNodes.filter((node) => node.classes.has('folio__nummer')).length !== 6) {
-  fail('index.html: buiten de zes folio’s mogen geen extra folionummers staan');
 }
 
-const spreads = htmlNodes.filter((node) => node.classes.has('spread'));
-const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-if (spreads.length !== 1) {
-  fail(`index.html: verwacht exact één modulespread, gevonden ${spreads.length}`);
+// Ongeordende onderwerpstrip in plaats van een hoofdstukconstructie.
+const topicNavs = nodes.filter((node) => node.tagName === 'nav' && node.classes.has('topic-switcher'));
+if (topicNavs.length !== 1 || topicNavs[0].attributes.get('aria-label') !== 'Direct naar onderwerp') {
+  fail('index.html: exact één gelabelde topic-switcher ontbreekt');
 } else {
-  const allParts = htmlNodes.filter((node) => node.classes.has('spread__deel'));
-  const parts = allParts.filter((node) => node.tagName === 'section' && node.parent === spreads[0]);
-  const foundClaims = parts.map((node) => node.attributes.get('data-claim-id'));
-  if (allParts.length !== 3 || parts.length !== 3 || foundClaims.join('|') !== moduleClaims.join('|')) {
-    fail(`index.html: modulevolgorde moet ${moduleClaims.join(' → ')} zijn binnen één directe spread`);
+  const hrefs = directChildren(topicNavs[0], 'a').map((node) => node.attributes.get('href'));
+  const expected = sectionOrder.map((id) => `#${id}`);
+  if (hrefs.join('|') !== expected.join('|')) fail(`index.html: topic-switcher moet exact ${expected.join(' → ')} volgen`);
+  if (directChildren(topicNavs[0]).some((node) => ['ol', 'ul'].includes(node.tagName))) {
+    fail('index.html: topic-switcher mag geen genummerde of lijstvormige hoofdstuknavigatie zijn');
   }
 }
-const ledgers = htmlNodes.filter((node) => node.tagName === 'dl' && node.classes.has('grootboek'));
-const ledgerPosts = ledgers.length === 1
-  ? htmlNodes.filter((node) => node.classes.has('grootboek__post') && node.parent === ledgers[0])
+
+// Relatiedeck: negen zelfstandige, tekstuele items en statische bediening.
+const decks = nodes.filter((node) => node.classes.has('relationship-deck') && node.attributes.has('data-relationship-deck'));
+const tracks = nodes.filter((node) => node.tagName === 'ol' && node.classes.has('relationship-track'));
+if (decks.length !== 1 || tracks.length !== 1 || !tracks[0].parent || tracks[0].parent !== decks[0]) {
+  fail('index.html: één relatiedeck met een directe, statische track ontbreekt');
+}
+const slides = tracks.length === 1
+  ? directChildren(tracks[0], 'li').filter((node) => node.attributes.has('data-relation-id'))
   : [];
-if (ledgers.length !== 1 || ledgerPosts.length !== 6) {
-  fail('index.html: het security-grootboek moet exact zes directe posten bevatten');
+const expectedRelations = [
+  ['basic-fit', 'Basic-Fit'],
+  ['eneco', 'Eneco'],
+  ['marktplaats', 'Marktplaats'],
+  ['hollandsnieuwe', 'hollandsnieuwe'],
+  ['gemeente-den-haag', 'Gemeente Den Haag'],
+  ['rtv-oost', 'RTV Oost'],
+  ['veiligheidsregio-zuid-limburg', 'Veiligheidsregio Zuid-Limburg'],
+  ['vechtsteden-notarissen', 'Vechtsteden Notarissen'],
+  ['fc-twente', 'FC Twente'],
+];
+if (slides.length !== expectedRelations.length) {
+  fail(`index.html: relatiedeck bevat ${slides.length} in plaats van negen directe items`);
+} else {
+  slides.forEach((slide, index) => {
+    const [id, name] = expectedRelations[index];
+    if (slide.attributes.get('data-relation-id') !== id || slide.attributes.get('data-relation-name') !== name) {
+      fail(`index.html: relatie ${index + 1} moet '${id}' / '${name}' zijn`);
+    }
+    if (!slide.attributes.get('id')) fail(`index.html: relatie '${id}' mist een stabiel anker-ID`);
+  });
+}
+if (!tracks[0] || tracks[0].attributes.get('tabindex') !== '0' || !tracks[0].attributes.get('aria-describedby')) {
+  fail('index.html: statische relatietrack mist toetsenbordfocus of instructierelatie');
+}
+const pagination = nodes.find((node) => node.classes.has('relationship-pagination'));
+const paginationLinks = pagination ? directChildren(pagination, 'a') : [];
+if (paginationLinks.length !== 9 || paginationLinks.some((link, index) =>
+  link.attributes.get('href') !== `#${slides[index]?.attributes.get('id')}` || !link.attributes.get('aria-label'))) {
+  fail('index.html: de no-JS-relatienavigatie moet negen gelabelde ankerlinks bevatten');
+}
+const enhancement = nodes.filter((node) => node.classes.has('relationship-enhancement') && node.attributes.has('data-deck-enhancement'));
+if (enhancement.length !== 1 || enhancement[0].attributes.get('aria-label') !== 'Slideshowbediening') {
+  fail('index.html: lege, gelabelde enhancement-mount ontbreekt');
+}
+const fcClaim = content.topics.bewijs.claims.find((claim) => claim.id === 'bw-fctwente').text;
+const fcScope = html.match(/<li\b[^>]*data-relation-id="fc-twente"[^>]*>([\s\S]*?)<\/li>/)?.[1] ?? '';
+if (textContent(fcScope).includes(fcClaim) === false || !/data-claim-id="bw-fctwente"/.test(fcScope)) {
+  fail('index.html: FC Twente-item bevat niet de exacte canonieke claim met bronhaak');
+}
+const customerImages = nodes.filter((node) => node.tagName === 'img' && !node.classes.has('brand-logo'));
+if (customerImages.length || /customer-logo|klantlogo|data:image|<svg\b/i.test(html)) {
+  fail('index.html: klantrelaties moeten tekst blijven; klantbeelden of getekende logo’s zijn niet toegestaan');
+}
+if (html.indexOf('data-relationship-deck') > html.indexOf('id="bewijs"')) {
+  fail('index.html: het relatiedeck moet bovenaan in intro vóór de bewijssectie staan');
 }
 
-// --- Claims, CTA's en merkassets ---
+// Canonieke inhoud, strikte formuleringen, CTA's en merkasset.
 checkClaims(html, content, {
   strictVariantTexts: {
     'pos-besparing-30': ['Bespaar 30% van je tijd met één AI-platform.'],
     'pos-nederlands': ['Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.'],
-    'pos-badges': ['EU-gehost', 'ISO 27001 gecertificeerd', 'API-first', 'Model-agnostisch'],
+    'pos-badges': ['EU-gehost, ISO 27001 gecertificeerd, API-first en model-agnostisch.'],
     'pos-award': ['Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.'],
+    'bw-100-klanten': ['We helpen meer dan 100 klanten om AI voor hen te laten werken.', 'Van enterprise tot overheid, bij organisaties die security, governance en betrouwbaarheid serieus nemen.'],
+    'bw-klantnamen': ['Klanten zijn onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
+    'bw-fctwente': [fcClaim],
     'sec-eu': ['Alle data, alle infrastructuur, alle processing binnen de EU.'],
     'sec-iso': ['Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.'],
     'sec-pseudo': ['Persoonlijk identificeerbare informatie wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.'],
     'sec-audit': ['Elke prompt, elke tool-call, elke beslissing wordt vastgelegd in het systeem.'],
     'bo-aftercare': ['Na livegang blijven we betrokken: monitoring, optimalisatie en minimaal één update-sync-meeting per kwartaal.'],
     'bo-support': ['Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.'],
-    'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken', 'Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.'],
-    'bw-klantnamen': ['Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
   },
   requiredClaims: [
     'pos-belofte', 'pos-agentic-platform', 'pos-badges',
+    'bw-100-klanten', 'bw-klantnamen', 'bw-fctwente',
     'dm-kop', 'vvt-veilig', 'vvt-voorspelbaar', 'vvt-transparant',
     'reis-fase-1', 'reis-fase-2', 'reis-fase-3',
-    'ctl-positie', 'ctl-tussen-model-en-proces',
-    'mod-overzicht', 'mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation',
-    'ph-portal', 'ph-headless',
-    'cc-een-plek', 'sec-ontwerp', 'sec-eu', 'sec-iso', 'sec-audit',
-    'pm-markt', 'bo-vijf-stappen', 'bw-100-klanten', 'cv-versnellen',
+    'ctl-positie', 'ctl-tussen-model-en-proces', 'ctl-platformlagen',
+    'mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation',
+    'ph-portal', 'ph-headless', 'cc-een-plek', 'cc-it-kaders',
+    'sec-ontwerp', 'sec-eu', 'sec-iso', 'sec-pseudo', 'sec-audit',
+    'pm-markt', 'pm-laag-artific', 'pm-laag-partners', 'pm-laag-klanten',
+    'bo-vijf-stappen', 'bo-aftercare', 'bo-support', 'cv-versnellen',
   ],
 }, fail);
-checkLinksAndCtas(html, content, { minCtaCount: 5, minCtaHint: 'masthead, intro en slot' }, fail);
+checkLinksAndCtas(html, content, { minCtaCount: 5, minCtaHint: 'header, intro en contact' }, fail);
 checkImages(html, css, brand, root, 'brutalistisch-b', fail);
-
-const logos = htmlNodes.filter((node) => node.tagName === 'img' && node.classes.has('brand-logo'));
-if (logos.length !== 2) fail(`index.html: verwacht exact masthead- en footerlogo, gevonden ${logos.length}`);
-const mastheadLogo = logos.find((node) => node.parent === mastheads[0]);
-if (!mastheadLogo || mastheadLogo.attributes.get('src') !== '../assets/brand/artific-logo-navy.png' ||
-    mastheadLogo.attributes.get('data-brand-logo') !== 'logo-navy' ||
-    mastheadLogo.attributes.get('data-brand-background') !== 'artific-geel') {
-  fail('index.html: de gele masthead moet exact het originele lokale logo-navy-PNG gebruiken');
-}
-const footerLogo = logos.find((node) => node.parent?.tagName === 'footer');
-if (!footerLogo || footerLogo.attributes.get('src') !== '../assets/brand/artific-logo-wit.svg' ||
-    footerLogo.attributes.get('data-brand-logo') !== 'logo-wit' ||
-    footerLogo.attributes.get('data-brand-background') !== 'artific-navy') {
-  fail('index.html: de navy footer moet exact het witte lokale logo gebruiken');
-}
-if (/<svg\b/i.test(html)) fail('index.html: inline SVG is niet toegestaan');
-
-// --- Kleur- en oppervlaktecontracten ---
-checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
-checkContrastUsage(html, css, brand, [
-  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.masthead', backgroundSelector: '.masthead', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.register', backgroundSelector: '.register', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.register__lijst a', backgroundSelector: '.register', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.register__lijst a:hover', backgroundSelector: '.register__lijst a:hover', pairId: 'geel-op-navy' },
-  { foregroundSelector: '.register__lijst a[aria-current="location"]', backgroundSelector: '.register__lijst a[aria-current="location"]', pairId: 'geel-op-navy' },
-  { foregroundSelector: '.folio--geel', backgroundSelector: '.folio--geel', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.folio--donker', backgroundSelector: '.folio--donker', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.folio--slot', backgroundSelector: '.folio--slot', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.folio--geel .margewoord', backgroundSelector: '.folio--geel', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.folio--donker .margewoord', backgroundSelector: '.folio--donker', pairId: 'geel-op-navy' },
-  { foregroundSelector: '.folio--donker .folio__nummer', backgroundSelector: '.folio--donker', pairId: 'geel-op-navy' },
-  { foregroundSelector: '.folio--slot .folio__nummer', backgroundSelector: '.folio--slot', pairId: 'geel-op-navy' },
-  { foregroundSelector: '.reis li::before', backgroundSelector: '.folio--geel', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.kader--niet', backgroundSelector: '.kader--niet', pairId: 'navy-op-lichtblauw' },
-  { foregroundSelector: '.spread__deel', backgroundSelector: '.spread__deel', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.spread__folio', backgroundSelector: '.spread__deel', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.cta--masthead', backgroundSelector: '.cta--masthead', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.cta--zwaar', backgroundSelector: '.cta--zwaar', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.cta--licht', backgroundSelector: '.cta--licht', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.folio--donker .cta--zwaar', backgroundSelector: '.folio--donker .cta--zwaar', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.folio--slot .cta--zwaar', backgroundSelector: '.folio--slot .cta--zwaar', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.folio--donker .cta--licht', backgroundSelector: '.folio--donker .cta--licht', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.folio--slot .cta--licht', backgroundSelector: '.folio--slot .cta--licht', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.colofonvoet', backgroundSelector: '.colofonvoet', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.colofonvoet__noot', backgroundSelector: '.colofonvoet', pairId: 'lichtblauw-op-navy' },
-], fail);
+checkBrandColors([['brutalistisch-b/index.html', html], ['brutalistisch-b/styles.css', css], ['brutalistisch-b/main.js', js]], brand, fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 
-if (/rgba?\(|hsla?\(|color-mix|\btransparent\b|opacity\s*:|visibility\s*:\s*hidden|display\s*:\s*none/.test(css) ||
-    /<[^>]+\shidden(?:\s|=|>)/i.test(html)) {
-  fail('styles.css/index.html: afgeleide kleuren, transparantie of standaard-verborgen inhoud zijn niet toegestaan');
-}
-if (/border-radius|(?:linear|radial|conic)-gradient|blur\(|filter\s*:|box-shadow|text-shadow/.test(css)) {
-  fail('styles.css: afronding, gradients, blur, filters en schaduwen zijn niet toegestaan');
-}
-if (/\b(?:commandobar|sectiecode|plaat|pipeline|signaalstrook|trust-console|module-card|bewijsrail|boekdeel|dossierregel|evidence-index|assurance-ledger)\b/i.test(`${html}\n${css}\n${js}`)) {
-  fail('brutalistisch-b: runtime bevat een verboden signatuur van een zustervariant');
-}
-if (/21st\.dev|magic-mcp/i.test(`${html}\n${css}\n${js}`)) {
-  fail('brutalistisch-b: 21st.dev mag geen runtime-afhankelijkheid zijn');
+const logos = nodes.filter((node) => node.tagName === 'img' && node.classes.has('brand-logo'));
+const logoIsInBrandStage = logos[0] && (() => {
+  for (let ancestor = logos[0].parent; ancestor; ancestor = ancestor.parent) {
+    if (ancestor.classes?.has('brand-stage')) return true;
+  }
+  return false;
+})();
+if (logos.length !== 1 || logos[0].attributes.get('src') !== '../assets/brand/artific-logo-navy.png' ||
+    logos[0].attributes.get('data-brand-background') !== 'artific-geel' || !logoIsInBrandStage) {
+  fail('index.html: exact één officieel navy Artific-logo moet in de gele brand-stage staan');
 }
 
-const stickyRules = cssModel.rules.filter((rule) => normalizeCssValue(rule.declarations.get('position') ?? '') === 'sticky');
-if (stickyRules.length !== 1 || stickyRules[0].selectors.length !== 1 || normalizeSelector(stickyRules[0].selectors[0]) !== '.register') {
-  fail('styles.css: alleen .register mag position: sticky gebruiken');
-}
-if (cssModel.rules.some((rule) => rule.selectors.some((selector) => normalizeSelector(selector) === '.masthead') &&
-    ['sticky', 'fixed'].includes(rule.declarations.get('position')))) {
-  fail('styles.css: de masthead hoort statisch in de documentflow te staan');
-}
-
-// --- Brede desktoptrap en expliciete mobiele reset ---
-const desktopModel = parseCssRules(extractSingleCssBlock(
-  css,
-  /@media\s*\(\s*min-width\s*:\s*1040px\s*\)\s*\{/g,
-  'desktopmediaquery (min-width: 1040px)',
-  fail
-));
-const mobileModel = parseCssRules(extractSingleCssBlock(
-  css,
-  /@media\s*\(\s*max-width\s*:\s*1039px\s*\)\s*\{/g,
-  'mobiele mediaquery (max-width: 1039px)',
-  fail
-));
-const desktopSpreadContracts = [
-  ['.spread', { 'grid-template-columns': 'repeat(12, minmax(0, 1fr))', 'row-gap': '0' }],
-  ['.spread > .spread__deel:nth-child(1)', { 'grid-column': '1 / 11', 'grid-row': '1' }],
-  ['.spread > .spread__deel:nth-child(2)', { 'grid-column': '2 / 12', 'grid-row': '2' }],
-  ['.spread > .spread__deel:nth-child(3)', { 'grid-column': '3 / 13', 'grid-row': '3' }],
-  ['.spread__deel', { 'grid-template-columns': 'minmax(180px, 1fr) minmax(0, 2fr)' }],
+// Geel/navy-oppervlakken, contrast en visuele eigenheid.
+const surfaceContracts = [
+  ['body', 'color', 'var(--navy)'], ['body', 'background-color', 'var(--yellow)'],
+  ['.brand-stage', 'color', 'var(--navy)'], ['.brand-stage', 'background-color', 'var(--yellow)'],
+  ['.section-yellow', 'color', 'var(--navy)'], ['.section-yellow', 'background-color', 'var(--yellow)'],
+  ['.section-navy', 'color', 'var(--white)'], ['.section-navy', 'background-color', 'var(--navy)'],
+  ['.button--navy', 'color', 'var(--white)'], ['.button--navy', 'background-color', 'var(--navy)'],
+  ['.button--yellow', 'color', 'var(--navy)'], ['.button--yellow', 'background-color', 'var(--yellow)'],
+  ['.relationship-card--block', 'color', 'var(--white)'], ['.relationship-card--block', 'background-color', 'var(--navy)'],
+  ['.relationship-card--fc', 'color', 'var(--navy)'], ['.relationship-card--fc', 'background-color', 'var(--light-blue)'],
+  ['.site-footer', 'color', 'var(--white)'], ['.site-footer', 'background-color', 'var(--navy)'],
 ];
-for (const [selector, declarations] of desktopSpreadContracts) {
-  if (!hasCssRule(desktopModel, selector, declarations)) {
-    fail(`styles.css: desktopspread '${selector}' mist zijn brede twaalfkolomscontract`);
-  }
-}
-if (!hasCssRule(mobileModel, '.spread', { 'grid-template-columns': 'minmax(0, 1fr)', width: '100%' })) {
-  fail('styles.css: de spread mist haar volledige lineaire reset onder 1040px');
-}
-for (const selector of [
-  '.spread > .spread__deel',
-  '.spread > .spread__deel:nth-child(1)',
-  '.spread > .spread__deel:nth-child(2)',
-  '.spread > .spread__deel:nth-child(3)',
-]) {
-  if (!hasCssRule(mobileModel, selector, { 'grid-column': 'auto', 'grid-row': 'auto', margin: '0', width: '100%' })) {
-    fail(`styles.css: mobiele spread '${selector}' mist een volledige lineaire reset`);
+for (const [selector, property, value] of surfaceContracts) {
+  const foundValues = declarations(selector, property);
+  const expectedValue = value.replace(/\s+/g, '');
+  if (foundValues.length === 0 || foundValues.some((foundValue) => foundValue.replace(/\s+/g, '') !== expectedValue)) {
+    fail(`styles.css: contrastcontract '${selector} { ${property}: ${value} }' ontbreekt of wordt overschreven`);
   }
 }
 
-// --- Progressive enhancement en korte transformbeweging ---
-checkMotionGuards(html, css, js, fail);
-if (/\b(?:pin|snap|scrollTo|autoScroll|parallax|marquee|scrub)\b/.test(js)) {
-  fail('main.js: voortdurende, gepinde of automatisch scrollende beweging is niet toegestaan');
+const bodyTextContrastSelectors = ['.control-stack .control-stack__core', '.module-block--conversation'];
+const bodyTextContrastHooks = ['.control-stack__core', '.module-block--conversation'];
+const contrastRules = cssModel.rules.filter((rule) => rule.selectors.some((selector) =>
+  bodyTextContrastHooks.some((hook) => selector.includes(hook))
+));
+const contrastCss = [
+  `:root { ${[...cssModel.variables].map(([property, value]) => `${property}: ${value};`).join(' ')} }`,
+  ...contrastRules.map((rule) => `${rule.selectors.join(', ')} { ${[...rule.declarations].map(([property, value]) => `${property}: ${value};`).join(' ')} }`),
+].join('\n');
+checkContrastUsage(html, contrastCss, brand, bodyTextContrastSelectors.map((selector) => ({
+  foregroundSelector: selector,
+  backgroundSelector: selector,
+  pairId: 'wit-op-navy',
+})), fail);
+
+const elementMatchesCompound = (element, rawCompound) => {
+  let compound = rawCompound.replace(/:(?:hover|focus|focus-visible|focus-within|active|target)\b/g, '');
+  for (const match of compound.matchAll(/:not\(([^)]+)\)/g)) {
+    if (elementMatchesCompound(element, match[1])) return false;
+  }
+  compound = compound.replace(/:not\([^)]+\)/g, '');
+  const nthChild = compound.match(/:nth-child\((\d+)\)/);
+  if (nthChild && element.childIndex !== Number(nthChild[1])) return false;
+  compound = compound.replace(/:nth-child\([^)]+\)/g, '');
+  const tagName = compound.match(/^[a-z][\w-]*/i)?.[0];
+  if (tagName && element.tagName !== tagName.toLowerCase()) return false;
+  for (const className of compound.matchAll(/\.([\w-]+)/g)) {
+    if (!element.classes.has(className[1])) return false;
+  }
+  for (const id of compound.matchAll(/#([\w-]+)/g)) {
+    if (element.id !== id[1]) return false;
+  }
+  return true;
+};
+const selectorMatchesChain = (selector, chain) => {
+  const tokens = selector.replace(/\s*>\s*/g, ' > ').trim().split(/\s+/).filter(Boolean);
+  const matchAt = (chainIndex, tokenIndex) => {
+    if (!chain[chainIndex] || tokenIndex < 0 || !elementMatchesCompound(chain[chainIndex], tokens[tokenIndex])) return false;
+    if (tokenIndex === 0) return true;
+    if (tokens[tokenIndex - 1] === '>') return matchAt(chainIndex + 1, tokenIndex - 2);
+    for (let ancestorIndex = chainIndex + 1; ancestorIndex < chain.length; ancestorIndex += 1) {
+      if (matchAt(ancestorIndex, tokenIndex - 1)) return true;
+    }
+    return false;
+  };
+  return !/[+~]/.test(selector) && matchAt(0, tokens.length - 1);
+};
+const selectorSpecificity = (selector) => {
+  const ids = (selector.match(/#[\w-]+/g) ?? []).length;
+  const classes = (selector.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g) ?? []).length;
+  const tags = selector.replace(/:not\(([^)]+)\)/g, ' $1 ')
+    .split(/[\s>+~]+/).filter((part) => /^[a-z]/i.test(part)).length;
+  return ids * 100 + classes * 10 + tags;
+};
+const resolveCssColor = (value) => {
+  let resolved = value?.trim();
+  const variable = resolved?.match(/^var\((--[\w-]+)\)$/)?.[1];
+  if (variable) resolved = cssModel.variables.get(variable);
+  return resolved?.toUpperCase();
+};
+const computedCriticalColors = (chain) => {
+  const winners = { color: null, background: null };
+  cssModel.rules.forEach((rule, sourceIndex) => {
+    rule.selectors.forEach((selector) => {
+      if (!selectorMatchesChain(selector, chain)) return;
+      const specificity = selectorSpecificity(selector);
+      const candidates = [
+        ['color', rule.declarations.get('color')],
+        ['background', rule.declarations.get('background-color') ?? rule.declarations.get('background')],
+      ];
+      candidates.forEach(([property, value]) => {
+        if (!value) return;
+        const winner = winners[property];
+        if (!winner || specificity > winner.specificity || (specificity === winner.specificity && sourceIndex >= winner.sourceIndex)) {
+          winners[property] = { value, specificity, sourceIndex, selector };
+        }
+      });
+    });
+  });
+  return winners;
+};
+const criticalContrastChains = [
+  {
+    label: 'controlelaag-kern',
+    chain: [
+      { tagName: 'div', classes: new Set(['control-stack__core']), childIndex: 2 },
+      { tagName: 'div', classes: new Set(['control-stack']) },
+      { tagName: 'section', classes: new Set(['platform-zone', 'section-navy']) },
+      { tagName: 'main', classes: new Set() },
+      { tagName: 'body', classes: new Set() },
+    ],
+  },
+  {
+    label: 'conversation-module',
+    chain: [
+      { tagName: 'article', classes: new Set(['module-block', 'module-block--conversation']) },
+      { tagName: 'div', classes: new Set(['module-blocks']) },
+      { tagName: 'section', classes: new Set(['platform-zone', 'section-navy']) },
+      { tagName: 'main', classes: new Set() },
+      { tagName: 'body', classes: new Set() },
+    ],
+  },
+];
+for (const { label, chain } of criticalContrastChains) {
+  const computed = computedCriticalColors(chain);
+  if (resolveCssColor(computed.color?.value) !== '#FFFFFF' || resolveCssColor(computed.background?.value) !== '#042244') {
+    fail(`styles.css: cascade voor ${label} moet wit op Deep Navy blijven; gevonden '${computed.color?.selector ?? 'geen kleur'}' / '${computed.background?.selector ?? 'geen achtergrond'}'`);
+  }
 }
-if (/\b(?:width|height|top|right|bottom|left|margin|padding|filter)\s*:/.test(js)) {
-  fail('main.js: motion mag geen layout- of filterproperty animeren');
+
+if ((css.match(/background-image\s*:/g) ?? []).length < 8 ||
+    !/radial-gradient/.test(css) || !/conic-gradient/.test(css) || !/repeating-linear-gradient/.test(css)) {
+  fail('styles.css: gelaagde shader-velden met meerdere goedgekeurde gradientvormen ontbreken');
 }
-if (!/immediateRender:\s*false/.test(js) || !/once:\s*true/.test(js) || !/overwrite:\s*"auto"/.test(js)) {
-  fail('main.js: redactionele entrees missen immediateRender/once/overwrite-afspraken');
+for (const hook of ['relationship-card', 'question-burst', 'module-block', 'control-stack', 'portal-split', 'governance-card', 'partner-relay', 'guidance-steps']) {
+  if (!html.includes(hook) || !css.includes(`.${hook}`)) fail(`brutalistisch-b: onderscheidende kaartvorm '${hook}' ontbreekt`);
 }
-if (!/\.folio__nummer, \[data-marge\]/.test(js) || !/\[data-regel\]/.test(js) || !/\.spread__deel/.test(js)) {
-  fail('main.js: gerichte beweging voor foliolabels, regels en spreadbanden ontbreekt');
+if (!/@media \(max-width: 699px\)/.test(css) || !/@media \(min-width: 700px\)/.test(css) || !/@media \(min-width: 1080px\)/.test(css)) {
+  fail('styles.css: compacte, midden- en brede layoutcontracten ontbreken');
 }
-const spreadOffsetContract = js.match(
-  /var\s+spreadOffset\s*=\s*window\.innerWidth\s*>=\s*1040\s*\?\s*(\d+)\s*:\s*(\d+)/
-);
-if (!spreadOffsetContract || Number(spreadOffsetContract[1]) > 18 || Number(spreadOffsetContract[2]) > 8 ||
-    !/x:\s*index === 1 \? spreadOffset : -spreadOffset/.test(js)) {
-  fail('main.js: de spreadentree mist een desktopoffset van maximaal 18px en mobiele veilige offset van maximaal 8px');
+if (!/overflow-x:\s*auto/.test(css) || !/scroll-snap-type:\s*inline mandatory/.test(css) || !/overflow-wrap:\s*anywhere/.test(css)) {
+  fail('styles.css: begrensde deckscroll, snapping of veilige woordafbreking ontbreekt');
 }
-if (/\w+\.push\(\s*gsap\.to/.test(js)) {
-  fail('main.js: CTA-hover-tweens mogen niet onbeperkt in de redactionele tweenregistratie blijven staan');
+if (!/:focus-visible/.test(css) || !/outline:\s*3px solid/.test(css) || !/scroll-margin-top/.test(css)) {
+  fail('styles.css: focus- of ankercontract ontbreekt');
 }
-if (!/addEventListener\(\s*"change"/.test(js) || !/scrollTrigger\) \{ scrollTrigger\.kill\(\)/.test(js) ||
-    !/gsap\.set\(motionTargets, \{ clearProps: "transform" \}\)/.test(js) || !/gsap\.killTweensOf\(/.test(js)) {
-  fail('main.js: dynamische reduced-motion-opruiming van triggers, CTA-tweens en transforms ontbreekt');
+if (!/@media \(prefers-reduced-motion: reduce\)/.test(css) || !/scroll-behavior:\s*auto/.test(css) ||
+    !/animation-duration:\s*0\.01ms/.test(css) || !/transition-duration:\s*0\.01ms/.test(css)) {
+  fail('styles.css: volledige reduced-motion-afbouw ontbreekt');
+}
+if (/\b(?:opacity\s*:|visibility\s*:\s*hidden|display\s*:\s*none)\b/i.test(css) ||
+    /<[^>]+\s(?:hidden|inert)(?:\s|=|>)/i.test(html)) {
+  fail('brutalistisch-b: kerninhoud mag niet standaard verborgen of inert zijn');
+}
+
+const retiredRuntime = /\b(?:masthead|folio|hoofdstukregister|krantkolom|modulespread|grootboek|tabloid|registertaal)\b/i;
+if (retiredRuntime.test(`${html}\n${css}\n${js}`)) fail('brutalistisch-b: een oude redactionele B-signatuur is teruggekeerd');
+if (/\b(?:commandobar|sectiecode|blueprint-grid|trust-console|bewijsrail|boekdeel|dossierregel|evidence-index|assurance-ledger)\b/i.test(`${html}\n${css}\n${js}`)) {
+  fail('brutalistisch-b: runtime bevat een herkenbare zustervariantsignatuur');
+}
+if (/https?:\/\//.test(js) || /<script(?![^>]*src="main\.js")[^>]*src=/i.test(html) || /fetch\s*\(|XMLHttpRequest|WebSocket/.test(js)) {
+  fail('brutalistisch-b: runtime moet lokaal en netwerk-onafhankelijk blijven');
+}
+if (/21st\.dev|magic(?:-mcp)?|api[_-]?key|x-api-key/i.test(`${html}\n${css}\n${js}\n${design}`)) {
+  fail('brutalistisch-b: externe provider-, configuratie- of secretmarker mag niet in route/documentatie staan');
+}
+
+// Progressieve deckbediening en transform-only motion.
+if (/setInterval|setTimeout|auto(?:play|advance)|\.click\(\)/i.test(js)) fail('main.js: relatiedeck mag niet automatisch doorlopen');
+if (/opacity|\b(?:width|height|top|right|bottom|left|margin|padding)\s*:/.test(js)) {
+  fail('main.js: Web Animations mogen alleen transforms animeren');
+}
+if (/classList\.(?:add|remove)\([^)]*(?:hidden|visible)|style\.(?:display|visibility|opacity)|setAttribute\(["']hidden/.test(js)) {
+  fail('main.js: enhancement mag geen kerninhoud tonen of verbergen');
 }
 
 try {
-  const motionPreference = {
-    matches: false,
-    addEventListener(type, listener) {
-      if (type === 'change') this.changeListener = listener;
+  const listeners = new Map();
+  const animationFrames = [];
+  const makeInteractive = () => ({
+    attributes: new Map(),
+    listeners: new Map(),
+    className: '', type: '', textContent: '',
+    setAttribute(name, value) { this.attributes.set(name, String(value)); },
+    removeAttribute(name) { this.attributes.delete(name); },
+    getAttribute(name) { return this.attributes.get(name) ?? null; },
+    addEventListener(type, listener) { this.listeners.set(type, listener); },
+  });
+  const scrollCalls = [];
+  const slidesStub = expectedRelations.map(([id, name], index) => {
+    const slide = makeInteractive();
+    slide.offsetLeft = index * 300;
+    slide.setAttribute('data-relation-id', id);
+    slide.setAttribute('data-relation-name', name);
+    slide.scrollIntoView = (options) => scrollCalls.push({ index, options });
+    return slide;
+  });
+  const linksStub = expectedRelations.map(() => makeInteractive());
+  const trackStub = makeInteractive();
+  trackStub.scrollLeft = 0;
+  const mountStub = makeInteractive();
+  mountStub.children = [];
+  mountStub.appendChild = (child) => mountStub.children.push(child);
+  const deckStub = {
+    querySelector(selector) {
+      if (selector === '.relationship-track') return trackStub;
+      if (selector === '[data-deck-enhancement]') return mountStub;
+      return null;
     },
-  };
-  const ctaListeners = new Map();
-  const cta = {
-    addEventListener(type, listener) { ctaListeners.set(type, listener); },
-  };
-  const ctaTargets = [cta];
-  let ctaTweenCount = 0;
-  let killedCtaTargets = null;
-  let clearedTargets = null;
-  const gsapStub = {
-    registerPlugin() {},
-    from() { return { kill() {}, scrollTrigger: { kill() {} } }; },
-    to() { ctaTweenCount += 1; return { kill() {} }; },
-    killTweensOf(targets) { killedCtaTargets = targets; },
-    set(targets, vars) {
-      if (vars.clearProps === 'transform') clearedTargets = targets;
-    },
-  };
-  const documentStub = {
     querySelectorAll(selector) {
-      if (selector === '.cta') return ctaTargets;
-      if (selector.includes('.cta')) return ctaTargets;
+      if (selector === '[data-relation-id]') return slidesStub;
+      if (selector === '.relationship-pagination a') return linksStub;
       return [];
     },
-    querySelector() { return null; },
   };
-  runInNewContext(js, {
-    window: {
-      matchMedia() { return motionPreference; },
-      innerWidth: 320,
-      gsap: gsapStub,
-      ScrollTrigger: { create() { return { kill() {} }; } },
-    },
-    document: documentStub,
-  });
+  const motionPreference = {
+    matches: false,
+    addEventListener(type, listener) { if (type === 'change') listeners.set(type, listener); },
+  };
+  let cancelled = 0;
+  const motionCard = { animate() { return { cancel() { cancelled += 1; } }; } };
+  const documentStub = {
+    querySelector(selector) { return selector === '[data-relationship-deck]' ? deckStub : null; },
+    querySelectorAll(selector) { return selector === '[data-motion-card]' ? [motionCard] : []; },
+    createElement() { return makeInteractive(); },
+  };
+  const windowStub = {
+    matchMedia() { return motionPreference; },
+    requestAnimationFrame(callback) { animationFrames.push(callback); },
+  };
+  const flushAnimationFrames = () => {
+    while (animationFrames.length) animationFrames.splice(0).forEach((callback) => callback());
+  };
+  runInNewContext(js, { document: documentStub, window: windowStub, Infinity });
 
-  const enter = ctaListeners.get('mouseenter');
-  const leave = ctaListeners.get('mouseleave');
-  if (!enter || !leave) throw new Error('CTA-hoverhandlers ontbreken');
-  enter({ currentTarget: cta });
-  if (ctaTweenCount !== 1) throw new Error('CTA-hover maakt zonder reduced motion geen tween');
+  if (mountStub.children.length !== 3) throw new Error('enhancement maakt niet twee knoppen en één status');
+  const [previous, next, status] = mountStub.children;
+  if (status.attributes.get('aria-live') !== 'polite' || status.attributes.get('aria-atomic') !== 'true' ||
+      status.textContent !== 'Relatie 1 van 9: Basic-Fit') {
+    throw new Error('initiële live-status klopt niet');
+  }
+
+  linksStub[6].listeners.get('click')?.({ preventDefault() {} });
+  if (scrollCalls.at(-1)?.index !== 6 || scrollCalls.at(-1)?.options.behavior !== 'smooth') {
+    throw new Error('niet-aangrenzende paginatie start niet naar relatie 7');
+  }
+  trackStub.scrollLeft = 300;
+  trackStub.listeners.get('scroll')?.({});
+  if (status.textContent !== 'Relatie 1 van 9: Basic-Fit' || linksStub[0].attributes.get('aria-current') !== 'true') {
+    throw new Error('tussenliggende scroll overschrijft de actieve relatie tijdens programmatische navigatie');
+  }
+
+  next.listeners.get('click')?.({});
+  if (scrollCalls.at(-1)?.index !== 7 || status.textContent !== 'Relatie 1 van 9: Basic-Fit') {
+    throw new Error('snelle Volgende bouwt niet voort op de nog aangevraagde relatie');
+  }
+  flushAnimationFrames();
+  if (status.textContent !== 'Relatie 1 van 9: Basic-Fit') {
+    throw new Error('verouderde scrollcallback commit een tussenliggende relatie');
+  }
+  trackStub.listeners.get('scrollend')?.({});
+  if (status.textContent !== 'Relatie 8 van 9: Vechtsteden Notarissen' || linksStub[7].attributes.get('aria-current') !== 'true') {
+    throw new Error('programmatische beweging commit niet exact eenmaal op de laatst aangevraagde relatie');
+  }
+
+  trackStub.scrollLeft = 1200;
+  trackStub.listeners.get('scroll')?.({});
+  flushAnimationFrames();
+  if (status.textContent !== 'Relatie 5 van 9: Gemeente Den Haag') {
+    throw new Error('handmatig scrollen commit niet vanuit de enige passieve scrollbron');
+  }
+
+  trackStub.listeners.get('keydown')?.({ key: 'End', preventDefault() {} });
+  if (status.textContent !== 'Relatie 5 van 9: Gemeente Den Haag') {
+    throw new Error('End kondigt een relatie aan voordat smooth scroll is gesetteld');
+  }
+  trackStub.listeners.get('scrollend')?.({});
+  if (status.textContent !== 'Relatie 9 van 9: FC Twente') throw new Error('End commit de laatste relatie niet');
+
   motionPreference.matches = true;
-  motionPreference.changeListener?.({ matches: true });
-  const countAfterCleanup = ctaTweenCount;
-  enter({ currentTarget: cta });
-  leave({ currentTarget: cta });
-  if (ctaTweenCount !== countAfterCleanup) throw new Error('CTA-hover maakt na reduced motion nog tweens');
-  if (killedCtaTargets !== ctaTargets) throw new Error('bestaande CTA-tweens worden niet gericht gestopt');
-  if (clearedTargets === null) throw new Error('transforms worden niet gewist');
+  listeners.get('change')?.({ matches: true });
+  next.listeners.get('click')?.({});
+  if (scrollCalls.at(-1)?.options.behavior !== 'auto' || status.textContent !== 'Relatie 1 van 9: Basic-Fit' || cancelled !== 1) {
+    throw new Error('reduced motion stopt animatie, auto-scroll of directe statuscommit niet');
+  }
+  previous.listeners.get('click')?.({});
+  if (status.textContent !== 'Relatie 9 van 9: FC Twente') throw new Error('Vorige wrapt niet veilig bij reduced motion');
 } catch (error) {
-  fail(`main.js: dynamisch reduced-motion-contract voor CTA’s faalt (${error.message})`);
+  fail(`main.js: dependency-vrije gedragscontrole faalt (${error.message})`);
 }
-if (!/aria-current/.test(js)) fail('main.js: registerstatus via aria-current ontbreekt');
 
-// --- Ontwerpdocument en oplevergate ---
-checkDesignDoc(root, 'brutalistisch-b/DESIGN.md', () => read('brutalistisch-b/DESIGN.md'),
-  ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijl', 'Motion', 'Responsief gedrag'], fail);
+checkDesignDoc(root, 'brutalistisch-b/DESIGN.md', () => design,
+  ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijl', 'Motion', 'Responsief gedrag', 'Toegankelijkheid en fallback', 'Provenance'], fail);
 checkBrandGate(brand, 'Brutalistisch B', fail);
 
 if (errors.length) {
@@ -347,4 +477,4 @@ if (errors.length) {
   for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }
-console.log('Variant Brutalistisch B: alle structurele controles geslaagd.');
+console.log('Variant Brutalistisch B: geel/navy-relatiedeck en alle regressiecontracten geslaagd.');
