@@ -29,5 +29,5 @@ createServer(async (req, res) => {
     res.end('404');
   }
 }).listen(port, '0.0.0.0', () => {
-  console.log(`Serveert ${root} op http://localhost:${port}/ — open /brutalistisch-a/ en /minimalistisch/`);
+  console.log(`Serveert ${root} op http://localhost:${port}/ — de keuzepagina op / linkt naar /minimalistisch/, /brutalistisch-a/, /brutalistisch-b/, /conventioneel/ en /premium/`);
 });

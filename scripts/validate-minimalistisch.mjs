@@ -203,6 +203,13 @@ if (!existsSync(join(root, designPath))) {
   for (const hoofdstuk of ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijlen', 'Bewegingsprincipes']) {
     if (!new RegExp(`^#{2,3} .*${hoofdstuk}`, 'im').test(design)) fail(`${designPath}: hoofdstuk '${hoofdstuk}' ontbreekt`);
   }
+  if (!/gefinaliseerd via Google Stitch-MCP/i.test(design)) fail(`${designPath}: provenance verklaart niet dat het document via de Google Stitch-MCP is gefinaliseerd`);
+  if (!/Stitch-project\s*`\d{15,}`/.test(design)) fail(`${designPath}: concreet Stitch-project-ID ontbreekt in de provenance`);
+  if (!/screen\s*`\d{10,}`/.test(design)) fail(`${designPath}: concreet Stitch-screen-ID ontbreekt in de provenance`);
+  if (!/design system\s*`assets\/[0-9a-f]{32}`/.test(design)) fail(`${designPath}: concreet Stitch-design-system-ID ontbreekt in de provenance`);
+  if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld|oplevering geblokkeerd/i.test(design)) {
+    fail(`${designPath}: provenance meldt een open of mislukte Stitch-status; de finalisatie is niet afgerond`);
+  }
 }
 
 // --- oplevergate: de variant is pas opleverbaar met een geverifieerde huisstijlbron ---
