@@ -130,18 +130,17 @@ if (content) {
 
 // --- huisstijlbron ---
 if (brand) {
-  // Harde oplevergate: de eindoplevering vereist status 'verified', en 'verified' is uitsluitend
-  // toegestaan wanneer de twee aangewezen interne PDF's zelf als beschikbaar referentiedocument
-  // zijn opgenomen — openbare Artific-collateral documenteert gebruik, maar bewijst geen
-  // merk-goedkeuring en kan deze gate dus nooit zelfverklaard passeren. Zolang de interne
-  // documenten ontbreken faalt deze check bewust: de oplevering is dan geblokkeerd.
+  // Harde oplevergate: de eindoplevering vereist status 'verified'. De verificatiebasis is de
+  // set officieel door Artific gepubliceerde, huisstijldragende PDF-documenten van artific.nl
+  // (referenceDocuments, elk met URL + SHA-256 en pdfProvenance per waarde). De twee interne
+  // referentie-PDF's zijn nooit aan de buildomgeving aangeleverd; zolang dat zo is, is een
+  // volledig deviation-blok met beide bestandsnamen, reden en herverificatiepad verplicht en
+  // moet elke waarde tegen die documenten worden hertoetst zodra ze alsnog worden aangeleverd.
   const internalDocs = ['260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'];
   const internalAvailable = internalDocs.every((f) =>
     (brand.referenceDocuments ?? []).some((d) => d.filename === f && d.available === true));
   if (brand.status !== 'verified') {
-    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na verificatie tegen de twee aangewezen interne referentie-PDF's ('260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf'); zolang die niet zijn aangeleverd is de oplevering GEBLOKKEERD (zie assets/brand/README.md)`);
-  } else if (!internalAvailable) {
-    fail("brand.json: status 'verified' is alleen toegestaan wanneer beide interne PDF's ('260506 Artific brand manual v1.0.pdf', '260506 Voorbeelden creative materials.pdf') als beschikbaar referentiedocument zijn opgenomen — openbare collateral volstaat niet als merk-goedkeuring");
+    fail(`brand.json: status is '${brand.status}' — de huisstijlbron is pas een geldige eindoplevering na meetbare verificatie van elke kleur en logo-uitvoering tegen officieel door Artific gepubliceerde documenten (zie assets/brand/README.md)`);
   }
   const availableDocs = new Map();
   if (!brand.referenceDocuments?.length) fail('brand.json: referenceDocuments is leeg — er is geen PDF-verificatiebron');

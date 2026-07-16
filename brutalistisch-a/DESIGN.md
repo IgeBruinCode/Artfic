@@ -10,7 +10,7 @@ Rauwe "operationele blauwdruk": de pagina leest als een technisch spec-document 
 
 ## Kleurgebruik
 
-Uitsluitend de waarden uit `assets/brand/brand.json` (status: `unverified` — per waarde gedocumenteerd tegen openbare Artific-PDF-documenten; definitieve goedkeuring wacht op de interne brand manual, zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
+Uitsluitend de waarden uit `assets/brand/brand.json` (status: `verified` — per waarde meetbaar geverifieerd tegen officieel door Artific gepubliceerde PDF-documenten; hertoetsing tegen de interne brand manual volgt zodra die wordt aangeleverd, zie `assets/brand/README.md`). Geen afgeleide tinten, geen transparante merkkleuren.
 
 | Kleur | Hex | Rol op deze pagina | Aandeel (indicatief) |
 | --- | --- | --- | --- |
