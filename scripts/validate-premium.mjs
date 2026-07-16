@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import {
   checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkDesignDoc, checkDocumentMetadata,
   checkImages, checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
+  extractSingleCssBlock, hasCssRule, parseCssRules, parseHtmlNodes,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -31,56 +32,208 @@ if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.te
 }
 if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
 
-// --- eigen dossierstructuur: statische donkere header, één evidence-index, drie maturity-fasen,
-// --- één controle-architectuur met drie lagen, drie modulehoofdstukken, assurance-ledger, vijf stappen ---
-const openingTags = [...html.matchAll(/<[a-z0-9]+\b[^>]*>/g)].map((match) => match[0]);
-const hasAttributeToken = (tag, attribute, token) => {
-  const value = tag.match(new RegExp(`\\s${attribute}="([^"]*)"`))?.[1];
-  return value?.split(/\s+/).includes(token) ?? false;
+// --- eigen dossierstructuur: statische donkere header, gerichte evidencegroepen,
+// --- brede moduletrap, assurance-ledger en vijf begeleidingsstappen ---
+const nodes = parseHtmlNodes(html);
+const nodesWithClass = (token) => nodes.filter((node) => node.classes.has(token));
+const directChildrenWithClass = (parent, token) =>
+  nodes.filter((node) => node.parent === parent && node.classes.has(token));
+const hasExactValues = (actual, expected) =>
+  actual.length === expected.length && actual.every((value, index) => value === expected[index]);
+const isDescendantOf = (node, ancestor) => {
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent === ancestor) return true;
+  }
+  return false;
 };
-const tagsWithClass = (token) => openingTags.filter((tag) => hasAttributeToken(tag, 'class', token));
+const cssModel = parseCssRules(css);
 
-if (tagsWithClass('premium-header').length !== 1) fail('index.html: premium-header ontbreekt');
-if (/\.premium-header\s*{[^}]*position:\s*(sticky|fixed)/s.test(css)) fail('styles.css: de premium-header is bewust statisch, niet sticky');
-const navAnchors = [...(html.match(/class="premium-header__nav"[\s\S]*?<\/nav>/)?.[0] ?? '').matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
-if (!navAnchors.length) fail('index.html: lokale sectienavigatie in de header ontbreekt');
-for (const anchor of navAnchors) {
-  if (!html.includes(`id="${anchor}"`)) fail(`index.html: navigatieanker '#${anchor}' wijst naar een niet-bestaand ID`);
+const headers = nodesWithClass('premium-header');
+if (headers.length !== 1) fail(`index.html: verwacht exact één premium-header, gevonden ${headers.length}`);
+if (!hasCssRule(cssModel, '.premium-header', { position: 'static' })) {
+  fail('styles.css: de premium-header hoort expliciet statisch in de documentflow te staan');
 }
-if (tagsWithClass('evidence-index').length !== 1) fail('index.html: verwacht exact één evidence-index');
-if (tagsWithClass('evidence-index__regel').length < 4) fail('index.html: de evidence-index hoort minimaal vier traceerbare bewijsregels te bevatten');
-if (tagsWithClass('maturity-track__fase').length !== 3) fail('index.html: verwacht exact drie maturity-fasen');
-if (tagsWithClass('controle-architectuur').length !== 1) fail('index.html: verwacht exact één controle-architectuur');
-if (tagsWithClass('controle-architectuur__laag').length !== 3) fail('index.html: de controle-architectuur hoort drie lagen (modellen → Artific → processen) te tonen');
-const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-const moduleTags = tagsWithClass('module-sequence__hoofdstuk');
-const hasAllModuleClaims = moduleClaims.every((claimId) =>
-  moduleTags.some((tag) => hasAttributeToken(tag, 'data-claim-id', claimId))
-);
-if (moduleTags.length !== 3 || !hasAllModuleClaims) {
-  fail('index.html: verwacht exact drie module-sequence-hoofdstukken met de drie canonieke moduleclaims');
-}
-if (tagsWithClass('assurance-ledger__item').length < 6) fail('index.html: het assurance-ledger hoort minimaal zes onderbouwde items te bevatten');
-if (tagsWithClass('begeleiding__stap').length !== 5) fail('index.html: verwacht exact vijf begeleidingsstappen');
-// Verbod op signaturen van de vier zustervarianten: dit moet een zelfstandige dossiercompositie zijn.
-for (const [file, text] of [['index.html', html], ['styles.css', css], ['main.js', js]]) {
-  for (const signatuur of ['commandobar', 'sectiecode', 'plaat', 'folio', 'register', 'spread', 'margewoord', 'trust-console', 'bewijsrail', 'module-card', 'saas-header']) {
-    if (new RegExp(`(class="[^"]*|\\.)${signatuur}(?![A-Za-z])`).test(text)) fail(`${file}: zustervariant-signatuur '${signatuur}' hoort niet in variant Premium`);
+for (const rule of cssModel.rules) {
+  if (!rule.selectors.some((selector) => selector.includes('.premium-header'))) continue;
+  if (['sticky', 'fixed'].includes(rule.declarations.get('position'))) {
+    fail('styles.css: geen enkele premium-header-regel mag sticky of fixed positioneren');
   }
 }
-if (/<svg/i.test(html)) fail('index.html: inline SVG is niet toegestaan; alleen de twee logo-bestanden');
-if (/linear-gradient|radial-gradient|conic-gradient|blur\(|rgba?\(|hsla?\(|color-mix|box-shadow|border-radius|opacity:\s*0[^;]/.test(css)) {
-  fail('styles.css: gradients, blur, schaduwen, afronding of afgeleide/transparante kleuren zijn niet toegestaan');
+const navs = nodesWithClass('premium-header__nav');
+const expectedNavHrefs = ['#bewijs', '#visie', '#platform', '#governance', '#aanpak'];
+const navLinks = navs.length === 1
+  ? nodes.filter((node) => node.tagName === 'a' && isDescendantOf(node, navs[0]))
+  : [];
+const navHrefs = navLinks.map((node) => node.attributes.get('href'));
+if (navs.length !== 1 || !hasExactValues(navHrefs, expectedNavHrefs)) {
+  fail(`index.html: headernavigatie moet exact vijf lokale links in vaste volgorde bevatten (${expectedNavHrefs.join(', ')})`);
 }
-const displayNones = css.match(/display:\s*none/g) ?? [];
-const hasAllowedDisplayNone = displayNones.length === 0 || (
-  displayNones.length === 1 &&
-  /@media \(max-width: \d+px\) {\s*\.premium-header__nav\s*{\s*display:\s*none;?\s*}/.test(css)
-);
-if (!hasAllowedDisplayNone) {
-  fail('styles.css: display:none is uitsluitend toegestaan voor .premium-header__nav in één max-width-mediaquery');
+for (const href of navHrefs) {
+  if (!href?.startsWith('#') || !nodes.some((node) => node.attributes.get('id') === href.slice(1))) {
+    fail(`index.html: navigatieanker '${href}' wijst naar een niet-bestaand ID`);
+  }
 }
-if (/visibility:\s*hidden/.test(css)) fail('styles.css: standaard verborgen inhoud is niet toegestaan');
+for (const rule of cssModel.rules) {
+  if (!rule.selectors.some((selector) => selector.includes('.premium-header__nav'))) continue;
+  if (rule.declarations.get('display') === 'none' || rule.declarations.get('visibility') === 'hidden') {
+    fail('styles.css: de lokale headernavigatie mag op geen enkele breedte worden verborgen');
+  }
+}
+
+const evidence = nodesWithClass('evidence-index');
+if (evidence.length !== 1 || directChildrenWithClass(evidence[0], 'evidence-index__regel').length !== 5) {
+  fail('index.html: verwacht één evidence-index met exact vijf directe bewijsregels');
+}
+const maturity = nodesWithClass('maturity-track');
+if (maturity.length !== 1 || directChildrenWithClass(maturity[0], 'maturity-track__fase').length !== 3) {
+  fail('index.html: verwacht één maturity-track met exact drie directe fasen');
+}
+const architecture = nodesWithClass('controle-architectuur');
+if (architecture.length !== 1 || directChildrenWithClass(architecture[0], 'controle-architectuur__laag').length !== 3) {
+  fail('index.html: verwacht één controle-architectuur met drie directe lagen');
+}
+const modules = nodesWithClass('module-sequence');
+const moduleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
+const moduleItems = modules.length === 1 ? directChildrenWithClass(modules[0], 'module-sequence__hoofdstuk') : [];
+if (modules.length !== 1 || !hasExactValues(
+  moduleItems.map((node) => node.attributes.get('data-claim-id')),
+  moduleClaims,
+)) {
+  fail('index.html: verwacht exact drie directe modulehoofdstukken in canonieke volgorde');
+}
+const assurance = nodesWithClass('assurance-ledger');
+const assuranceClaims = ['sec-eu', 'sec-iso', 'sec-pseudo', 'sec-model-agnostisch', 'sec-access', 'sec-audit'];
+const assuranceItems = assurance.length === 1 ? directChildrenWithClass(assurance[0], 'assurance-ledger__item') : [];
+if (assurance.length !== 1 || !hasExactValues(
+  assuranceItems.map((node) => node.attributes.get('data-claim-id')),
+  assuranceClaims,
+)) {
+  fail('index.html: assurance-ledger moet exact zes canonieke items in vaste volgorde bevatten');
+}
+if (nodesWithClass('begeleiding__stap').length !== 5) fail('index.html: verwacht exact vijf begeleidingsstappen');
+if (nodes.filter((node) => node.attributes.has('data-motion-heading')).length !== 8) {
+  fail('index.html: de acht hoofdheadings moeten exact de gerichte motionhook dragen');
+}
+for (const group of ['evidence', 'maturity', 'controle', 'modules', 'assurance']) {
+  if (nodes.filter((node) => node.attributes.get('data-motion-group') === group).length !== 1) {
+    fail(`index.html: verwacht exact één gerichte motiongroep '${group}'`);
+  }
+}
+
+const desktopCss = extractSingleCssBlock(css, /@media\s*\(min-width:\s*1040px\)\s*{/g, 'dossiergrid vanaf 1040px', fail);
+const desktopModel = parseCssRules(desktopCss);
+if (!hasCssRule(desktopModel, '.boekdeel > .kader', {
+  display: 'grid', 'grid-template-columns': 'repeat(12, minmax(0, 1fr))', 'column-gap': 'var(--r-3)',
+})) {
+  fail('styles.css: het algemene twaalfkoloms dossiergrid met 24px gutter ontbreekt vanaf 1040px');
+}
+if (!hasCssRule(desktopModel, '.module-sequence', {
+  display: 'grid', 'grid-template-columns': 'repeat(12, minmax(0, 1fr))',
+})) {
+  fail('styles.css: .module-sequence mist het twaalfkoloms desktopgrid vanaf 1040px');
+}
+for (const [index, column, row] of [[1, '1 / 11', '1'], [2, '2 / 12', '2'], [3, '3 / 13', '3']]) {
+  if (!hasCssRule(desktopModel, `.module-sequence__hoofdstuk:nth-child(${index})`, {
+    'grid-column': column, 'grid-row': row,
+  })) {
+    fail(`styles.css: module ${index} mist desktopplaatsing ${column} op rij ${row}`);
+  }
+}
+const mobileCss = extractSingleCssBlock(css, /@media\s*\(max-width:\s*1039px\)\s*{/g, 'lineaire module-reset t/m 1039px', fail);
+const mobileModel = parseCssRules(mobileCss);
+if (!hasCssRule(mobileModel, '.module-sequence', {
+  display: 'grid', 'grid-template-columns': 'minmax(0, 1fr)', 'grid-template-rows': 'auto',
+  width: '100%', 'margin-left': '0', 'margin-right': '0',
+}) || !hasCssRule(mobileModel, '.module-sequence__hoofdstuk', {
+  display: 'block', 'grid-column': '1 / -1', 'grid-row': 'auto', width: '100%', margin: '0',
+})) {
+  fail('styles.css: volledige lineaire module-reset t/m 1039px ontbreekt');
+}
+
+const moduleItemSelector = (selector) => {
+  const token = '.module-sequence__hoofdstuk';
+  const index = selector.lastIndexOf(token);
+  if (index === -1) return false;
+  const suffix = selector.slice(index + token.length).trim();
+  return suffix === '' || /^[:.#\[]/.test(suffix);
+};
+const modulePlacementProperties = new Set([
+  'grid-area', 'grid-column', 'grid-column-start', 'grid-column-end',
+  'grid-row', 'grid-row-start', 'grid-row-end',
+  'width', 'min-width', 'max-width', 'inline-size', 'min-inline-size', 'max-inline-size',
+  'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+  'margin-block', 'margin-block-start', 'margin-block-end',
+  'margin-inline', 'margin-inline-start', 'margin-inline-end',
+  'left', 'right', 'inset', 'inset-inline', 'inset-inline-start', 'inset-inline-end',
+  'translate', 'transform', 'justify-self', 'order', 'position',
+]);
+const placementDeclarations = (rule) => [...rule.declarations]
+  .filter(([property]) => modulePlacementProperties.has(property));
+
+const cssOutsideModuleQueries = css.replace(desktopCss, '').replace(mobileCss, '');
+for (const rule of parseCssRules(cssOutsideModuleQueries).rules) {
+  if (!rule.selectors.some(moduleItemSelector)) continue;
+  for (const [property] of placementDeclarations(rule)) {
+    fail(`styles.css: module-itemplaatsing '${property}' is uitsluitend toegestaan binnen de 1040px-desktopquery of 1039px-reset`);
+  }
+}
+
+const safeMobilePlacement = new Map([
+  ['grid-column', '1/-1'],
+  ['grid-row', 'auto'],
+  ['width', '100%'], ['inline-size', '100%'],
+  ['margin', '0'],
+  ['margin-top', '0'], ['margin-right', '0'], ['margin-bottom', '0'], ['margin-left', '0'],
+  ['margin-block', '0'], ['margin-block-start', '0'], ['margin-block-end', '0'],
+  ['margin-inline', '0'], ['margin-inline-start', '0'], ['margin-inline-end', '0'],
+  ['left', 'auto'], ['right', 'auto'],
+  ['inset', 'auto'], ['inset-inline', 'auto'], ['inset-inline-start', 'auto'], ['inset-inline-end', 'auto'],
+  ['translate', 'none'], ['transform', 'none'], ['justify-self', 'stretch'],
+]);
+for (const rule of mobileModel.rules) {
+  if (!rule.selectors.some(moduleItemSelector)) continue;
+  for (const [property, value] of placementDeclarations(rule)) {
+    const expected = safeMobilePlacement.get(property);
+    if (expected === undefined || value.replace(/\s+/g, '') !== expected) {
+      fail(`styles.css: conflicterende mobiele moduleplaatsing '${property}: ${value}' overschrijft de lineaire 1039px-reset`);
+    }
+  }
+}
+
+const tabletEvidenceCss = extractSingleCssBlock(css, /@media\s*\(max-width:\s*768px\)\s*{/g, 'evidence-reset t/m exact 768px', fail);
+const tabletEvidenceModel = parseCssRules(tabletEvidenceCss);
+if (/\.premium-header/.test(tabletEvidenceCss)) {
+  fail('styles.css: de componentreset op 768px mag de aparte vijf-link-headerindeling niet wijzigen');
+}
+if (!hasCssRule(tabletEvidenceModel, '.evidence-index__regel', {
+  'grid-template-columns': 'minmax(180px, 4fr) minmax(0, 8fr)',
+}) || !hasCssRule(tabletEvidenceModel, '.maturity-track', {
+  'grid-template-columns': 'minmax(0, 1fr)',
+}) || !hasCssRule(tabletEvidenceModel, '.controle-architectuur', {
+  'grid-template-columns': 'minmax(0, 1fr)',
+})) {
+  fail('styles.css: evidence-index, maturity-track en controle-architectuur missen hun leesbare reset op exact 768px');
+}
+
+// Premium blijft een zelfstandig dossier zonder card-, tabloid- of blueprintsignaturen.
+for (const [file, text] of [['index.html', html], ['styles.css', css], ['main.js', js]]) {
+  for (const signatuur of [
+    'commandobar', 'sectiecode', 'plaat', 'folio', 'register', 'spread', 'margewoord',
+    'trust-console', 'bewijsrail', 'module-card', 'saas-header',
+  ]) {
+    if (new RegExp(`(class="[^"]*|\\.)${signatuur}(?![A-Za-z])`).test(text)) {
+      fail(`${file}: zustervariant-signatuur '${signatuur}' hoort niet in variant Premium`);
+    }
+  }
+}
+if (/<svg/i.test(html)) fail('index.html: inline SVG is niet toegestaan; alleen lokale logo-bestanden');
+if (/21st\.dev/i.test(`${html}\n${css}\n${js}`)) fail('runtimebestanden: 21st.dev-runtimeverwijzing is niet toegestaan');
+if (/linear-gradient|radial-gradient|conic-gradient|blur\(|rgba?\(|hsla?\(|color-mix|\btransparent\b|(?:box|text)-shadow\s*:|border-radius\s*:/i.test(css) || /\bfilter\s*:(?!\s*none)/i.test(css)) {
+  fail('styles.css: gradients, blur/filter, schaduwen, afronding of transparante/afgeleide kleuren zijn niet toegestaan');
+}
+if (/display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0(?:\D|$)/i.test(css)) {
+  fail('styles.css: inhoud of navigatie mag niet standaard of responsief worden verborgen');
+}
 
 // --- claims (gedeeld, met per-variant vastgelegde strikte teksten) ---
 checkClaims(html, content, {
@@ -126,6 +279,8 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
   { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
   { foregroundSelector: '.premium-header', backgroundSelector: '.premium-header', pairId: 'wit-op-navy' },
+  { foregroundSelector: '.premium-header__nav a', backgroundSelector: '.premium-header', pairId: 'wit-op-navy' },
+  { foregroundSelector: 'body', backgroundSelector: '.boekdeel--tint', pairId: 'navy-op-lichtblauw' },
   { foregroundSelector: '.cta--accent', backgroundSelector: '.cta--accent', pairId: 'navy-op-geel' },
   { foregroundSelector: '.cta--accent:hover', backgroundSelector: '.cta--accent:hover', pairId: 'navy-op-wit' },
   { foregroundSelector: '.cta--omlijnd', backgroundSelector: '.boekdeel--donker', pairId: 'wit-op-navy' },
@@ -142,15 +297,31 @@ checkContrastUsage(html, css, brand, [
 ], fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 
-// --- progressive enhancement & motion (gedeeld + variantdoelen) ---
+// --- progressive enhancement & gerichte transform-motion ---
 checkMotionGuards(html, css, js, fail);
-for (const doel of ['data-hoofdstuk', 'data-hairline', 'data-index']) {
-  if (new RegExp(`\\[${doel}\\]`).test(js) && !new RegExp(`\\s${doel}[\\s>]`).test(html)) {
-    fail(`index.html: main.js animeert ${doel}-doelen maar de pagina bevat er geen`);
+if (!/data-motion-heading/.test(js) || !/data-hairline/.test(js)) {
+  fail('HTML/main.js: gerichte heading- of hairline-motion ontbreekt');
+}
+for (const group of ['evidence', 'maturity', 'controle', 'modules', 'assurance']) {
+  if (!js.includes(`name: "${group}"`)) {
+    fail(`main.js: gerichte motiongroep '${group}' is niet gekoppeld`);
   }
 }
-if (!/scaleX/.test(js)) fail('main.js: de hairline-opbouw (scaleX) ontbreekt');
-if (/pin:|scrollTo|marquee/i.test(js)) fail('main.js: pinning, scroll-jacking of marquee is niet toegestaan');
+if (!/scaleX/.test(js)) fail('main.js: de hairline-opbouw met scaleX ontbreekt');
+if (/\b(?:opacity|filter|clipPath|height|width|top|left|margin|padding)\s*:/.test(js)) {
+  fail('main.js: dossiermotion mag uitsluitend transform-properties gebruiken');
+}
+if (/\b(?:pin|scrub|snap|toggleActions|repeat)\s*:|ScrollToPlugin|scrollTo\s*:|marquee|parallax/i.test(js)) {
+  fail('main.js: pinning, scrub, herhaling of automatische scroll is niet toegestaan');
+}
+for (const contract of ['immediateRender: false', 'once: true', 'overwrite: "auto"', 'clearProps: "transform"']) {
+  if (!js.includes(contract)) fail(`main.js: motioncontract '${contract}' ontbreekt`);
+}
+if (!/function groupEntrance/.test(js) || !/cleanupTargets\.add\(target\)/.test(js) ||
+    !/addEventListener\("change"/.test(js) || !/function stopMotion/.test(js) ||
+    !/\.kill\(\)/.test(js) || !/removeProperty\("transform"\)/.test(js)) {
+  fail('main.js: dynamische reduced-motion-opruiming van triggers, tweens en transforms ontbreekt');
+}
 
 // --- ontwerpdocument & oplevergate ---
 const designPath = 'premium/DESIGN.md';

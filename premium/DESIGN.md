@@ -8,45 +8,50 @@ Stijlgids voor de landingspagina op `/premium/`. Dit document beschrijft de daad
 
 ## Ontwerpprincipes
 
-Een high-end "executive evidence dossier": de pagina leest als een zorgvuldig gebonden bestuursdocument. Donkere marineblauwe boekdelen openen en sluiten de route (hero, governance, slot), lichte en getinte boekdelen dragen de bewijsvoering. Elke sectie begint met een dossierregel — decoratief indexnummer, hairline en sectielabel — die de doorlopende scroll als hoofdstukken markeert. Autoriteit komt uit ritme, typografische precisie en bewijsgerichte inhoud; er zijn geen goud-/luxemotieven, gradients, schaduwen, afgeronde cards, glas-effecten, stockbeelden of AI-illustraties. Het enige beeldmateriaal is het witte Artific-logo op de donkere header en footer.
+Een high-end executive evidence dossier: de pagina leest als een zorgvuldig gebonden bestuursdocument. Donkere navy boekdelen openen en sluiten de route en dragen governance; witte en lichtblauwe boekdelen ordenen de bewijsvoering. Elke sectie begint met een dossierregel van index, hairline en label. Autoriteit komt uit vaste assen, doorlopende bewijsrails, typografische precisie en inhoudelijk ritme — niet uit cards, serif-folio's, dashboardpatronen, schaduwen of decoratieve luxe.
 
 ## Kleurgebruik
 
-Uitsluitend de bevestigde waarden uit `assets/brand/brand.json` (status: `verified`). Geen afgeleide tinten, geen transparante merkkleuren, geen gradients of blur.
+Uitsluitend de bevestigde waarden uit `assets/brand/brand.json` (status: `verified`). Geen afgeleide tinten, transparantie, gradients of blur.
 
-- `#042244` (Artific Navy) — donkere boekdelen: header, hero (`#intro`), governance (`#governance`), slot (`#contact`) en footer; daarnaast lopende tekst/hairlines op licht en de Artific-laag (één CSS-token `--navy`).
-- `#FFFFFF` (wit) — lichte boekdelen (`#bewijs`, `#controlelaag`, `#aanpak`) en tekst op donker.
-- `#E5EDF8` (lichtblauw) — getinte boekdelen (`#visie`, `#platform`) en subtiele scheidingslijnen in de evidence-index.
-- `#287CEB` (blauw) — uitsluitend lijnen en decoratieve, `aria-hidden` indexnummers op licht, hairlines, dunne CTA- en hero-margeranden; nooit als kleine betekenisvolle tekst op licht (contrast onder AA).
-- `#FFD602` (Artific-geel) — schaars accent: primaire CTA (`.cta--accent`), indexnummers en ledger-termen op donker, conclusiestreep en de focusring op donkere oppervlakken. Nadrukkelijk een Artific-accent, geen luxe-goudmotief.
+- `#042244` (Artific Navy) — header, hero, governance, slot, footer, tekst en betekenisvolle lijnen op licht.
+- `#FFFFFF` (wit) — lichte boekdelen en lopende tekst op navy.
+- `#E5EDF8` (Artific Light Blue) — getinte boekdelen en lichte evidence-scheidingen.
+- `#287CEB` (Artific Blue) — hairlines, randen en decoratieve, `aria-hidden` indexcijfers op licht.
+- `#FFD602` (Artific Yellow) — primaire CTA, indexcijfers en ledger-termen op navy en focus op donkere oppervlakken.
 
-Contrast (oppervlakte-afhankelijke regel): kleine betekenisvolle tekst is altijd donkerblauw op wit/lichtblauw (≥ 12:1) of wit/oranjegeel op marineblauw; helder blauw `#287CEB` is op lichte vlakken gereserveerd voor lijnen en decoratieve indexcijfers omdat het bij kleine tekst onder WCAG AA blijft (≈ 4,06:1 op wit, ≈ 3,44:1 op lichtblauw). De evidence-termen en maturity-koppen zijn daarom donkerblauw. De oranjegele CTA draagt marineblauwe tekst (contrast ≈ 11,3:1).
+Kleine betekenisvolle tekst gebruikt navy op wit/Light Blue of wit/Artific Yellow op navy. Artific Blue blijft op lichte vlakken beperkt tot decoratieve cijfers en lijnen. Focus is 3px navy op licht en 3px Artific Yellow op navy, steeds met 3px offset.
 
 ## Spacing
 
-8px-schaal via CSS-variabelen (`--r-1` 8px t/m `--r-12` 96px). Boekdelen krijgen royale verticale ruimte `clamp(64px, 12vh, 144px)`; de dossierregel houdt `clamp(32px, 6vh, 64px)` afstand tot de sectiekop; tussenkoppen `--r-12` (96px, tablet 64px). Het kader is maximaal 1280px breed met zijruimte `clamp(20px, 5vw, 64px)`; composities gebruiken grid-gaps van 24–96px op dezelfde schaal.
+De 8px-schaal loopt van `--r-1` (8px) tot `--r-12` (96px). Boekdelen gebruiken `clamp(72px, 9vw, 128px)`; dossierregels houden `clamp(32px, 5vw, 64px)` tot de sectiekop. Het kader is maximaal 1280px met `clamp(20px, 5vw, 64px)` zijruimte. Vanaf 1040px gebruikt ieder `.boekdeel > .kader` twaalf kolommen met een vaste 24px gutter (`--r-3`). Hoofdcomponenten en dossierregels beslaan alle twaalf kolommen; H2's lopen over 1–8, leestekst/conclusies over 3–9 en tussenkoppen over 2–9.
 
 ## Visuele hiërarchie
 
-Eén H1 in de hero; per hoofdsectie één H2, met logisch geneste H3/H4 (vragen, fasen, modules, lagen, stappen). Koppen zijn licht tot middelzwaar (gewicht 450–500) in een lokale humanist-/neo-groteskstack (`"Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif`) met negatieve letterspatiëring (−0.015em) en `text-wrap: balance`. Dossierregels en ledger-termen contrasteren met kleine kapitalen op ruime letterspatiëring (0.06–0.22em). Bodyregels blijven binnen 62ch (`--leesbreedte`); ondersteunende tekst is 0.9375rem. De hero is asymmetrisch: 7/4-grid met een grote stelling links en een dunne, blauw omlijnde bewijsmarge rechts.
+Eén H1 opent het dossier; de acht hoofdheadings vormen de primaire leeslijn. Koppen staan licht tot middelzwaar (450–500) in de lokale humanist-/neo-groteskstack. Dossierregels en ledger-termen gebruiken kleine kapitalen met ruime letterspatiëring. Bodyregels blijven binnen 62ch. De hero behoudt een asymmetrische 7/4-verdeling; de vaste desktopassen laten daarna kop, beslisserskolom en dossierbrede bewijsgroepen bewust van elkaar verschillen.
 
 ## Componentstijlen
 
-- **Dossierregel** — index (tabulaire cijfers, blauw op licht, oranjegeel op donker) + 1px hairline + uppercase sectielabel; markeert elk hoofdstuk.
-- **Evidence-index** (`#bewijs`) — definitielijst met hairline-regels: uppercase donkerblauwe term links, traceerbare claim rechts; boven- en onderrand donkerblauw, tussenlijnen lichtblauw.
-- **Vraag-ledger & maturity-track** (`#visie`) — driekoloms rijen met 1–2px topregels; geen cards of iconen.
-- **Controle-architectuur** (`#controlelaag`) — drie aaneengesloten omlijnde lagen (modellen → Artific → processen); de Artific-laag is gevuld donkerblauw met oranjegele kop.
-- **Module-sequence** (`#platform`) — drie grote modulehoofdstukken als 3/4/5-grid-rijen, verbonden door hairlines; module-nummer, grote H3 en toepassing per rij.
-- **Assurance-ledger** (`#governance`) — tweekoloms grootboek op donker: oranjegele uppercase termen, witte toelichting, blauwe onderlijnen.
-- **Begeleiding** (`#aanpak`) — vijf kolommen met geautonummerde stappen (`01`–`05`) boven dunne topregels.
-- **CTA's** — rechthoekig (geen afronding): oranjegeel gevuld (`.cta--accent`), wit omlijnd op donker (`.cta--omlijnd`), wit gevuld in de header (`.cta--licht`); minimaal 44–48px hoog. Focus: 3px outline met 3px offset, oppervlakte-afhankelijk — donkerblauw op lichte vlakken (≥ 3:1), oranjegeel op de donkere header/footer/boekdelen en de skiplink.
+- **Dossierregel** — tabulair indexcijfer, 1px Artific Blue-hairline en uppercase hoofdstuklabel.
+- **Evidence-index** — vijf dossierbrede bewijsregels met een vaste termkolom van minimaal 220px en een ruime bewijskolom; navy buitenregels en Light Blue tussenlijnen.
+- **Maturity-track** — één doorlopende 2px bovenrail met drie aangesloten fasen en verticale registratielijnen.
+- **Controle-architectuur** — drie aaneengesloten lagen modellen → Artific → processen; de centrale Artific-laag is navy met Artific Yellow-kop.
+- **Module-sequence** — vanaf 1040px een dossierbreed twaalfkoloms raster. De drie open banden staan op afzonderlijke rijen en beslaan tien kolommen: 1/11, 2/12 en 3/13. Iedere band gebruikt intern nummer, grote titel, toelichting en een detailregel, verbonden door rechte hairlines.
+- **Assurance-ledger** — op navy een tweekoloms grootboek; elk item ordent Artific Yellow-term en witte toelichting op een eigen 4/8-as.
+- **Begeleiding** — vijf geautonummerde stappen boven dunne topregels.
+- **CTA's** — rechte doelen van minimaal 44–48px; Artific Yellow gevuld, wit omlijnd of wit gevuld, afhankelijk van het oppervlak.
 
 ## Motion
 
-GSAP 3.12.5 + ScrollTrigger via gepinde jsDelivr-CDN met `defer`, uitsluitend progressive enhancement. Guards stoppen vóór pluginregistratie bij `prefers-reduced-motion: reduce` of ontbrekende `window.gsap`/`window.ScrollTrigger`. Effecten: sectiekoppen en modulehoofdstukken (`[data-hoofdstuk]`) schuiven eenmalig 14px in (0.6s, power2.out, `once`), hairlines (`[data-hairline]`) bouwen van `scaleX(0.35)` naar volledig op, indexnummers (`[data-index]`) krijgen een ±6px scrub-verschuiving, CTA's een 2px hover-lift. Alles is transform-only (geen opacity), tijdelijke transforms worden met `clearProps` gewist en CSS kent een reduced-motion-blok dat resterende transities uitschakelt. Zonder scripts of CDN blijft de volledige pagina zichtbaar en bedienbaar.
+GSAP 3.12.5 en ScrollTrigger laden via de bestaande gepinde jsDelivr-scripts en zijn uitsluitend progressive enhancement. Guards stoppen vóór pluginregistratie bij reduced motion of ontbrekende CDN-globals. De acht hoofdheadings bewegen eenmalig 12px verticaal; evidence- en assurance-regels 10px verticaal; maturity-, controle- en modulegroepen maximaal 14–16px horizontaal; iedere dossierhairline bouwt met `scaleX` op. `groupEntrance` gebruikt 0,48s, `immediateRender: false`, `once: true`, `overwrite: "auto"` en wist alleen `transform`. CTA's krijgen een overwrite-safe lift van 2px.
+
+Er is geen opacity, scrub, pinning, parallax, automatische scroll of layoutanimatie. Bij dynamisch inschakelen van reduced motion stopt `stopMotion()` alle geregistreerde tweens en triggers, stopt CTA-tweens en wist inline transforms. Zonder JavaScript, GSAP of ScrollTrigger is alle inhoud direct zichtbaar.
 
 ## Responsief gedrag
 
-- **1440px / desktop** — 12-koloms ritme binnen 1280px: asymmetrische hero (7/4), driekoloms ledgers en tracks, 3/4/5-modulerijen, vijfkoloms stappen, tweekoloms assurance-ledger.
-- **768px / tablet (≤960px)** — hero wordt één kolom; module-rijen vereenvoudigen naar nummer + inhoud (1/2); vraag-ledger, maturity-track, lagenraster en stappen naar twee kolommen.
-- **320px / mobiel (≤640px)** — alles lineair in één kolom zonder horizontale scroll; de headernavigatie verdwijnt (de secties volgen direct in de doorlopende scroll), de controle-architectuur stapelt verticaal met doorlopende randen, de hero-marge krijgt een topregel in plaats van een zijlijn en dossierregels verkleinen hun letterspatiëring. `scroll-margin-top: 88px` houdt ankers vrij van de vaste leesrand; alle doelen blijven minimaal 44px.
+- **Vanaf 1040px** — twaalf dossierkolommen; asymmetrische hero; aangesloten evidence-, maturity- en controlerails; modules als brede trap 1/11 → 2/12 → 3/13; assurance in twee kolommen en begeleiding in vijf.
+- **Tot en met 1039px** — de statische header gebruikt twee rijen: logo en compacte CTA boven, alle vijf lokale links eronder. De module-sequence reset volledig naar één kolom, auto-rijen, volle breedte, nul offset en lineaire interne flow; DOM- en leesvolgorde blijven AI Assistant → AI ToolBox → Conversation Module.
+- **Tot en met 768px** — zonder de headerindeling te wijzigen krijgt de evidence-index een compacte `minmax(180px, 4fr) / 8fr`-term-/bewijskolom en stapelen maturity-track en controle-architectuur tot één ruime kolom met doorlopende regels.
+- **Tot en met 767px** — de vijf navlinks vormen een 3+2-raster met doelen van minimaal 44px. Evidence-index, vraag-ledger, tweeluiken, assurance-ledger, lagenraster en begeleiding worden één kolom. Op 320px gebruikt het kader 16px zijruimte en blijven CTA's, logo, navigatie en bewijsregels binnen de viewport.
+
+De header is op iedere breedte expliciet `position: static`; ankers gebruiken daarom een bescheiden `scroll-margin-top: 24px`. Geen responsieve regel verbergt navigatie of inhoud.
