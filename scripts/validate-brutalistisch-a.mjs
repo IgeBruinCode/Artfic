@@ -92,6 +92,7 @@ const strictVariantTexts = {
   'bo-support': ['Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.'],
   'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken', 'Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.'],
   'bw-klantnamen': ['Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
+  'bw-fctwente': ['FC Twente koos Artific en AI-SupportGroup voor drie seizoenen als officiële AI-partner van de club.'],
   'bw-quote-leqqr': ['De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.'],
 };
 const requiredClaims = [
@@ -102,7 +103,7 @@ const requiredClaims = [
   'mod-overzicht', 'mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation',
   'ph-portal', 'ph-headless',
   'cc-een-plek', 'sec-ontwerp', 'sec-eu', 'sec-iso', 'sec-audit',
-  'pm-markt', 'bo-vijf-stappen', 'bw-100-klanten', 'cv-versnellen',
+  'pm-markt', 'bo-vijf-stappen', 'bw-100-klanten', 'bw-fctwente', 'cv-versnellen',
 ];
 checkClaims(html, content, { strictVariantTexts, requiredClaims }, fail);
 checkLinksAndCtas(html, content, { minCtaCount: 3, minCtaHint: 'commandobar, hero, slot' }, fail);
@@ -138,6 +139,12 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: '.site-footer__links a', backgroundSelector: '.site-footer', pairId: 'wit-op-navy' },
   { foregroundSelector: '.fasen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
   { foregroundSelector: '.stappen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: '.hero__woord--blauw', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: '.tekstblok--blauw', backgroundSelector: '.tekstblok--blauw', pairId: 'wit-op-blauw-groot' },
+  { foregroundSelector: '.commandticker span', backgroundSelector: '.commandticker', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.twenteplaat__label', backgroundSelector: '.twenteplaat', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.twenteplaat h3 span', backgroundSelector: '.twenteplaat', pairId: 'geel-op-navy' },
+  { foregroundSelector: '.twenteplaat__stempel', backgroundSelector: '.twenteplaat', pairId: 'geel-op-navy' },
   { foregroundSelector: 'body', backgroundSelector: '.bedrijvenband', pairId: 'navy-op-lichtblauw' },
   { foregroundSelector: 'body', backgroundSelector: '.bedrijvenmerk', pairId: 'navy-op-wit' },
   { foregroundSelector: 'body', backgroundSelector: '.stem', pairId: 'navy-op-wit' },

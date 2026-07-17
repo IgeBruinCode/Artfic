@@ -216,6 +216,33 @@ a { color: inherit; }
   margin-bottom: var(--r-2);
 }
 
+.hero__statusregel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--r-2);
+  flex-wrap: wrap;
+}
+.livecode {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--r-1);
+  border: 3px solid var(--navy);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+.livecode__blok {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--geel);
+  --brand-surface-role: decorative;
+  border: 2px solid var(--navy);
+  animation: systeemslag 0.8s steps(2, end) infinite;
+}
+
 .blok__kop {
   font-size: clamp(2.25rem, 7vw, 5.5rem);
   line-height: 0.98;
@@ -233,8 +260,34 @@ a { color: inherit; }
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  max-width: 14ch;
+  max-width: 17ch;
   margin: var(--r-2) 0 var(--r-4);
+}
+.hero__regel { display: block; overflow: hidden; padding: 0.04em 0.08em 0.08em 0; }
+.hero__regel:first-child {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.08em;
+  overflow: visible;
+}
+.hero__woord { display: inline-block; transform-origin: left bottom; }
+.hero__woord--geel {
+  background: var(--geel);
+  color: var(--navy);
+  padding-inline: 0.12em;
+  border: 4px solid var(--navy);
+}
+.hero__woord--navy {
+  background: var(--navy);
+  color: var(--wit);
+  padding-inline: 0.12em;
+  box-shadow: 8px 8px 0 0 var(--blauw);
+}
+.hero__woord--blauw {
+  color: var(--blauw);
+  font-size: clamp(3.25rem, 8vw, 7rem);
+  font-weight: 900;
 }
 
 .hero__grid {
@@ -248,6 +301,31 @@ a { color: inherit; }
   margin-bottom: var(--r-2);
 }
 .hero__sub { max-width: 60ch; }
+
+.systeemviz {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  align-items: end;
+  gap: 6px;
+  height: 68px;
+  padding: 8px;
+  margin-bottom: var(--r-2);
+  background: var(--navy);
+  --brand-surface-role: decorative;
+  border: 4px solid var(--navy);
+}
+.systeemviz span {
+  display: block;
+  height: 100%;
+  background: var(--geel);
+  --brand-surface-role: decorative;
+  transform-origin: center bottom;
+  animation: systeembalk 1.2s steps(4, end) infinite alternate;
+}
+.systeemviz span:nth-child(2),
+.systeemviz span:nth-child(5) { animation-delay: -0.35s; background: var(--wit); --brand-surface-role: decorative; }
+.systeemviz span:nth-child(3),
+.systeemviz span:nth-child(6) { animation-delay: -0.7s; background: var(--blauw); --brand-surface-role: decorative; }
 
 .specs {
   list-style: none;
@@ -264,6 +342,45 @@ a { color: inherit; }
   margin-top: var(--r-2);
   font-size: 0.95rem;
   max-width: 45ch;
+}
+
+.commandticker {
+  margin-top: var(--r-5);
+  overflow: hidden;
+  border: var(--lijn);
+  background: var(--navy);
+  color: var(--wit);
+  transform: rotate(-1deg);
+  box-shadow: 8px 8px 0 0 var(--blauw);
+}
+.commandticker__spoor {
+  display: flex;
+  width: max-content;
+  animation: commandoloop 18s linear infinite;
+}
+.commandticker p {
+  flex: none;
+  padding: 10px 0;
+  font-size: clamp(1.1rem, 2.4vw, 2rem);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.commandticker span { color: var(--geel); padding-inline: 0.35em; }
+
+.tekstblok {
+  display: inline-block;
+  padding-inline: 0.08em;
+  transform-origin: left bottom;
+}
+.tekstblok--geel { background: var(--geel); color: var(--navy); }
+.tekstblok--blauw {
+  background: var(--blauw);
+  color: var(--wit);
+  font-size: clamp(2.25rem, 7vw, 5.5rem);
+  font-weight: 900;
 }
 
 /* --- signaalstrook --- */
@@ -383,6 +500,25 @@ a { color: inherit; }
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
+.pipeline__puls {
+  display: flex;
+  align-items: end;
+  gap: 5px;
+  height: 24px;
+  margin-top: var(--r-1);
+}
+.pipeline__puls i {
+  display: block;
+  width: 12px;
+  height: 100%;
+  background: var(--geel);
+  --brand-surface-role: decorative;
+  transform-origin: center bottom;
+  animation: systeemslag 0.7s steps(3, end) infinite alternate;
+}
+.pipeline__puls i:nth-child(2) { animation-delay: -0.2s; }
+.pipeline__puls i:nth-child(3) { animation-delay: -0.4s; }
+.pipeline__puls i:nth-child(4) { animation-delay: -0.6s; }
 .pipeline__koppeling {
   font-size: 2rem;
   font-weight: 900;
@@ -425,6 +561,8 @@ a { color: inherit; }
   position: relative;
   box-shadow: 12px 12px 0 0 var(--blauw);
   width: 100%;
+  transform-origin: center center;
+  will-change: transform;
 }
 .plaat__nummer {
   position: absolute;
@@ -446,6 +584,17 @@ a { color: inherit; }
   display: inline-block;
   padding: 4px 14px;
 }
+.plaat__status {
+  display: inline-block;
+  margin-bottom: var(--r-2);
+  padding: 3px 9px;
+  border: 3px solid var(--navy);
+  background: var(--geel);
+  color: var(--navy);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
 .plaat p { max-width: 58ch; }
 .plaat__lijst {
   list-style: none;
@@ -462,6 +611,26 @@ a { color: inherit; }
   font-size: 0.85rem;
   background: var(--wit);
 }
+.plaat__meter {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  height: 18px;
+  max-width: 340px;
+  margin-top: var(--r-3);
+}
+.plaat__meter i {
+  display: block;
+  background: var(--navy);
+  --brand-surface-role: decorative;
+  border: 2px solid var(--navy);
+  transform-origin: left center;
+  animation: meterslag 1.5s steps(3, end) infinite alternate;
+}
+.plaat__meter i:nth-child(2) { animation-delay: -0.3s; background: var(--blauw); --brand-surface-role: decorative; }
+.plaat__meter i:nth-child(3) { animation-delay: -0.6s; background: var(--geel); --brand-surface-role: decorative; }
+.plaat__meter i:nth-child(4) { animation-delay: -0.9s; background: var(--blauw); --brand-surface-role: decorative; }
+.plaat__meter i:nth-child(5) { animation-delay: -1.2s; }
 
 /* --- specsheet (security) --- */
 .specsheet {
@@ -528,6 +697,65 @@ a { color: inherit; }
   margin-bottom: var(--r-3);
 }
 
+.twenteplaat {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+  border: var(--lijn);
+  background: var(--navy);
+  color: var(--wit);
+  margin: var(--r-4) 0;
+  box-shadow: 12px 12px 0 0 var(--blauw);
+  transform-origin: center center;
+  will-change: transform;
+}
+.twenteplaat__code {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-width: 180px;
+  padding: var(--r-3);
+  background: var(--geel);
+  color: var(--navy);
+  border-right: var(--lijn);
+}
+.twenteplaat__code span {
+  font-size: clamp(5rem, 11vw, 9rem);
+  font-weight: 900;
+  line-height: 0.75;
+  letter-spacing: -0.08em;
+}
+.twenteplaat__code small { margin-top: var(--r-2); font-weight: 900; letter-spacing: 0.15em; }
+.twenteplaat__tekst { padding: var(--r-3); align-self: center; }
+.twenteplaat__label {
+  color: var(--geel);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+.twenteplaat h3 {
+  margin-block: var(--r-1) var(--r-2);
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+}
+.twenteplaat h3 span { color: var(--geel); }
+.twenteplaat__tekst > p:last-child { max-width: 58ch; font-weight: 700; }
+.twenteplaat__stempel {
+  align-self: center;
+  margin: var(--r-2);
+  padding: var(--r-2);
+  border: 4px solid var(--geel);
+  color: var(--geel);
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  letter-spacing: 0.12em;
+  transform: rotate(5deg);
+}
+
 .bedrijvenband {
   margin: var(--r-4) 0;
   overflow: hidden;
@@ -576,6 +804,8 @@ a { color: inherit; }
   padding: var(--r-3);
   background: var(--wit);
   box-shadow: 8px 8px 0 0 var(--blauw);
+  transform-origin: center center;
+  will-change: transform;
 }
 .stem--signaal { background: var(--geel); }
 .stem blockquote {
@@ -637,6 +867,22 @@ a { color: inherit; }
   min-height: 44px;
 }
 .site-footer__noot { font-size: 0.85rem; max-width: 60ch; }
+
+@keyframes systeemslag {
+  0% { transform: scale(0.55) rotate(-8deg); }
+  100% { transform: scale(1) rotate(8deg); }
+}
+@keyframes systeembalk {
+  0% { transform: scaleY(0.18); }
+  100% { transform: scaleY(1); }
+}
+@keyframes commandoloop {
+  to { transform: translateX(-50%); }
+}
+@keyframes meterslag {
+  0% { transform: scaleX(0.28); }
+  100% { transform: scaleX(1); }
+}
 
 /* --- breakpoints --- */
 @media (min-width: 700px) {
@@ -711,9 +957,28 @@ a { color: inherit; }
   .cta--bar { grid-area: cta; font-size: 0.75rem; padding: 4px 10px; }
   #inhoud,
   .blok { scroll-margin-top: 116px; }
+  .twenteplaat { grid-template-columns: 1fr; }
+  .twenteplaat__code {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    min-width: 0;
+    border-right: 0;
+    border-bottom: var(--lijn);
+  }
+  .twenteplaat__code span { font-size: 4.5rem; }
+  .twenteplaat__stempel { justify-self: start; }
 }
 
 @media (max-width: 480px) {
+  .hero__regel:first-child {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    align-items: center;
+    gap: 0.04em;
+  }
+  .hero__regel:first-child .hero__woord { font-size: 0.76em; }
+  .hero__regel:first-child .hero__woord--geel { position: relative; top: -0.42em; }
   .plaat { box-shadow: 6px 6px 0 0 var(--blauw); }
   .cta--primair, .cta--signaal { box-shadow: 6px 6px 0 0 var(--blauw); }
   .fasen li { grid-template-columns: 1fr; }
@@ -722,6 +987,9 @@ a { color: inherit; }
   .stemmen__grid { grid-template-columns: 1fr; }
   .stem { min-height: 0; }
   .bedrijvenmerk { width: 150px; min-height: 96px; }
+  .hero__woord--navy { box-shadow: 6px 6px 0 0 var(--blauw); }
+  .commandticker { box-shadow: 6px 6px 0 0 var(--blauw); }
+  .twenteplaat { box-shadow: 6px 6px 0 0 var(--blauw); }
 }
 
 /* --- reduced motion --- */
@@ -734,4 +1002,9 @@ a { color: inherit; }
   }
   .commandobar__voortgang { display: none; }
   .bedrijvenband__spoor { animation: none; }
+  .commandticker__spoor,
+  .livecode__blok,
+  .systeemviz span,
+  .pipeline__puls i,
+  .plaat__meter i { animation: none; }
 }

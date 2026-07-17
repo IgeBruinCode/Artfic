@@ -790,42 +790,45 @@ h4 {
   isolation: isolate;
   overflow: clip;
   color: var(--navy);
-  background-color: var(--yellow);
+  background-color: var(--light-blue);
 }
 
 .platform-zone::before,
 .platform-zone::after {
   position: absolute;
+  inset: 0;
   z-index: -1;
   content: "";
   pointer-events: none;
-  will-change: transform;
 }
 
 .platform-zone::before {
+  background-image: linear-gradient(var(--white), var(--white));
+  clip-path: polygon(0 0, 70% 0, 90% 100%, 0 100%);
+}
+
+.platform-zone::after {
+  background-image: linear-gradient(var(--navy), var(--navy));
+  clip-path: polygon(70% 0, 72.5% 0, 92.5% 100%, 90% 100%);
+}
+
+.platform-field {
+  position: absolute;
   inset: -12%;
+  z-index: 0;
   opacity: 0.13;
   background-image:
     radial-gradient(circle, var(--navy) 0 3px, transparent 4px),
     repeating-linear-gradient(90deg, transparent 0 116px, var(--blue) 116px 119px),
     repeating-linear-gradient(0deg, transparent 0 116px, var(--blue) 116px 119px);
-  background-size: 119px 119px, 119px 119px, 119px 119px;
+  background-size: 119px 119px;
   transform: rotate(-4deg) scale(1.06);
   animation: platform-grid-flow 28s ease-in-out infinite alternate;
+  pointer-events: none;
+  will-change: transform;
 }
 
-.platform-zone::after {
-  top: -10%;
-  bottom: -10%;
-  left: -34%;
-  width: 24%;
-  opacity: 0.15;
-  background-image: linear-gradient(90deg, transparent, var(--blue), transparent);
-  transform: skewX(-16deg);
-  animation: platform-signal-sweep 16s linear infinite;
-}
-
-.platform-zone > * {
+.platform-zone > :not(.platform-field) {
   position: relative;
   z-index: 1;
 }
@@ -1358,6 +1361,14 @@ h4 {
   .contact-zone {
     padding-right: 16px;
     padding-left: 16px;
+  }
+
+  .platform-zone::before {
+    clip-path: polygon(0 0, 90% 0, 96% 100%, 0 100%);
+  }
+
+  .platform-zone::after {
+    clip-path: polygon(90% 0, 93% 0, 99% 100%, 96% 100%);
   }
 
   .hero__copy,

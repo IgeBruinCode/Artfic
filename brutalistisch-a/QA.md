@@ -29,3 +29,21 @@ Lokaal uitgevoerd met Chromium via de CDP-sidecar tegen `node scripts/serve.mjs 
 De tijdelijke fallbackkopieën zijn na de controle verwijderd. De variantvalidator is aanvullend met teruggedraaide mutaties beproefd voor sectiecodevolgorde, binnenwrapper, modulevolgorde en `data-plaat`-hook, gecentreerd werkvlak, desktoptrap, mobiele reset/commandobar, zustervariantsignatuur, transparantie, verborgen inhoud, blur-schaduw, opacity/pinning/layout-motion, gewijzigde CTA, ontbrekende reduced-motion-guard en een 21st.dev-runtimeverwijzing; iedere mutatie faalde op de bedoelde gate en de ongewijzigde variant slaagde daarna opnieuw. Na review faalden ook een teruggezet 480px-commandobarbreakpoint en een verwijderde `#inhoud`-offset gericht. Omgekeerd bleven equivalent herschikte HTML-attributen en CSS-declaraties terecht slagen.
 
 Er zijn geen nieuwe dependencies, assets, MCP-configuraties of credentials toegevoegd. Magic MCP was in deze buildomgeving niet als tool beschikbaar en wordt daarom niet als uitgevoerde provenance geclaimd.
+
+## Hercontrole kinetische control-roomlaag (2026-07-17)
+
+De opgevoerde variant is lokaal opnieuw gerenderd met headless Chromium tegen
+`node scripts/serve.mjs 4173`.
+
+| Controle | Feitelijk resultaat |
+| --- | --- |
+| 390 px | OK — de commandobar blijft tweerijig; de kleur-H1 stapelt zonder horizontale afsnijding en houdt `AI` als gele stempel zichtbaar; tekst, CTA's en systeemobjecten blijven binnen de viewport. |
+| 1440 px | OK — de hero toont de volledige gesplitste H1, live-status, pulsmeter en commandoticker; de moduletrap, FC Twente-caseplaat, reviewgrid en contactslogan behouden het 1280px-werkvlak. |
+| FC Twente | OK — de zichtbare bewijsplaat bevat de canonieke claim over drie seizoenen en de bestaande klantlogo-rail bevat het lokale FC Twente-logo. De variantvalidator eist de claim nu expliciet. |
+| JavaScript uit | OK — een Chromium-render met JavaScript uit toont alle tekst, navigatie, CTA's en componenten; alleen de progressieve choreografie ontbreekt. |
+| Reduced motion | OK — Chromium met `--force-prefers-reduced-motion=reduce` toont de volledige statische hero en stopt tickers, meters en GSAP-entrees; alleen de decoratieve voortgangsbalk wordt verborgen. |
+| Automatische gates | OK — `node --check brutalistisch-a/main.js`, `node scripts/validate-brutalistisch-a.mjs` en `git diff --check` slagen. De setbrede validator blijft los hiervan steken op de reeds bestaande bestandsnaammismatch van de twee lokale referentie-PDF's. |
+
+De nieuwe componentlaag gebruikt geen nieuwe runtime dependency of extern
+componentpakket. De inspiratie is lokaal vertaald naar semantische HTML, CSS en
+de bestaande GSAP/ScrollTrigger-progressive enhancement.

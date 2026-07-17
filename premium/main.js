@@ -77,6 +77,20 @@
     );
   });
 
+  [
+    { selector: ".hero__marge p", trigger: ".hero__marge", from: { x: 14 } },
+    { selector: ".vraag-ledger__vraag", trigger: ".vraag-ledger", from: { y: 14 } },
+    { selector: ".voice-entry", trigger: ".voice-ledger", from: { x: 18 } },
+    { selector: ".lagenraster__laag", trigger: ".lagenraster", from: { x: 14 } },
+    { selector: ".begeleiding__stap", trigger: ".begeleiding", from: { y: 14 } }
+  ].forEach(function (group) {
+    groupEntrance(
+      selectAll(group.selector),
+      group.from,
+      document.querySelector(group.trigger)
+    );
+  });
+
   hairlines.forEach(function (hairline) {
     groupEntrance([hairline], { scaleX: 0.35 }, hairline, "top 92%");
   });
@@ -108,6 +122,32 @@
     cta.addEventListener("mouseenter", handleCtaEnter);
     cta.addEventListener("mouseleave", handleCtaLeave);
   });
+
+  var navigationLinks = selectAll('.premium-header__nav a[href^="#"]');
+  var navigationSections = navigationLinks.map(function (link) {
+    return document.querySelector(link.getAttribute("href"));
+  }).filter(Boolean);
+  var navigationObserver;
+
+  if ("IntersectionObserver" in window && navigationSections.length) {
+    navigationObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        navigationLinks.forEach(function (link) {
+          if (link.getAttribute("href") === "#" + entry.target.id) {
+            link.setAttribute("aria-current", "true");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        });
+      });
+    }, {
+      rootMargin: "-35% 0px -55% 0px"
+    });
+    navigationSections.forEach(function (section) {
+      navigationObserver.observe(section);
+    });
+  }
 
   function stopMotion() {
     tweens.forEach(function (tween) { tween.kill(); });
