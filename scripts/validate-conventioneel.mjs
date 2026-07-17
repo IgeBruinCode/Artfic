@@ -218,6 +218,8 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: '.trust-console__status a', backgroundSelector: '.trust-console__status a', pairId: 'navy-op-wit' },
   { foregroundSelector: 'body', backgroundSelector: '.paneel', pairId: 'navy-op-wit' },
   { foregroundSelector: 'body', backgroundSelector: '.assurance-matrix__item', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.stappen', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: 'body', backgroundSelector: '.stappen__stap', pairId: 'navy-op-wit' },
   { foregroundSelector: '.stappen__stap h4::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
   { foregroundSelector: '.module-card__nummer', backgroundSelector: '.module-card', pairId: 'navy-op-wit' },
   { foregroundSelector: '.sectie--donker', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },

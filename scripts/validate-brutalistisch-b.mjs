@@ -304,7 +304,7 @@ for (const { label, chain } of criticalContrastChains) {
   }
 }
 
-if ((css.match(/background-image\s*:/g) ?? []).length < 8 ||
+if ((css.match(/background-image\s*:/g) ?? []).length < 7 ||
     !/radial-gradient/.test(css) || !/conic-gradient/.test(css) || !/repeating-linear-gradient/.test(css)) {
   fail('styles.css: gelaagde shader-velden met meerdere goedgekeurde gradientvormen ontbreken');
 }
@@ -382,12 +382,13 @@ try {
     slide.offsetLeft = index * 300;
     slide.setAttribute('data-relation-id', id);
     slide.setAttribute('data-relation-name', name);
-    slide.scrollIntoView = (options) => scrollCalls.push({ index, options });
+    slide.scrollIntoView = () => { throw new Error('carrousel mag de documentpositie niet via scrollIntoView wijzigen'); };
     return slide;
   });
   const linksStub = expectedRelations.map(() => makeInteractive());
   const trackStub = makeInteractive();
   trackStub.scrollLeft = 0;
+  trackStub.scrollTo = (options) => scrollCalls.push(options);
   const mountStub = makeInteractive();
   mountStub.children = [];
   mountStub.appendChild = (child) => mountStub.children.push(child);
@@ -446,8 +447,8 @@ try {
   }
 
   linksStub[6].listeners.get('click')?.({ preventDefault() {} });
-  if (scrollCalls.at(-1)?.index !== 6 || scrollCalls.at(-1)?.options.behavior !== 'smooth') {
-    throw new Error('niet-aangrenzende paginatie start niet naar relatie 7');
+  if (scrollCalls.at(-1)?.left !== 1800 || scrollCalls.at(-1)?.behavior !== 'smooth') {
+    throw new Error('niet-aangrenzende paginatie scrolt de interne track niet naar relatie 7');
   }
   trackStub.scrollLeft = 300;
   trackStub.listeners.get('scroll')?.({});
@@ -456,7 +457,7 @@ try {
   }
 
   next.listeners.get('click')?.({});
-  if (scrollCalls.at(-1)?.index !== 7 || status.textContent !== 'Relatie 1 van 9: FC Twente') {
+  if (scrollCalls.at(-1)?.left !== 2100 || status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('snelle Volgende bouwt niet voort op de nog aangevraagde relatie');
   }
   flushAnimationFrames();
@@ -485,7 +486,7 @@ try {
   motionPreference.matches = true;
   listeners.get('change')?.({ matches: true });
   next.listeners.get('click')?.({});
-  if (scrollCalls.at(-1)?.options.behavior !== 'auto' || status.textContent !== 'Relatie 1 van 9: FC Twente') {
+  if (scrollCalls.at(-1)?.left !== 0 || scrollCalls.at(-1)?.behavior !== 'auto' || status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('reduced motion stopt animatie, auto-scroll of directe statuscommit niet');
   }
   previous.listeners.get('click')?.({});

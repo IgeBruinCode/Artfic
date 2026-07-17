@@ -34,7 +34,6 @@
   <main id="inhoud" tabindex="-1">
     <section class="hero section-yellow shader-field" id="intro" aria-labelledby="intro-titel">
       <canvas class="shader-canvas" data-shader-canvas aria-hidden="true"></canvas>
-      <div class="hero-orbit" aria-hidden="true"><span></span></div>
       <div class="hero__grid">
         <div class="hero__copy">
           <p class="eyebrow">Eén platform. Mens in control.</p>
@@ -46,11 +45,16 @@
             <a class="button button--yellow" data-cta-id="maak-een-afspraak" href="https://artific.nl/contact-opnemen/">Maak een afspraak</a>
           </div>
         </div>
-        <aside class="hero-stamp" aria-label="Platformkenmerken">
-          <p class="hero-stamp__mark" aria-hidden="true">AI/<br>CONTROL</p>
-          <p data-claim-id="pos-badges">EU-gehost, ISO 27001 gecertificeerd, API-first en model-agnostisch.</p>
-          <p data-claim-id="pos-nederlands">Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.</p>
-        </aside>
+        <div class="hero__side">
+          <div class="hero-award">
+            <img data-brand-artwork src=".media/images/image_001.webp" alt="AI Company of the Year 2025" width="704" height="409">
+          </div>
+          <aside class="hero-stamp" aria-label="Platformkenmerken">
+            <p class="hero-stamp__mark" aria-hidden="true">AI/<br>CONTROL</p>
+            <p data-claim-id="pos-badges">EU-gehost, ISO 27001 gecertificeerd, API-first en model-agnostisch.</p>
+            <p data-claim-id="pos-nederlands">Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.</p>
+          </aside>
+        </div>
       </div>
 
       <div class="relationship-deck" data-relationship-deck aria-labelledby="relaties-titel">
@@ -59,23 +63,20 @@
             <p class="eyebrow">Samen aan het werk</p>
             <h2 id="relaties-titel">Negen relaties. Eén duidelijke beweging.</h2>
           </div>
-          <p id="relaties-uitleg">Veeg of scroll horizontaal. Met toetsenbord: gebruik pijl links/rechts, Home en End. Alle relaties blijven altijd leesbaar.</p>
         </div>
-        <p class="relationship-deck__names" data-claim-id="bw-klantnamen">Klanten zijn onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.</p>
-        <ol class="relationship-track" tabindex="0" aria-describedby="relaties-uitleg" aria-label="Klantrelaties">
-          <li class="relationship-card relationship-card--fc" id="relatie-fc-twente" data-relation-id="fc-twente" data-relation-name="FC Twente">
+        <ol class="relationship-track" tabindex="0" aria-roledescription="carousel" aria-label="Klantrelaties; horizontaal te bedienen met pijltoetsen, Home en End">
+          <li class="relationship-card" id="relatie-fc-twente" data-relation-id="fc-twente" data-relation-name="FC Twente">
             <div class="relationship-card__media"><img class="client-logo client-logo--fc-twente" src="assets/clients/fc-twente.svg" data-client-logo alt="Logo van FC Twente" width="240"></div>
-            <strong class="relationship-card__name">FC Twente</strong>
-            <span data-claim-id="bw-fctwente">FC Twente koos Artific en AI-SupportGroup voor drie seizoenen als officiële AI-partner van de club.</span>
+            <div class="relationship-card__copy"><strong class="relationship-card__name">FC Twente</strong><span class="relationship-card__detail">Officiële AI-partner van de club voor drie seizoenen.</span></div>
           </li>
-          <li class="relationship-card relationship-card--slash" id="relatie-basic-fit" data-relation-id="basic-fit" data-relation-name="Basic-Fit"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/basic-fit.svg" data-client-logo alt="Logo van Basic-Fit" width="240"></div><span class="relationship-card__name">Basic-Fit</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-eneco" data-relation-id="eneco" data-relation-name="Eneco"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/eneco.svg" data-client-logo alt="Logo van Eneco" width="240"></div><span class="relationship-card__name">Eneco</span></li>
-          <li class="relationship-card relationship-card--slash" id="relatie-marktplaats" data-relation-id="marktplaats" data-relation-name="Marktplaats"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/marktplaats.svg" data-client-logo alt="Logo van Marktplaats" width="240"></div><span class="relationship-card__name">Marktplaats</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-hollandsnieuwe" data-relation-id="hollandsnieuwe" data-relation-name="hollandsnieuwe"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/hollandsnieuwe.svg" data-client-logo alt="Logo van hollandsnieuwe" width="240"></div><span class="relationship-card__name">hollandsnieuwe</span></li>
-          <li class="relationship-card relationship-card--slash" id="relatie-den-haag" data-relation-id="gemeente-den-haag" data-relation-name="Gemeente Den Haag"><div class="relationship-card__media"><img class="client-logo client-logo--den-haag" src="assets/clients/gemeente-den-haag.jpg" data-client-logo alt="Logo van Gemeente Den Haag" width="240"></div><span class="relationship-card__name">Gemeente Den Haag</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-rtv-oost" data-relation-id="rtv-oost" data-relation-name="RTV Oost"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/rtv-oost.svg" data-client-logo alt="Logo van RTV Oost" width="240"></div><span class="relationship-card__name">RTV Oost</span></li>
-          <li class="relationship-card relationship-card--slash" id="relatie-vrzl" data-relation-id="veiligheidsregio-zuid-limburg" data-relation-name="Veiligheidsregio Zuid-Limburg"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/vrzl.svg" data-client-logo alt="Logo van Veiligheidsregio Zuid-Limburg" width="240"></div><span class="relationship-card__name">Veiligheidsregio Zuid-Limburg</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-vechtsteden" data-relation-id="vechtsteden-notarissen" data-relation-name="Vechtsteden Notarissen"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/vechtstede.svg" data-client-logo alt="Logo van Vechtstede Notarissen" width="240"></div><span class="relationship-card__name">Vechtsteden Notarissen</span></li>
+          <li class="relationship-card" id="relatie-basic-fit" data-relation-id="basic-fit" data-relation-name="Basic-Fit"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/basic-fit.svg" data-client-logo alt="Logo van Basic-Fit" width="240"></div><strong class="relationship-card__name">Basic-Fit</strong></li>
+          <li class="relationship-card" id="relatie-eneco" data-relation-id="eneco" data-relation-name="Eneco"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/eneco.svg" data-client-logo alt="Logo van Eneco" width="240"></div><strong class="relationship-card__name">Eneco</strong></li>
+          <li class="relationship-card" id="relatie-marktplaats" data-relation-id="marktplaats" data-relation-name="Marktplaats"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/marktplaats.svg" data-client-logo alt="Logo van Marktplaats" width="240"></div><strong class="relationship-card__name">Marktplaats</strong></li>
+          <li class="relationship-card" id="relatie-hollandsnieuwe" data-relation-id="hollandsnieuwe" data-relation-name="hollandsnieuwe"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/hollandsnieuwe.svg" data-client-logo alt="Logo van hollandsnieuwe" width="240"></div><strong class="relationship-card__name">hollandsnieuwe</strong></li>
+          <li class="relationship-card" id="relatie-den-haag" data-relation-id="gemeente-den-haag" data-relation-name="Gemeente Den Haag"><div class="relationship-card__media"><img class="client-logo client-logo--den-haag" src="assets/clients/gemeente-den-haag.jpg" data-client-logo alt="Logo van Gemeente Den Haag" width="240"></div><strong class="relationship-card__name">Gemeente Den Haag</strong></li>
+          <li class="relationship-card" id="relatie-rtv-oost" data-relation-id="rtv-oost" data-relation-name="RTV Oost"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/rtv-oost.svg" data-client-logo alt="Logo van RTV Oost" width="240"></div><strong class="relationship-card__name">RTV Oost</strong></li>
+          <li class="relationship-card" id="relatie-vrzl" data-relation-id="veiligheidsregio-zuid-limburg" data-relation-name="Veiligheidsregio Zuid-Limburg"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/vrzl.svg" data-client-logo alt="Logo van Veiligheidsregio Zuid-Limburg" width="240"></div><strong class="relationship-card__name">Veiligheidsregio Zuid-Limburg</strong></li>
+          <li class="relationship-card" id="relatie-vechtsteden" data-relation-id="vechtsteden-notarissen" data-relation-name="Vechtsteden Notarissen"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/vechtstede.svg" data-client-logo alt="Logo van Vechtstede Notarissen" width="240"></div><strong class="relationship-card__name">Vechtsteden Notarissen</strong></li>
         </ol>
         <div class="relationship-pagination" aria-label="Kies een klantrelatie">
           <a href="#relatie-fc-twente" aria-label="Toon relatie 1: FC Twente">01</a>
@@ -101,6 +102,38 @@
         <p class="proof-grid__statement" data-claim-id="bw-100-klanten">Van enterprise tot overheid, bij organisaties die security, governance en betrouwbaarheid serieus nemen.</p>
         <p class="proof-grid__award" data-claim-id="pos-award">Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.</p>
         <p class="proof-grid__case" data-claim-id="bw-bulpe">Bulpe Fulfilment ondersteunt zijn klantenservice met het Artific AI-platform; de resultaten zijn zo positief dat de volgende AI-processtap al in ontwikkeling is.</p>
+      </div>
+      <div class="customer-reviews" aria-labelledby="reviews-titel">
+        <div class="customer-reviews__heading">
+          <p class="eyebrow">Uit de praktijk</p>
+          <h3 id="reviews-titel">Wat klanten over Artific zeggen</h3>
+        </div>
+        <div class="customer-reviews__grid">
+          <article class="customer-review" data-customer-review data-motion-card>
+            <blockquote>Samen met Artific zijn we bezig de AI-Notaris Assistent te ontwikkelen. De eerste resultaten zijn veelbelovend en gaan wel wat in beweging zetten in het “notaris landschap”!</blockquote>
+            <footer><img data-customer-photo src="../klantenBeoordelingen/Rogier.jpg.webp" alt="Rogier Lukas" width="150" height="150"><p><strong>Rogier Lukas</strong><span>Notaris — Vechtstede Notarissen</span></p></footer>
+          </article>
+          <article class="customer-review" data-customer-review data-motion-card>
+            <blockquote>Artific heeft voor ons alle bestaande bedrijfsprocedures met AI uitgerust. Wat een geweldige resultaten en wat een top bedrijf om mee samen te werken!</blockquote>
+            <footer><img data-customer-photo src="../klantenBeoordelingen/Maarten-ter-Velde-aspect-ratio-150-150.jpg.webp" alt="Maarten ter Velde" width="453" height="453"><p><strong>Maarten ter Velde</strong><span>Co-founder</span></p></footer>
+          </article>
+          <article class="customer-review" data-customer-review data-motion-card>
+            <blockquote>De AI Roadmap van Artific heeft tot veel nieuwe inzichten binnen onze organisatie geleid. Binnen het hele bedrijf is gekeken naar de potentie van AI. Echt een aanrader dus.</blockquote>
+            <footer><img data-customer-photo src="../klantenBeoordelingen/johan.jpg.webp" alt="Johan Evers" width="400" height="400"><p><strong>Johan Evers</strong><span>CEO — Human Talent Group</span></p></footer>
+          </article>
+          <article class="customer-review" data-customer-review data-motion-card>
+            <blockquote>Binnen Webton werken we sinds september 2023 met de tooling van Artific. Op het gebied van online marketing heeft Artific ons geholpen nog efficiënter en effectiever te werken.</blockquote>
+            <footer><img data-customer-photo src="../klantenBeoordelingen/joshua-360x360.jpg" alt="Joshua Kuipers" width="360" height="360"><p><strong>Joshua Kuipers</strong><span>Directeur — Webton</span></p></footer>
+          </article>
+          <article class="customer-review" data-customer-review data-motion-card data-claim-id="bw-quote-harundo">
+            <blockquote>De custom made AI-Assistent / Chatbot die voor onze klanten ontwikkeld is werkt uitstekend. Mooi om te zien hoe elke (Reseller) klant deze met open armen ontvangt.</blockquote>
+            <footer><img data-customer-photo src="../klantenBeoordelingen/sander-360x360.jpg" alt="Sander van der Meer" width="360" height="360"><p><strong>Sander van der Meer</strong><span>Senior Online Marketeer — Harundo</span></p></footer>
+          </article>
+          <article class="customer-review customer-review--featured" data-customer-review data-motion-card data-claim-id="bw-quote-leqqr">
+            <blockquote>De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.</blockquote>
+            <footer><img data-customer-photo src="../klantenBeoordelingen/arjan-1.jpg" alt="Arjan Zwarteveen" width="219" height="219"><p><strong>Arjan Zwarteveen</strong><span>Senior Marketeer — Leqqr</span></p></footer>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -150,7 +183,7 @@
         <div class="control-stack__core">Artific · governance · safeguards · runtime</div>
         <div>GPT · Claude · Gemini</div>
       </div>
-      <div class="build-boundary">
+      <div class="build-boundary build-mode">
         <p data-claim-id="ctl-wat-we-bouwen"><strong>Wat we bouwen:</strong> de operationele laag voor AI binnen organisaties — features, interacties, integraties en governance die AI omzetten in productieve, gecontroleerde medewerkers.</p>
         <p data-claim-id="ctl-wat-we-niet-bouwen"><strong>Wat we niet bouwen:</strong> algemene chatbots. Artific bouwt infrastructuur voor specifieke, gecontroleerde, enterprise AI.</p>
       </div>

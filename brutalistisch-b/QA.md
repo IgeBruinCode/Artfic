@@ -7,7 +7,7 @@ Datum: 2026-07-17 · Route: `http://127.0.0.1:4388/brutalistisch-b/` · Server: 
 | Viewport | Gemeten resultaat |
 | --- | --- |
 | 320 × 1000 | Document- en viewportbreedte zijn beide 320px; geen horizontale pagina-uitloop. Onderwerpnavigatie en relatiedeck behouden hun eigen begrensde horizontale scroll. |
-| 405 × 1000 | Document- en viewportbreedte zijn beide 405px; de hero, dikke ring en cards blijven binnen het routecanvas. |
+| 405 × 1000 | Document- en viewportbreedte zijn beide 405px; de hero-shader en cards blijven binnen het routecanvas. |
 | 768 × 1000 | Document- en clientbreedte zijn beide 753px naast de 15px browser-scrollbar; geen horizontale pagina-uitloop. |
 | 1440 × 1000 | Document- en clientbreedte zijn beide 1425px naast de 15px browser-scrollbar. De drie modulekaarten zijn elk circa 384px breed. |
 
@@ -19,11 +19,12 @@ De Conversation Module-kaart is op desktop even breed als de twee andere modulek
 
 - De header rapporteert `position: sticky` en `top: 0px`; de actieve onderwerplink en blauwe leesvoortgang volgen de scrollpositie.
 - De browser rapporteert GSAP `3.13.0`, scripts in de volgorde `assets/vendor/gsap-3.13.0.min.js` en `main.js`, en na 2,2 seconden de rootstatus `motion-ready motion-loaded`.
-- De ring rapporteert animatienaam `orbit-turn`; zijn wrapper houdt de vaste hero-positie en de gesegmenteerde rand draait in 32 seconden rond.
+- De hero toont de WebGL-shader en CSS-fallback zonder een extra cirkelobject.
+- De AI Company of the Year-badge staat in de vrijgekomen rechterkolom van de hero en niet langer in de onderwerpnavigatie.
 - Het hero-canvas is aanwezig en initialiseert een lokale WebGL-context. De shader is begrensd op 40 fps, gebruikt maximaal 1,25× pixelratio op mobiel en 1,5× op grotere schermen. Bij ontbreken van WebGL blijft de onderliggende CSS-compositie zichtbaar.
 - De GSAP-loadingtimeline liet na settle nul verborgen hero-items achter. Tekstwoorden en cards worden daarna één keer via `IntersectionObserver` onthuld.
 - De logo-platen en sectieachtergronden gebruiken afzonderlijke rustige lussen. In de bovenzijde van de pagina stonden 16 buitenbeeldanimaties gepauzeerd.
-- Het relatiedeck heeft geen timer of autoplay; bediening blijft handmatig via scroll, paginatie, knoppen en toetsenbord.
+- Het relatiedeck speelt alleen automatisch wanneer het zelf in beeld is. Alle automatische en handmatige wissels gebruiken `track.scrollTo()`; een controle vanaf de platformsectie hield de documentpositie exact gelijk.
 - Bij een live omschakeling naar `prefers-reduced-motion: reduce` waren nul motion-items verborgen en nul `ambient-paused`-restklassen aanwezig; de shaderloop wordt uitgeschakeld.
 
 ## Bediening en fallback

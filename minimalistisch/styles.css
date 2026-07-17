@@ -338,20 +338,6 @@ p {
   background: var(--lichtblauw);
 }
 
-.hero::after {
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: clamp(240px, 30vw, 520px);
-  background: var(--wit);
-  content: "";
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 82%);
-  mask-image: linear-gradient(to bottom, transparent, black 82%);
-  pointer-events: none;
-}
-
 .hero-shader {
   position: absolute;
   z-index: 0;
@@ -1239,7 +1225,6 @@ p {
   margin-top: clamp(82px, 10vw, 136px);
   margin-inline: auto;
   padding: 54px 0 72px;
-  background: var(--wit);
   text-align: center;
 }
 
@@ -1273,7 +1258,6 @@ p {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: var(--wit);
   animation: rail 9s cubic-bezier(.76, 0, .24, 1) infinite;
   animation-delay: calc(var(--slot) * 140ms);
   will-change: transform, opacity;
@@ -2411,6 +2395,10 @@ p {
   .approach__inner .section-heading {
     min-width: 0;
     max-width: 100%;
+  }
+
+  .control-layer__inner .layer-map {
+    margin-top: clamp(64px, 7vw, 96px);
   }
 }
 

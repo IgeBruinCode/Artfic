@@ -36,9 +36,11 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 
 ## Componentstijl
 
-- **Merkpodium:** sticky bovenrand met Artific-logo, demoactie, horizontaal scrollbare onderwerpstrook op mobiel, actieve sectiestatus en blauwe leesvoortgang.
-- **Hero:** WebGL-kleurveld, CSS-fallback en een dikke gesegmenteerde ring. De ring blijft op dezelfde compositiepositie en draait langzaam om zijn middelpunt.
-- **Relatiedeck:** begrensde horizontale snap-track met negen kaarten en lokale logo’s op witte logoplaten. FC Twente opent het deck en bevat de volledige canonieke relatiezin. Handmatige knoppen, paginatie en toetsenbordbediening vullen native horizontaal scrollen aan.
+- **Merkpodium:** sticky bovenrand met Artific-logo, demoactie, compact gecentreerde onderwerpstrook, actieve sectiestatus en blauwe leesvoortgang. Op mobiel blijft de strook horizontaal scrollbaar.
+- **Hero:** het lokale WebGL-kleurveld en de CSS-fallback vormen zonder extra cirkelobject de zichtbare geanimeerde achtergrond. De lokale AI Company of the Year-badge staat groot in de vrijgekomen rechterkolom boven de platformkenmerken.
+- **Relatiedeck:** begrensde horizontale snap-track met negen rustige lichtblauwe kaarten, lokale logo’s op witte vlakken en directe klantnamen. FC Twente opent het deck. Pauzeerbare autoplay, handmatige knoppen, paginatie en toetsenbordbediening vullen native horizontaal scrollen aan.
+- **Klantbeoordelingen:** zes volledige, canonieke beoordelingen staan met hun lokale portretten in het bewijsdeel.
+- **Platformveld:** een schuin bewegend signal-grid en een langzame lichtscan vervangen de eerdere radiale bol zonder de leesvlakken te verstoren.
 - **Vraagkaarten:** grote witte en navy vlakken met hoekmarkering en blokschaduw.
 - **Controlelaag:** drie volle gestapelde banden tonen proces, Artific en modellen in één object.
 - **Moduleblokken:** drie even brede vierkolomsblokken op desktop. Daardoor heeft Conversation Module voldoende tekstbreedte; verticale offsets bewaren het asymmetrische ritme.
@@ -49,9 +51,9 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 
 Alle inhoud staat in de serverresponse en blijft zonder JavaScript zichtbaar. De lokale GSAP Core-runtime wordt met `defer` parallel aan `main.js` geladen. Een korte GSAP-timeline choreografeert bij laden eerst merk, H1 en hero-details. Daarna activeert één gedeelde `IntersectionObserver` de gemaskeerde kopwoorden en kaartposes uitsluitend wanneer ze in beeld komen. De tweens gebruiken alleen GSAP-transformaliases en opacity; `will-change` wordt bij aanvang gezet en na voltooiing gewist. De layout zelf verspringt niet.
 
-Achtergrondvelden, logo-platen en kleine stempels hebben rustige lussen, maar een tweede observer pauzeert ze buiten beeld. De WebGL-mesh reageert subtiel op de aanwijzer, tekent maximaal 40 frames per seconde, gebruikt op mobiel een lagere pixelratio en pauzeert buiten beeld of in een verborgen tab. De hero-ring gebruikt een lineaire omloop van 32 seconden.
+Achtergrondvelden en kleine stempels hebben rustige lussen, maar een tweede observer pauzeert ze buiten beeld. De WebGL-mesh reageert subtiel op de aanwijzer, tekent maximaal 40 frames per seconde, gebruikt op mobiel een lagere pixelratio en pauzeert buiten beeld of in een verborgen tab. Het platform-grid en de lichtscan bewegen uitsluitend via compositorvriendelijke transforms.
 
-Het relatiedeck speelt nooit automatisch. JavaScript voegt alleen vorige/volgende-knoppen, actieve status, pijl/Home/End-bediening en een beleefde live-aankondiging toe. Normale bediening gebruikt smooth scroll; bij reduced motion wordt direct gescrold. `gsap.matchMedia()` ruimt de normale timelines op en zet alle elementen direct in hun zichtbare eindstaat. De CSS-mediaquery stopt daarnaast decoratieve animaties en transities; de shaderloop schakelt zichzelf uit.
+Het relatiedeck wisselt in beeld rustig om de 4,2 seconden en biedt een expliciete pauze-/afspeelknop naast vorige/volgende, actieve status, pijl/Home/End-bediening en een beleefde live-aankondiging. De beweging gebruikt uitsluitend de horizontale scrollpositie van de track en kan daardoor nooit de documentpositie veranderen. Buiten beeld en bij reduced motion stopt autoplay. `gsap.matchMedia()` ruimt de normale timelines op en zet alle elementen direct in hun zichtbare eindstaat. De CSS-mediaquery stopt daarnaast decoratieve animaties en transities; de shaderloop schakelt zichzelf uit.
 
 ## Responsief gedrag
 

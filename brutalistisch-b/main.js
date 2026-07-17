@@ -14,6 +14,10 @@
   var activeIndex = 0;
   var pendingIndex = null;
   var settleVersion = 0;
+  var autoplayDelay = 4200;
+  var autoplayTimer = null;
+  var autoplayPaused = false;
+  var deckInView = true;
 
   function createDeckButton(text, ariaLabel) {
     var button = document.createElement("button");
@@ -25,14 +29,17 @@
   }
 
   var previousButton = createDeckButton("← Vorige", "Vorige klantrelatie");
+  var pauseButton = createDeckButton("Pauze", "Automatische slideshow pauzeren");
   var nextButton = createDeckButton("Volgende →", "Volgende klantrelatie");
   var status = document.createElement("p");
   status.className = "deck-status";
   status.setAttribute("aria-live", "polite");
   status.setAttribute("aria-atomic", "true");
-  mount.appendChild(previousButton);
-  mount.appendChild(nextButton);
+  pauseButton.setAttribute("aria-pressed", "false");
   mount.appendChild(status);
+  mount.appendChild(previousButton);
+  mount.appendChild(pauseButton);
+  mount.appendChild(nextButton);
 
   function normalizeIndex(index) {
     return (index + slides.length) % slides.length;
@@ -87,10 +94,9 @@
     if (pendingIndex === null && targetIndex === activeIndex) return;
     pendingIndex = targetIndex;
     settleVersion += 1;
-    slides[targetIndex].scrollIntoView({
-      behavior: motionPreference.matches ? "auto" : "smooth",
-      block: "nearest",
-      inline: "start"
+    track.scrollTo({
+      left: slides[targetIndex].offsetLeft - slides[0].offsetLeft,
+      behavior: motionPreference.matches ? "auto" : "smooth"
     });
     if (motionPreference.matches) settleMovement();
   }
@@ -99,8 +105,30 @@
     return pendingIndex === null ? activeIndex : pendingIndex;
   }
 
+  function stopAutoplay() {
+    if (autoplayTimer === null) return;
+    window.clearInterval(autoplayTimer);
+    autoplayTimer = null;
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    if (autoplayPaused || motionPreference.matches || document.hidden || !deckInView) return;
+    autoplayTimer = window.setInterval(function () {
+      moveTo(navigationIndex() + 1);
+    }, autoplayDelay);
+  }
+
   previousButton.addEventListener("click", function () { moveTo(navigationIndex() - 1); });
   nextButton.addEventListener("click", function () { moveTo(navigationIndex() + 1); });
+  pauseButton.addEventListener("click", function () {
+    autoplayPaused = !autoplayPaused;
+    pauseButton.setAttribute("aria-pressed", autoplayPaused ? "true" : "false");
+    pauseButton.textContent = autoplayPaused ? "Afspelen" : "Pauze";
+    pauseButton.setAttribute("aria-label", autoplayPaused ? "Automatische slideshow hervatten" : "Automatische slideshow pauzeren");
+    if (autoplayPaused) stopAutoplay();
+    else startAutoplay();
+  });
   pagination.forEach(function (link, index) {
     link.addEventListener("click", function (event) {
       event.preventDefault();
@@ -121,12 +149,31 @@
   track.addEventListener("scrollend", settleMovement);
   motionPreference.addEventListener("change", function (event) {
     if (event.matches && pendingIndex !== null) {
-      slides[pendingIndex].scrollIntoView({ behavior: "auto", block: "nearest", inline: "start" });
+      track.scrollTo({
+        left: slides[pendingIndex].offsetLeft - slides[0].offsetLeft,
+        behavior: "auto"
+      });
       settleMovement();
     }
+    if (event.matches) stopAutoplay();
+    else startAutoplay();
+  });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stopAutoplay();
+    else startAutoplay();
   });
 
+  if (typeof window.IntersectionObserver === "function") {
+    var deckObserver = new window.IntersectionObserver(function (entries) {
+      deckInView = entries.some(function (entry) { return entry.isIntersecting; });
+      if (deckInView) startAutoplay();
+      else stopAutoplay();
+    }, { threshold: 0.08 });
+    deckObserver.observe(deck);
+  }
+
   commitActive(0);
+  startAutoplay();
 })();
 
 (function () {
@@ -286,7 +333,7 @@
       surfaces.forEach(prepareSurface);
 
       var heroWords = heroHeading ? headingWords(heroHeading) : [];
-      var heroDetails = Array.prototype.slice.call(document.querySelectorAll(".hero__copy > .eyebrow, .hero__copy > p, .hero__copy > .button-row, .hero-stamp"));
+      var heroDetails = Array.prototype.slice.call(document.querySelectorAll(".hero__copy > .eyebrow, .hero__copy > p, .hero__copy > .button-row, .hero-award, .hero-stamp"));
       var brandItems = Array.prototype.slice.call(document.querySelectorAll(".brand-home, .brand-stage__top > .button"));
       gsap.set(heroWords, { autoAlpha: 0, yPercent: 112, skewY: 5 });
       gsap.set(heroDetails, { autoAlpha: 0, y: 28 });
@@ -320,7 +367,7 @@
         revealTargets.forEach(function (target) { revealObserver.observe(target); });
 
         var ambientTargets = Array.prototype.slice.call(document.querySelectorAll(
-          ".shader-field, .hero-orbit span, .hero-stamp__mark, .relationship-card__media, .platform-zone, .organisation-zone, .contact-zone, .contact-zone__burst"
+          ".shader-field, .hero-stamp__mark, .relationship-card__media, .platform-zone, .organisation-zone, .contact-zone, .contact-zone__burst"
         ));
         ambientTargets.forEach(function (target) { target.classList.add("ambient-paused"); });
         ambientObserver = new window.IntersectionObserver(function (entries) {

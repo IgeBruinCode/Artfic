@@ -539,10 +539,47 @@ section[id],
 
 .stappen__stap { counter-increment: stap; }
 
+.stappen {
+  gap: 0;
+  margin-bottom: 0;
+  background: var(--lichtblauw);
+  border: 1px solid var(--lichtblauw);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+}
+
+.stappen__stap {
+  display: grid;
+  gap: var(--ruimte-1);
+  background: var(--wit);
+  border: 0;
+  border-radius: 0;
+  padding: clamp(20px, 4vw, 32px);
+}
+
+.stappen__stap + .stappen__stap {
+  border-top: 1px solid var(--lichtblauw);
+}
+
+.stappen__stap h4 {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--ruimte-1);
+  margin: 0;
+}
+
 .stappen__stap h4::before {
-  content: counter(stap, decimal-leading-zero) " · ";
+  content: counter(stap, decimal-leading-zero);
   color: var(--navy);
   font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+}
+
+.stappen__stap p {
+  max-width: 58ch;
+  margin: 0 0 0 calc(3.25rem + var(--ruimte-1));
 }
 
 .modules {
@@ -663,6 +700,14 @@ section[id],
   .stepper { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .customer-stories__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
+  .stappen__stap {
+    grid-template-columns: minmax(220px, 4fr) minmax(0, 7fr);
+    align-items: baseline;
+    column-gap: var(--ruimte-4);
+  }
+
+  .stappen__stap p { margin: 0; }
+
   .bewijsrail {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--ruimte-3);
@@ -765,7 +810,6 @@ section[id],
   .module-card:nth-child(3) { grid-column: 3 / 13; grid-row: 3; }
 
   .assurance-matrix { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .stappen { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .customer-stories__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
