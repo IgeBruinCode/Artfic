@@ -1,0 +1,357 @@
+{
+  "/home/ige/Work/Projects/Artfic/.reflex-kanban/config.json": {
+    "mtime": 1784127909.110685,
+    "ast_hash": "77d0cc9bf7db7292814f1712130e6d47",
+    "semantic_hash": "77d0cc9bf7db7292814f1712130e6d47"
+  },
+  "/home/ige/Work/Projects/Artfic/.vscode/settings.json": {
+    "mtime": 1784116013.9191291,
+    "ast_hash": "c40bbcc22545f65ef6bc2d131b67909b",
+    "semantic_hash": "c40bbcc22545f65ef6bc2d131b67909b"
+  },
+  "/home/ige/Work/Projects/Artfic/assets/brand/brand.json": {
+    "mtime": 1784215764.4674122,
+    "ast_hash": "407372245b821949953003bd6e2d5c29",
+    "semantic_hash": "407372245b821949953003bd6e2d5c29"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-a/main.js": {
+    "mtime": 1784229788.489942,
+    "ast_hash": "86a7f758d51f6e7a8a2ac264d11637ab",
+    "semantic_hash": "86a7f758d51f6e7a8a2ac264d11637ab"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/vendor/gsap-3.13.0.min.js": {
+    "mtime": 1784288165.4210894,
+    "ast_hash": "5e6e6cba1d2eabb40740bdc12f736a3c",
+    "semantic_hash": "5e6e6cba1d2eabb40740bdc12f736a3c"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/main.js": {
+    "mtime": 1784291614.6268039,
+    "ast_hash": "2291050a0df3e03d6edbbd01189891a4",
+    "semantic_hash": "2291050a0df3e03d6edbbd01189891a4"
+  },
+  "/home/ige/Work/Projects/Artfic/content/artific-content.nl.json": {
+    "mtime": 1784212117.674454,
+    "ast_hash": "0ef686655764a51c41175cc866abbdc3",
+    "semantic_hash": "0ef686655764a51c41175cc866abbdc3"
+  },
+  "/home/ige/Work/Projects/Artfic/conventioneel/main.js": {
+    "mtime": 1784229788.491399,
+    "ast_hash": "bd7a4b1651c31b24ec0532b3b2860577",
+    "semantic_hash": "bd7a4b1651c31b24ec0532b3b2860577"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/flow-field-shader.js": {
+    "mtime": 1784288124.0019271,
+    "ast_hash": "370bed1197505925613619766f9fc24b",
+    "semantic_hash": "370bed1197505925613619766f9fc24b"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/main.js": {
+    "mtime": 1784291449.6806066,
+    "ast_hash": "cabac9139d335c5712f793a0afc7cd1d",
+    "semantic_hash": "cabac9139d335c5712f793a0afc7cd1d"
+  },
+  "/home/ige/Work/Projects/Artfic/premium/main.js": {
+    "mtime": 1784229788.4923413,
+    "ast_hash": "00bf15381d8540319aafc321dd2261db",
+    "semantic_hash": "00bf15381d8540319aafc321dd2261db"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/lib/variant-checks.mjs": {
+    "mtime": 1784291525.6515427,
+    "ast_hash": "55e150aba915576d67042db4621de27e",
+    "semantic_hash": "55e150aba915576d67042db4621de27e"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/serve.mjs": {
+    "mtime": 1784212117.6752636,
+    "ast_hash": "c0bc75e4cbd843ee493a3f60b63badd0",
+    "semantic_hash": "c0bc75e4cbd843ee493a3f60b63badd0"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-brutalistisch-a.mjs": {
+    "mtime": 1784291601.3754675,
+    "ast_hash": "79d4e1f7b70e811a8e1d1026a09b0dd2",
+    "semantic_hash": "79d4e1f7b70e811a8e1d1026a09b0dd2"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-brutalistisch-b.mjs": {
+    "mtime": 1784291536.1738102,
+    "ast_hash": "c1640ba941515c2f1ed8c283796b288d",
+    "semantic_hash": "c1640ba941515c2f1ed8c283796b288d"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-content.mjs": {
+    "mtime": 1784215764.4728107,
+    "ast_hash": "dbacc2e384312746b5484725a65a9a33",
+    "semantic_hash": "dbacc2e384312746b5484725a65a9a33"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-conventioneel.mjs": {
+    "mtime": 1784291601.3774676,
+    "ast_hash": "f2d89ed4f17239ebf7761cae725a882f",
+    "semantic_hash": "f2d89ed4f17239ebf7761cae725a882f"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-minimalistisch.mjs": {
+    "mtime": 1784291536.1728103,
+    "ast_hash": "a2517cf1e18e6dd4065628a6be7c0aa4",
+    "semantic_hash": "a2517cf1e18e6dd4065628a6be7c0aa4"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-premium.mjs": {
+    "mtime": 1784291601.3804677,
+    "ast_hash": "7678f3cfc6579516d8602ed429db6b1e",
+    "semantic_hash": "7678f3cfc6579516d8602ed429db6b1e"
+  },
+  "/home/ige/Work/Projects/Artfic/scripts/validate-site.mjs": {
+    "mtime": 1784238952.9591756,
+    "ast_hash": "f64959a0fe737b973650e6735a589d90",
+    "semantic_hash": "f64959a0fe737b973650e6735a589d90"
+  },
+  "/home/ige/Work/Projects/Artfic/.reflex-kanban/prompts/agent-review.md": {
+    "mtime": 1783677692.6423025,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/ige/Work/Projects/Artfic/.reflex-kanban/prompts/build.md": {
+    "mtime": 1784234878.0866032,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/ige/Work/Projects/Artfic/.reflex-kanban/prompts/plan.md": {
+    "mtime": 1783677687.9591725,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/ige/Work/Projects/Artfic/QA.md": {
+    "mtime": 1784238952.9572186,
+    "ast_hash": "fe7d7ce310b173e478c51bc7f52bbde6",
+    "semantic_hash": "fe7d7ce310b173e478c51bc7f52bbde6"
+  },
+  "/home/ige/Work/Projects/Artfic/README.md": {
+    "mtime": 1784285512.9398189,
+    "ast_hash": "1940dc7915b8d8c3cbad1a73ad10c777",
+    "semantic_hash": "1940dc7915b8d8c3cbad1a73ad10c777"
+  },
+  "/home/ige/Work/Projects/Artfic/assets/brand/README.md": {
+    "mtime": 1784215764.4667509,
+    "ast_hash": "acffb8957bb2efccc79191c63d79b4a2",
+    "semantic_hash": "acffb8957bb2efccc79191c63d79b4a2"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-a/DESIGN.md": {
+    "mtime": 1784229788.489942,
+    "ast_hash": "38d31df4829ab6aff5f045978ae3211c",
+    "semantic_hash": "38d31df4829ab6aff5f045978ae3211c"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-a/QA.md": {
+    "mtime": 1784229788.489942,
+    "ast_hash": "e9a93f23abd864fa76605d6e911538a3",
+    "semantic_hash": "e9a93f23abd864fa76605d6e911538a3"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-a/index.html": {
+    "mtime": 1784291570.573685,
+    "ast_hash": "0729ee019a840c683c6e23a6313613c3",
+    "semantic_hash": "0729ee019a840c683c6e23a6313613c3"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/.media/index.md": {
+    "mtime": 1784290670.4352767,
+    "ast_hash": "5de0879c9bbb28ff5233c9b5dbcb7972",
+    "semantic_hash": "5de0879c9bbb28ff5233c9b5dbcb7972"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/DESIGN.md": {
+    "mtime": 1784291196.015098,
+    "ast_hash": "2ee9d91acd897063c01de3c842d8954e",
+    "semantic_hash": "2ee9d91acd897063c01de3c842d8954e"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/QA.md": {
+    "mtime": 1784288515.8225567,
+    "ast_hash": "0fd749eaa06d49eea30f9b8dc660454d",
+    "semantic_hash": "0fd749eaa06d49eea30f9b8dc660454d"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/README.md": {
+    "mtime": 1784287093.601436,
+    "ast_hash": "831a49097488674b76996568645aeb95",
+    "semantic_hash": "831a49097488674b76996568645aeb95"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/vendor/README.md": {
+    "mtime": 1784288496.4999926,
+    "ast_hash": "b6de2cb5d9e8e7d450a68c6188aaafd7",
+    "semantic_hash": "b6de2cb5d9e8e7d450a68c6188aaafd7"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/index.html": {
+    "mtime": 1784291570.5752225,
+    "ast_hash": "895cceff9a8dce2d01ffdee57f162b0d",
+    "semantic_hash": "895cceff9a8dce2d01ffdee57f162b0d"
+  },
+  "/home/ige/Work/Projects/Artfic/content/sources/artific.nl.md": {
+    "mtime": 1784212117.6745968,
+    "ast_hash": "ecd88cfc5429ed16cb7b6e1110d74044",
+    "semantic_hash": "ecd88cfc5429ed16cb7b6e1110d74044"
+  },
+  "/home/ige/Work/Projects/Artfic/content/sources/demo-trigger-observation.md": {
+    "mtime": 1784212117.6746538,
+    "ast_hash": "1008899d446991459c240ee1f2abf09a",
+    "semantic_hash": "1008899d446991459c240ee1f2abf09a"
+  },
+  "/home/ige/Work/Projects/Artfic/content/sources/product.artific.nl-nl.md": {
+    "mtime": 1784212117.6746538,
+    "ast_hash": "31fe1b6ac39e6a6aae6fcc37bd8a5307",
+    "semantic_hash": "31fe1b6ac39e6a6aae6fcc37bd8a5307"
+  },
+  "/home/ige/Work/Projects/Artfic/content/sources/vision.artific.nl-nl.md": {
+    "mtime": 1784212117.6746538,
+    "ast_hash": "075538ed5b00aab39b094aeda8f7352d",
+    "semantic_hash": "075538ed5b00aab39b094aeda8f7352d"
+  },
+  "/home/ige/Work/Projects/Artfic/conventioneel/DESIGN.md": {
+    "mtime": 1784229788.491095,
+    "ast_hash": "7dfdf9b3caafc126e82fea6a1075e8a6",
+    "semantic_hash": "7dfdf9b3caafc126e82fea6a1075e8a6"
+  },
+  "/home/ige/Work/Projects/Artfic/conventioneel/QA.md": {
+    "mtime": 1784229788.4911897,
+    "ast_hash": "da10fd1e1d6905b846be1566687a71e0",
+    "semantic_hash": "da10fd1e1d6905b846be1566687a71e0"
+  },
+  "/home/ige/Work/Projects/Artfic/conventioneel/index.html": {
+    "mtime": 1784291570.5761366,
+    "ast_hash": "3ca4e3d4da49f211a2c62c542050db5f",
+    "semantic_hash": "3ca4e3d4da49f211a2c62c542050db5f"
+  },
+  "/home/ige/Work/Projects/Artfic/index.html": {
+    "mtime": 1784238952.9589221,
+    "ast_hash": "73d94969a9a3a3af126f5a5ed5c48d60",
+    "semantic_hash": "73d94969a9a3a3af126f5a5ed5c48d60"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/DESIGN.md": {
+    "mtime": 1784288147.858486,
+    "ast_hash": "329976da8d1ef0d6f187e82bf6a37770",
+    "semantic_hash": "329976da8d1ef0d6f187e82bf6a37770"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/README.md": {
+    "mtime": 1784284702.5343392,
+    "ast_hash": "b08aafbf2934ad80223690345cd9ba43",
+    "semantic_hash": "b08aafbf2934ad80223690345cd9ba43"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/index.html": {
+    "mtime": 1784291488.0467052,
+    "ast_hash": "7ec742da6780e2e05f78537da6475f62",
+    "semantic_hash": "7ec742da6780e2e05f78537da6475f62"
+  },
+  "/home/ige/Work/Projects/Artfic/premium/DESIGN.md": {
+    "mtime": 1784229788.4919145,
+    "ast_hash": "4772a33426ebd1686bbe658113300046",
+    "semantic_hash": "4772a33426ebd1686bbe658113300046"
+  },
+  "/home/ige/Work/Projects/Artfic/premium/index.html": {
+    "mtime": 1784291570.576752,
+    "ast_hash": "991193cc31533ba68ad1ca861c7788c7",
+    "semantic_hash": "991193cc31533ba68ad1ca861c7788c7"
+  },
+  "/home/ige/Work/Projects/Artfic/Artific brand manual v1.0.pdf": {
+    "mtime": 1784212117.6572044,
+    "ast_hash": "8f80f4d990d56adf50b2b807daec810e",
+    "semantic_hash": "8f80f4d990d56adf50b2b807daec810e"
+  },
+  "/home/ige/Work/Projects/Artfic/Voorbeelden creative materials.pdf": {
+    "mtime": 1784212117.6736832,
+    "ast_hash": "81da59c27f7b2e227a8d536c3f2814e2",
+    "semantic_hash": "81da59c27f7b2e227a8d536c3f2814e2"
+  },
+  "/home/ige/Work/Projects/Artfic/assets/brand/artific-logo-blauw.svg": {
+    "mtime": 1784212117.6740148,
+    "ast_hash": "49e3160fb8d27b0bb4f9d68aeb9bf3e3",
+    "semantic_hash": "49e3160fb8d27b0bb4f9d68aeb9bf3e3"
+  },
+  "/home/ige/Work/Projects/Artfic/assets/brand/artific-logo-navy.png": {
+    "mtime": 1784215764.467168,
+    "ast_hash": "aadfbfc24c96a51a0013e9cc736971cc",
+    "semantic_hash": "aadfbfc24c96a51a0013e9cc736971cc"
+  },
+  "/home/ige/Work/Projects/Artfic/assets/brand/artific-logo-wit.svg": {
+    "mtime": 1784212117.6740148,
+    "ast_hash": "f81545837492996a67562f2eec68063e",
+    "semantic_hash": "f81545837492996a67562f2eec68063e"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/.media/images/image_001.webp": {
+    "mtime": 1784290670.4346094,
+    "ast_hash": "7c81646eb0af0f4a1333607509bde97b",
+    "semantic_hash": "7c81646eb0af0f4a1333607509bde97b"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/basic-fit.svg": {
+    "mtime": 1784287106.704203,
+    "ast_hash": "7b05536c2d433803ffb30679c6c8cf44",
+    "semantic_hash": "7b05536c2d433803ffb30679c6c8cf44"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/eneco.svg": {
+    "mtime": 1784287093.601436,
+    "ast_hash": "a511e519aaa10efdc1497b16469b8e2d",
+    "semantic_hash": "a511e519aaa10efdc1497b16469b8e2d"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/fc-twente.svg": {
+    "mtime": 1784287106.4967506,
+    "ast_hash": "9bdd584e4a3836c8586ac8c2c2c4b52c",
+    "semantic_hash": "9bdd584e4a3836c8586ac8c2c2c4b52c"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/gemeente-den-haag.jpg": {
+    "mtime": 1784287106.6317537,
+    "ast_hash": "0ea1b3c83a2ca5846893ef3977e4614b",
+    "semantic_hash": "0ea1b3c83a2ca5846893ef3977e4614b"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/hollandsnieuwe.svg": {
+    "mtime": 1784287106.538164,
+    "ast_hash": "c82417db7ad6c1acaf0a759f49e16b3e",
+    "semantic_hash": "c82417db7ad6c1acaf0a759f49e16b3e"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/marktplaats.svg": {
+    "mtime": 1784287106.5296214,
+    "ast_hash": "5b121dba1219d204a923f49979ac70d4",
+    "semantic_hash": "5b121dba1219d204a923f49979ac70d4"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/rtv-oost.svg": {
+    "mtime": 1784287106.52885,
+    "ast_hash": "affd9864b29a52fb0605bb8f1b8d3b9c",
+    "semantic_hash": "affd9864b29a52fb0605bb8f1b8d3b9c"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/vechtstede.svg": {
+    "mtime": 1784287106.634754,
+    "ast_hash": "c1890f325ab725e197206eba1a6a3258",
+    "semantic_hash": "c1890f325ab725e197206eba1a6a3258"
+  },
+  "/home/ige/Work/Projects/Artfic/brutalistisch-b/assets/clients/vrzl.svg": {
+    "mtime": 1784287106.6157534,
+    "ast_hash": "9098403f9007b047e7f83c720aef1cf9",
+    "semantic_hash": "9098403f9007b047e7f83c720aef1cf9"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/basic-fit.png": {
+    "mtime": 1784283671.497813,
+    "ast_hash": "0237c66eabcd285570cc3a9217400856",
+    "semantic_hash": "0237c66eabcd285570cc3a9217400856"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/eneco.jpg": {
+    "mtime": 1784283671.5988166,
+    "ast_hash": "66f9b7c6aed192813e6891aa57208d39",
+    "semantic_hash": "66f9b7c6aed192813e6891aa57208d39"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/marktplaats.jpg": {
+    "mtime": 1784283671.8298244,
+    "ast_hash": "1eb19a96b79ed5b2d9dc287118557671",
+    "semantic_hash": "1eb19a96b79ed5b2d9dc287118557671"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/previder.png": {
+    "mtime": 1784283672.2545774,
+    "ast_hash": "ca0331e0ef314ab3af513c66f9b9fc8b",
+    "semantic_hash": "ca0331e0ef314ab3af513c66f9b9fc8b"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/royal-de-ree-holland.jpg": {
+    "mtime": 1784283672.166836,
+    "ast_hash": "67d337a7a0773fe08fef23b354ef39d5",
+    "semantic_hash": "67d337a7a0773fe08fef23b354ef39d5"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/rtv-oost.png": {
+    "mtime": 1784283672.0595918,
+    "ast_hash": "3fe15d7ae272586d3cbb10201165298c",
+    "semantic_hash": "3fe15d7ae272586d3cbb10201165298c"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/tonys-chocolonely.svg": {
+    "mtime": 1784283671.9678292,
+    "ast_hash": "611b6032a7e34e375359cee765f954e8",
+    "semantic_hash": "611b6032a7e34e375359cee765f954e8"
+  },
+  "/home/ige/Work/Projects/Artfic/minimalistisch/assets/clients/veiligheidsregio-zuid-limburg.png": {
+    "mtime": 1784283671.7158206,
+    "ast_hash": "9a00e6ec3de622b2050194d90334f121",
+    "semantic_hash": "9a00e6ec3de622b2050194d90334f121"
+  }
+}

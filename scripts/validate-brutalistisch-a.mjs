@@ -8,6 +8,7 @@ import {
   checkBrandColors,
   checkBrandGate,
   checkClaims,
+  checkCustomerReviews,
   checkContrastUsage,
   checkDesignDoc,
   checkDocumentMetadata,
@@ -91,6 +92,7 @@ const strictVariantTexts = {
   'bo-support': ['Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.'],
   'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken', 'Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.'],
   'bw-klantnamen': ['Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
+  'bw-quote-leqqr': ['De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.'],
 };
 const requiredClaims = [
   'pos-belofte', 'pos-agentic-platform', 'pos-badges',
@@ -107,6 +109,10 @@ checkLinksAndCtas(html, content, { minCtaCount: 3, minCtaHint: 'commandobar, her
 
 // --- afbeeldingen: alleen canonieke logo-/achtergrondcombinaties ---
 checkImages(html, css, brand, root, 'brutalistisch-a', fail);
+checkCustomerReviews(html, fail);
+if ((html.match(/\sdata-company-logo(?=\s|>)/g) ?? []).length !== 9 || !/data-company-slider/.test(html) || !/animation:\s*bedrijvenloop-a/.test(css)) {
+  fail('bedrijven-slideshow: verwacht negen lokale klantlogo’s in de bewegende brutalistische band');
+}
 // Logo-uitvoering: op de donkere commandobar en footer hoort uitsluitend het witte logo.
 if (/artific-logo-blauw\.svg/.test(html)) fail('index.html: het blauwe logo hoort niet op de donkere vlakken van deze variant');
 
@@ -132,6 +138,10 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: '.site-footer__links a', backgroundSelector: '.site-footer', pairId: 'wit-op-navy' },
   { foregroundSelector: '.fasen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
   { foregroundSelector: '.stappen li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
+  { foregroundSelector: 'body', backgroundSelector: '.bedrijvenband', pairId: 'navy-op-lichtblauw' },
+  { foregroundSelector: 'body', backgroundSelector: '.bedrijvenmerk', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.stem', pairId: 'navy-op-wit' },
+  { foregroundSelector: 'body', backgroundSelector: '.stem--signaal', pairId: 'navy-op-geel' },
 ], fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 if (/rgba?\(|hsla?\(|color-mix|\btransparent\b|opacity:\s*0(?:\D|$)|visibility\s*:\s*hidden/.test(css)) {

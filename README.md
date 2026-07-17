@@ -7,10 +7,10 @@ Statische HTML-website met vijf onafhankelijk bekijkbare, klantgerichte landings
 | Variant | Adres | Status |
 | --- | --- | --- |
 | Minimalistisch | `/minimalistisch/` | **Gebouwd** — Codex-geïnspireerde Artific-landingspagina met 21st.dev-geïnspireerde WebGL-shader en workflowvisual, officiële klantlogo-rail, zes klantbeoordelingen en eigen stijlgids |
-| Brutalistisch A | `/brutalistisch-a/` | **Gebouwd** — volledige landingspagina; `brutalistisch-a/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document zelf) |
-| Brutalistisch B | `/brutalistisch-b/` | **Gebouwd** — dominante geel/navy-landingspagina met een toegankelijk relatiedeck, gelaagde shaders, asymmetrische kaarten, eigen stijlgids en QA-log |
-| Conventioneel (SaaS) | `/conventioneel/` | **Gebouwd** — volledige landingspagina ("trust-center SaaS") met eigen stijlgids en QA-log (`conventioneel/QA.md`); `conventioneel/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
-| Premium | `/premium/` | **Gebouwd** — volledige landingspagina ("executive evidence dossier") met eigen stijlgids; `premium/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
+| Brutalistisch A | `/brutalistisch-a/` | **Gebouwd** — volledige landingspagina met brutalistische bedrijvenband en zes klantbeoordelingen met portretten; `brutalistisch-a/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd (provenance in het document zelf) |
+| Brutalistisch B | `/brutalistisch-b/` | **Gebouwd** — dominante geel/navy-landingspagina met een toegankelijk relatiedeck, zes klantbeoordelingen met portretten, gelaagde shaders, asymmetrische kaarten, eigen stijlgids en QA-log |
+| Conventioneel (SaaS) | `/conventioneel/` | **Gebouwd** — volledige landingspagina ("trust-center SaaS") met bedrijvenrail, zes klantbeoordelingen met portretten, eigen stijlgids en QA-log (`conventioneel/QA.md`); `conventioneel/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
+| Premium | `/premium/` | **Gebouwd** — volledige landingspagina ("executive evidence dossier") met bedrijven-ledger, zes klantbeoordelingen met portretten en eigen stijlgids; `premium/DESIGN.md` is via de Google Stitch-MCP gefinaliseerd in een afzonderlijk Stitch-project (provenance in het document zelf) |
 
 Het standaard openingsadres `/` is een neutrale keuzepagina (`index.html` + `keuze.css`, zonder JavaScript) die naar exact deze vijf varianten linkt, zonder voorkeurslabel.
 
@@ -29,6 +29,8 @@ Alle vijf routes zijn gebouwd; wijzigingen vervangen telkens alleen inhoud, nooi
 - `content/sources/*.md` — gedateerde snapshots van de oorspronkelijke SEO-/paginatekst van artific.nl, vision.artific.nl/nl en product.artific.nl/nl, met stabiele ankers (`<a id="..."></a>`).
 - `content/sources/demo-trigger-observation.md` — geobserveerd live clientgedrag van "Vraag een demo aan" en het vastgelegde fallbackbesluit.
 - `assets/brand/brand.json` + `assets/brand/README.md` + `assets/brand/*.{svg,png}` — canonieke huisstijlbron met geverifieerde tokens, contrastregels, logo-uitvoeringen en toegestane logo-achtergronden. De twee aanwezige root-PDF's zijn de primaire auditbron; ieder item bevat document-ID, 1-gebaseerde pagina en concrete evidence. De PDF's blijven build-time bron en worden nooit door de website geladen.
+- `assets/clients/` — gedeelde lokale logo-assets voor de drie nieuw toegevoegde bedrijven-slideshows; bestaande variant-specifieke logo-assets blijven op hun oorspronkelijke plek.
+- `klantenBeoordelingen/` — zes lokale portretten met een vaste naam-, functie- en quotekoppeling voor alle varianten.
 
 ### Redactionele regels voor varianten
 

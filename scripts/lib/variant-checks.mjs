@@ -379,7 +379,36 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
 
   for (const image of imageNodes) {
     const src = image.attributes.get('src') ?? '';
-    if (image.attributes.has('data-client-logo')) {
+    if (image.attributes.has('data-customer-photo')) {
+      const alt = image.attributes.get('alt') ?? '';
+      const width = Number(image.attributes.get('width'));
+      const height = Number(image.attributes.get('height'));
+      if (!src || /^(?:https?:|data:)/i.test(src)) {
+        fail(`index.html: klantportret '${src || '?'}' moet als lokale asset worden geleverd`);
+      } else if (!existsSync(join(root, variantDir, src))) {
+        fail(`index.html: klantportret '${src}' bestaat niet`);
+      }
+      if (!alt.trim()) fail(`index.html: klantportret '${src || '?'}' mist een herkenbare alt-tekst`);
+      if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
+        fail(`index.html: klantportret '${src || '?'}' mist geldige afmetingen`);
+      }
+      continue;
+    }
+    if (image.attributes.has('data-brand-artwork')) {
+      const alt = image.attributes.get('alt') ?? '';
+      const width = Number(image.attributes.get('width'));
+      if (!src || /^(?:https?:|data:)/i.test(src)) {
+        fail(`index.html: merkbeeld '${src || '?'}' moet als lokale asset worden geleverd`);
+      } else if (!existsSync(join(root, variantDir, src))) {
+        fail(`index.html: merkbeeld '${src}' bestaat niet`);
+      }
+      if (!alt.trim()) fail(`index.html: merkbeeld '${src || '?'}' mist een herkenbare alt-tekst`);
+      if (!Number.isFinite(width) || width < minWidth) {
+        fail(`index.html: merkbeeld '${src || '?'}' is volgens het width-attribuut niet minimaal ${minWidth}px breed`);
+      }
+      continue;
+    }
+    if (image.attributes.has('data-client-logo') || image.attributes.has('data-company-logo') || image.attributes.has('data-company-logo-copy')) {
       const alt = image.attributes.get('alt') ?? '';
       const width = Number(image.attributes.get('width'));
       if (!src || /^(?:https?:|data:)/i.test(src)) {
@@ -387,9 +416,26 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
       } else if (!existsSync(join(root, variantDir, src))) {
         fail(`index.html: klantlogo '${src}' bestaat niet`);
       }
-      if (!alt.trim()) fail(`index.html: klantlogo '${src || '?'}' mist een herkenbare alt-tekst`);
+      if (!image.attributes.has('data-company-logo-copy') && !alt.trim()) {
+        fail(`index.html: klantlogo '${src || '?'}' mist een herkenbare alt-tekst`);
+      }
       if (!Number.isFinite(width) || width < minWidth) {
         fail(`index.html: klantlogo '${src || '?'}' is volgens het width-attribuut niet minimaal ${minWidth}px breed`);
+      }
+      continue;
+    }
+    if (image.attributes.has('data-customer-photo')) {
+      const alt = image.attributes.get('alt') ?? '';
+      const width = Number(image.attributes.get('width'));
+      const height = Number(image.attributes.get('height'));
+      if (!src || /^(?:https?:|data:)/i.test(src)) {
+        fail(`index.html: klantfoto '${src || '?'}' moet als lokale asset worden geleverd`);
+      } else if (!existsSync(join(root, variantDir, src))) {
+        fail(`index.html: klantfoto '${src}' bestaat niet`);
+      }
+      if (!alt.trim()) fail(`index.html: klantfoto '${src || '?'}' mist de naam als alt-tekst`);
+      if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
+        fail(`index.html: klantfoto '${src || '?'}' mist geldige width- en height-attributen`);
       }
       continue;
     }
@@ -453,7 +499,7 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
   }
 
   for (const rule of model.rules) {
-    if (rule.selectors.every((selector) => /(?:client-logo|logo-rail|logo-track)/i.test(selector))) continue;
+    if (rule.selectors.every((selector) => /(?:brand-artwork|client-logo|logo-rail|logo-track|review-avatar|review-slab|customer-photo|customer-story|voice-entry|\.stem\b)/i.test(selector))) continue;
     if (rule.declarations.has('filter') && rule.declarations.get('filter') !== 'none') {
       fail(`styles.css: globale/oppervlaktefilter in '${rule.selectors.join(', ')}' kan een logo herkleuren`);
     }
@@ -475,6 +521,33 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
       fail(`styles.css: logo-selector '${rule.selectors.join(', ')}' mag geen eigen achtergrond over het gevalideerde oppervlak leggen`);
     }
   }
+}
+
+export function checkCustomerReviews(html, fail) {
+  const expected = [
+    ['Rogier Lukas', 'Notaris — Vechtstede Notarissen', 'Rogier.jpg.webp', 'Samen met Artific zijn we bezig de AI-Notaris Assistent te ontwikkelen.'],
+    ['Maarten ter Velde', 'Co-founder', 'Maarten-ter-Velde-aspect-ratio-150-150.jpg.webp', 'Artific heeft voor ons alle bestaande bedrijfsprocedures met AI uitgerust.'],
+    ['Johan Evers', 'CEO — Human Talent Group', 'johan.jpg.webp', 'De AI Roadmap van Artific heeft tot veel nieuwe inzichten binnen onze organisatie geleid.'],
+    ['Joshua Kuipers', 'Directeur — Webton', 'joshua-360x360.jpg', 'Binnen Webton werken we sinds september 2023 met de tooling van Artific.'],
+    ['Sander van der Meer', 'Senior Online Marketeer — Harundo', 'sander-360x360.jpg', 'De custom made AI-Assistent / Chatbot die voor onze klanten ontwikkeld is werkt uitstekend.'],
+    ['Arjan Zwarteveen', 'Senior Marketeer — Leqqr', 'arjan-1.jpg', 'De Artific AI-Assistent werkt als een trein.'],
+  ];
+  const scopes = [...html.matchAll(/<article\b[^>]*\sdata-customer-review(?:\s|>)[^>]*>([\s\S]*?)<\/article>/g)];
+  if (scopes.length !== expected.length) {
+    fail(`index.html: verwacht exact zes klantenbeoordelingen, gevonden ${scopes.length}`);
+    return;
+  }
+  scopes.forEach((match, index) => {
+    const [name, role, file, quoteStart] = expected[index];
+    const scope = normalize(match[1].replace(/<[^>]+>/g, ' '));
+    if (!scope.includes(name) || !scope.includes(role) || !scope.includes(quoteStart)) {
+      fail(`index.html: beoordeling ${index + 1} hoort bij ${name} met de juiste functie en tekst`);
+    }
+    const photo = parseHtmlNodes(match[1]).find((node) => node.tagName === 'img' && node.attributes.has('data-customer-photo'));
+    if (!photo || photo.attributes.get('src') !== `../klantenBeoordelingen/${file}` || photo.attributes.get('alt') !== name) {
+      fail(`index.html: beoordeling van ${name} gebruikt niet de juiste lokale foto`);
+    }
+  });
 }
 
 export function checkContrastUsage(html, css, brand, surfaces, fail) {

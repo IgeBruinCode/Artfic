@@ -418,6 +418,86 @@ section[id],
   border-radius: var(--radius-s);
 }
 
+.company-showcase {
+  margin-top: var(--ruimte-4);
+  overflow: hidden;
+  border: 1px solid var(--blauw);
+  border-radius: var(--radius-m);
+  background: var(--wit);
+}
+.company-showcase__track {
+  display: flex;
+  width: max-content;
+  animation: company-loop-conventional 38s linear infinite;
+}
+.company-showcase__set {
+  display: flex;
+  flex: none;
+}
+.company-tile {
+  display: grid;
+  width: 176px;
+  min-height: 104px;
+  place-items: center;
+  padding: var(--ruimte-2);
+  border-right: 1px solid var(--lichtblauw);
+  background: var(--wit);
+}
+.company-tile img {
+  width: 132px;
+  max-height: 58px;
+  object-fit: contain;
+}
+@keyframes company-loop-conventional {
+  to { transform: translateX(-50%); }
+}
+
+.customer-stories { margin-top: var(--ruimte-5); }
+.customer-stories__heading { max-width: 64ch; }
+.customer-stories__grid {
+  display: grid;
+  gap: var(--ruimte-3);
+  margin-top: var(--ruimte-4);
+}
+.customer-story {
+  display: flex;
+  min-height: 320px;
+  flex-direction: column;
+  padding: var(--ruimte-3);
+  border: 1px solid var(--blauw);
+  border-radius: var(--radius-m);
+  background: var(--wit);
+}
+.customer-story--featured {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: var(--wit);
+}
+.customer-story blockquote {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+.customer-story footer {
+  display: flex;
+  align-items: center;
+  gap: var(--ruimte-2);
+  margin-top: auto;
+  padding-top: var(--ruimte-3);
+}
+.customer-story footer img {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border: 2px solid var(--blauw);
+  border-radius: 50%;
+  object-fit: cover;
+}
+.customer-story footer p { margin: 0; }
+.customer-story footer strong,
+.customer-story footer span { display: block; }
+.customer-story footer span { font-size: 0.8125rem; }
+
 /* --- panelen, stepper en modules --- */
 
 .vragenrij,
@@ -581,6 +661,7 @@ section[id],
   .tweeluik { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .assurance-matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stepper { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .customer-stories__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .bewijsrail {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -685,6 +766,7 @@ section[id],
 
   .assurance-matrix { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .stappen { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .customer-stories__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 /* --- reduced motion --- */
@@ -699,4 +781,5 @@ section[id],
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .company-showcase__track { animation: none; }
 }

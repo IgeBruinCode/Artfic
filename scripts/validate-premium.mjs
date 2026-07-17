@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkDesignDoc, checkDocumentMetadata,
+  checkBrandColors, checkBrandGate, checkClaims, checkContrastUsage, checkCustomerReviews, checkDesignDoc, checkDocumentMetadata,
   checkImages, checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder,
   extractSingleCssBlock, hasCssRule, parseCssRules, parseHtmlNodes,
 } from './lib/variant-checks.mjs';
@@ -251,6 +251,7 @@ checkClaims(html, content, {
     'bo-support': ['Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.'],
     'bw-100-klanten': ['We helpen meer dan 100 klanten om AI voor hen te laten werken — van enterprise tot overheid, bij organisaties die security, governance en betrouwbaarheid serieus nemen.'],
     'bw-klantnamen': ['Klanten zijn onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
+    'bw-quote-leqqr': ['De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.'],
   },
   requiredClaims: [
     'pos-belofte', 'pos-agentic-platform', 'pos-badges', 'pos-nederlands', 'pos-award',
@@ -270,6 +271,10 @@ checkClaims(html, content, {
 // --- links, CTA's, afbeeldingen & kleuren (gedeeld) ---
 checkLinksAndCtas(html, content, { minCtaCount: 5, minCtaHint: 'header, hero (2×), slot (2×)' }, fail);
 checkImages(html, css, brand, root, 'premium', fail);
+checkCustomerReviews(html, fail);
+if ((html.match(/\sdata-company-logo(?=\s|>)/g) ?? []).length !== 9 || !/data-company-slider/.test(html) || !/animation:\s*client-ledger-loop/.test(css)) {
+  fail('bedrijven-slideshow: verwacht negen lokale klantlogo’s in de bewegende premium-ledger');
+}
 // Logo-uitvoering: op de donkere header en footer hoort uitsluitend het witte logo.
 if (!/premium-header[\s\S]*artific-logo-wit\.svg/.test(html)) fail('index.html: de donkere header hoort het witte logo te dragen');
 if (!/premium-footer[\s\S]*artific-logo-wit\.svg/.test(html)) fail('index.html: de donkere footer hoort het witte logo te dragen');
@@ -294,6 +299,7 @@ checkContrastUsage(html, css, brand, [
   { foregroundSelector: '.begeleiding__stap::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
   { foregroundSelector: '.assurance-ledger__item dt', backgroundSelector: '.boekdeel--donker', pairId: 'geel-op-navy' },
   { foregroundSelector: '.premium-footer', backgroundSelector: '.premium-footer', pairId: 'wit-op-navy' },
+  { foregroundSelector: 'body', backgroundSelector: '.client-mark', pairId: 'navy-op-wit' },
 ], fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 

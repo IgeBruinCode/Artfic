@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   checkBrandColors,
   checkClaims,
+  checkCustomerReviews,
   checkDocumentMetadata,
   checkImages,
   checkLinksAndCtas,
@@ -79,11 +80,20 @@ if (!/getContext\("webgl"/.test(shaderJs) || !/shaderSource/.test(shaderJs) || !
 if (!/devicePixelRatio[^\n]+2\)/.test(shaderJs) || !/visibilitychange/.test(shaderJs) || !/IntersectionObserver/.test(shaderJs) || !/uniform4f\(uniforms\.cursor, 0\.00/.test(shaderJs)) {
   fail('flow-field-shader.js: DPR-cap, visibility/viewport-pauze of uitgeschakelde cursor ontbreekt');
 }
-if (!/class="process-stage"/.test(html) || !/Artific AI-assistent/.test(html) || !/Human in control/.test(html)) {
-  fail('index.html: de inhoudelijke Artific-workflowvisual ontbreekt');
+if (/class="process-stage"/.test(html) || /Workflow live/.test(html)) {
+  fail('index.html: de vervallen hero-workflowvisual is nog aanwezig');
 }
-if (!/Mesh Gradient Shader|21st\.dev-geïnspireerde workflow builder/.test(css) || !/Workflow live/.test(html)) {
-  fail('21st.dev: shader- en workflowbron zijn niet aantoonbaar vertaald naar de variant');
+if (!/class="workflow-visual"/.test(html) || !/Human in control/.test(html)) {
+  fail('index.html: de compacte inhoudelijke workflow in de visiesectie ontbreekt');
+}
+if (!/hero__award/.test(html) || !/ai-company-of-the-year-2025\.webp/.test(html)) {
+  fail('index.html: de AI Company of the Year-winnaarbadge ontbreekt in de hero');
+}
+if (!/class="trust-principles"/.test(html) || /class="security-demo"/.test(html)) {
+  fail('index.html: het redactionele veiligheidsstatement ontbreekt of gebruikt nog een fictieve product-UI');
+}
+if ((html.match(/\bdata-orbit\b/g) ?? []).length !== 8 || !/data-solar-system/.test(html) || !/gsap\.fromTo/.test(js)) {
+  fail('slotsectie: het Artific-zonnestelsel met acht bewegende klantmerken ontbreekt');
 }
 if (!/\.site-header\.is-scrolled/.test(css) || !/classList\.toggle\("is-scrolled"/.test(js)) {
   fail('navbar: transparante hero-state en solide scrolled-state ontbreken');
@@ -114,6 +124,7 @@ if (!/>Klantbeoordelingen</.test(html) || !/<strong>6<\/strong>\s*klantbeoordeli
 }
 const reviewCards = html.match(/<article class="review-card[^>]*>/g) ?? [];
 if (reviewCards.length !== 6) fail(`index.html: verwacht zes reviewkaarten, gevonden ${reviewCards.length}`);
+checkCustomerReviews(html, fail);
 const reviewContracts = [
   ['Rogier Lukas', 'Notaris — Vechtstede Notarissen', 'Samen met Artific zijn we bezig de AI-Notaris Assistent te ontwikkelen.'],
   ['Maarten ter Velde', 'Co-founder', 'Artific heeft voor ons alle bestaande bedrijfsprocedures met AI uitgerust.'],

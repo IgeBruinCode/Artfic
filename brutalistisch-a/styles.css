@@ -528,6 +528,81 @@ a { color: inherit; }
   margin-bottom: var(--r-3);
 }
 
+.bedrijvenband {
+  margin: var(--r-4) 0;
+  overflow: hidden;
+  border: var(--lijn);
+  background: var(--lichtblauw);
+}
+.bedrijvenband__spoor {
+  display: flex;
+  width: max-content;
+  animation: bedrijvenloop-a 34s linear infinite;
+}
+.bedrijvenband__groep {
+  display: flex;
+  flex: none;
+}
+.bedrijvenmerk {
+  display: grid;
+  width: 190px;
+  min-height: 116px;
+  place-items: center;
+  padding: var(--r-2);
+  border-right: var(--lijn);
+  background: var(--wit);
+}
+.bedrijvenmerk img {
+  width: 142px;
+  max-height: 68px;
+  object-fit: contain;
+}
+@keyframes bedrijvenloop-a {
+  to { transform: translateX(-50%); }
+}
+
+.stemmen { margin-top: var(--r-5); }
+.stemmen__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--r-3);
+  margin-top: var(--r-3);
+}
+.stem {
+  display: flex;
+  min-height: 330px;
+  flex-direction: column;
+  border: var(--lijn);
+  padding: var(--r-3);
+  background: var(--wit);
+  box-shadow: 8px 8px 0 0 var(--blauw);
+}
+.stem--signaal { background: var(--geel); }
+.stem blockquote {
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.stem footer {
+  display: flex;
+  align-items: center;
+  gap: var(--r-2);
+  margin-top: auto;
+  padding-top: var(--r-3);
+}
+.stem footer img {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border: 3px solid var(--navy);
+  object-fit: cover;
+}
+.stem footer p { margin: 0; }
+.stem footer strong,
+.stem footer span { display: block; }
+.stem footer strong { text-transform: uppercase; }
+.stem footer span { font-size: 0.82rem; }
+
 .blok--slot .contactgegevens { margin-top: var(--r-3); }
 .contactgegevens a { font-weight: 800; }
 
@@ -644,6 +719,9 @@ a { color: inherit; }
   .fasen li { grid-template-columns: 1fr; }
   .fasen li::before { grid-row: auto; }
   .fasen p { grid-column: 1; }
+  .stemmen__grid { grid-template-columns: 1fr; }
+  .stem { min-height: 0; }
+  .bedrijvenmerk { width: 150px; min-height: 96px; }
 }
 
 /* --- reduced motion --- */
@@ -655,4 +733,5 @@ a { color: inherit; }
     transition-duration: 0.001s !important;
   }
   .commandobar__voortgang { display: none; }
+  .bedrijvenband__spoor { animation: none; }
 }

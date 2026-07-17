@@ -8,6 +8,7 @@ import {
   checkBrandColors,
   checkBrandGate,
   checkClaims,
+  checkCustomerReviews,
   checkContrastUsage,
   checkDesignDoc,
   checkDocumentMetadata,
@@ -73,7 +74,7 @@ if (topicNavs.length !== 1 || topicNavs[0].attributes.get('aria-label') !== 'Dir
   }
 }
 
-// Relatiedeck: negen zelfstandige, tekstuele items en statische bediening.
+// Relatiedeck: negen zelfstandige logo-items met progressieve autoplaybediening.
 const decks = nodes.filter((node) => node.classes.has('relationship-deck') && node.attributes.has('data-relationship-deck'));
 const tracks = nodes.filter((node) => node.tagName === 'ol' && node.classes.has('relationship-track'));
 if (decks.length !== 1 || tracks.length !== 1 || !tracks[0].parent || tracks[0].parent !== decks[0]) {
@@ -104,8 +105,9 @@ if (slides.length !== expectedRelations.length) {
     if (!slide.attributes.get('id')) fail(`index.html: relatie '${id}' mist een stabiel anker-ID`);
   });
 }
-if (!tracks[0] || tracks[0].attributes.get('tabindex') !== '0' || !tracks[0].attributes.get('aria-describedby')) {
-  fail('index.html: statische relatietrack mist toetsenbordfocus of instructierelatie');
+if (!tracks[0] || tracks[0].attributes.get('tabindex') !== '0' ||
+    tracks[0].attributes.get('aria-roledescription') !== 'carousel' || !tracks[0].attributes.get('aria-label')) {
+  fail('index.html: relatietrack mist toetsenbordfocus of toegankelijke carrouselnaam');
 }
 const pagination = nodes.find((node) => node.classes.has('relationship-pagination'));
 const paginationLinks = pagination ? directChildren(pagination, 'a') : [];
@@ -116,11 +118,6 @@ if (paginationLinks.length !== 9 || paginationLinks.some((link, index) =>
 const enhancement = nodes.filter((node) => node.classes.has('relationship-enhancement') && node.attributes.has('data-deck-enhancement'));
 if (enhancement.length !== 1 || enhancement[0].attributes.get('aria-label') !== 'Slideshowbediening') {
   fail('index.html: lege, gelabelde enhancement-mount ontbreekt');
-}
-const fcClaim = content.topics.bewijs.claims.find((claim) => claim.id === 'bw-fctwente').text;
-const fcScope = html.match(/<li\b[^>]*data-relation-id="fc-twente"[^>]*>([\s\S]*?)<\/li>/)?.[1] ?? '';
-if (textContent(fcScope).includes(fcClaim) === false || !/data-claim-id="bw-fctwente"/.test(fcScope)) {
-  fail('index.html: FC Twente-item bevat niet de exacte canonieke claim met bronhaak');
 }
 const customerImages = nodes.filter((node) => node.tagName === 'img' && node.attributes.has('data-client-logo'));
 if (customerImages.length !== expectedRelations.length || slides.some((slide) =>
@@ -138,9 +135,8 @@ checkClaims(html, content, {
     'pos-nederlands': ['Door Nederlandse AI-professionals gebouwd; NL-gehost, AVG-proof en snel inzetbaar.'],
     'pos-badges': ['EU-gehost, ISO 27001 gecertificeerd, API-first en model-agnostisch.'],
     'pos-award': ['Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.'],
+    'bw-quote-leqqr': ['De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.'],
     'bw-100-klanten': ['We helpen meer dan 100 klanten om AI voor hen te laten werken.', 'Van enterprise tot overheid, bij organisaties die security, governance en betrouwbaarheid serieus nemen.'],
-    'bw-klantnamen': ['Klanten zijn onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
-    'bw-fctwente': [fcClaim],
     'sec-eu': ['Alle data, alle infrastructuur, alle processing binnen de EU.'],
     'sec-iso': ['Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.'],
     'sec-pseudo': ['Persoonlijk identificeerbare informatie wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.'],
@@ -150,7 +146,7 @@ checkClaims(html, content, {
   },
   requiredClaims: [
     'pos-belofte', 'pos-agentic-platform', 'pos-badges',
-    'bw-100-klanten', 'bw-klantnamen', 'bw-fctwente',
+    'bw-100-klanten',
     'dm-kop', 'vvt-veilig', 'vvt-voorspelbaar', 'vvt-transparant',
     'reis-fase-1', 'reis-fase-2', 'reis-fase-3',
     'ctl-positie', 'ctl-tussen-model-en-proces', 'ctl-platformlagen',
@@ -163,6 +159,7 @@ checkClaims(html, content, {
 }, fail);
 checkLinksAndCtas(html, content, { minCtaCount: 5, minCtaHint: 'header, intro en contact' }, fail);
 checkImages(html, css, brand, root, 'brutalistisch-b', fail);
+checkCustomerReviews(html, fail);
 checkBrandColors([['brutalistisch-b/index.html', html], ['brutalistisch-b/styles.css', css], ['brutalistisch-b/main.js', js]], brand, fail);
 checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
 
@@ -186,8 +183,7 @@ const surfaceContracts = [
   ['.section-navy', 'color', 'var(--white)'], ['.section-navy', 'background-color', 'var(--navy)'],
   ['.button--navy', 'color', 'var(--white)'], ['.button--navy', 'background-color', 'var(--navy)'],
   ['.button--yellow', 'color', 'var(--navy)'], ['.button--yellow', 'background-color', 'var(--yellow)'],
-  ['.relationship-card--block', 'color', 'var(--white)'], ['.relationship-card--block', 'background-color', 'var(--navy)'],
-  ['.relationship-card--fc', 'color', 'var(--navy)'], ['.relationship-card--fc', 'background-color', 'var(--light-blue)'],
+  ['.relationship-card', 'color', 'var(--navy)'], ['.relationship-card', 'background-color', 'var(--light-blue)'],
   ['.site-footer', 'color', 'var(--white)'], ['.site-footer', 'background-color', 'var(--navy)'],
 ];
 for (const [selector, property, value] of surfaceContracts) {
@@ -312,7 +308,7 @@ if ((css.match(/background-image\s*:/g) ?? []).length < 8 ||
     !/radial-gradient/.test(css) || !/conic-gradient/.test(css) || !/repeating-linear-gradient/.test(css)) {
   fail('styles.css: gelaagde shader-velden met meerdere goedgekeurde gradientvormen ontbreken');
 }
-for (const hook of ['relationship-card', 'question-burst', 'module-block', 'control-stack', 'portal-split', 'governance-card', 'partner-relay', 'guidance-steps']) {
+for (const hook of ['relationship-card', 'question-burst', 'module-block', 'control-stack', 'build-mode', 'governance-card', 'partner-relay', 'guidance-steps']) {
   if (!html.includes(hook) || !css.includes(`.${hook}`)) fail(`brutalistisch-b: onderscheidende kaartvorm '${hook}' ontbreekt`);
 }
 if (!/@media \(max-width: 699px\)/.test(css) || !/@media \(min-width: 700px\)/.test(css) || !/@media \(min-width: 1080px\)/.test(css)) {
@@ -360,8 +356,10 @@ if (/21st\.dev|magic(?:-mcp)?|api[_-]?key|x-api-key/i.test(`${html}\n${css}\n${j
   fail('brutalistisch-b: externe provider-, configuratie- of secretmarker mag niet in route/documentatie staan');
 }
 
-// Progressieve deckbediening; de slideshow blijft bewust handmatig.
-if (/setInterval|setTimeout|auto(?:play|advance)|\.click\(\)/i.test(js)) fail('main.js: relatiedeck mag niet automatisch doorlopen');
+// Progressieve deckbediening met pauzeerbare autoplay.
+if (!/setInterval/.test(js) || !/autoplayDelay\s*=\s*4200/.test(js) || !/Automatische slideshow pauzeren/.test(js)) {
+  fail('main.js: pauzeerbare autoplay voor het relatiedeck ontbreekt');
+}
 if (/classList\.(?:add|remove)\([^)]*hidden|style\.(?:display|visibility)|setAttribute\(["']hidden/.test(js)) {
   fail('main.js: enhancement mag geen kerninhoud tonen of verbergen');
 }
@@ -394,6 +392,9 @@ try {
   mountStub.children = [];
   mountStub.appendChild = (child) => mountStub.children.push(child);
   const deckStub = {
+    listeners: new Map(),
+    addEventListener(type, listener) { this.listeners.set(type, listener); },
+    contains() { return false; },
     querySelector(selector) {
       if (selector === '.relationship-track') return trackStub;
       if (selector === '[data-deck-enhancement]') return mountStub;
@@ -410,6 +411,9 @@ try {
     addEventListener(type, listener) { if (type === 'change') listeners.set(type, listener); },
   };
   const documentStub = {
+    hidden: false,
+    listeners: new Map(),
+    addEventListener(type, listener) { this.listeners.set(type, listener); },
     querySelector(selector) { return selector === '[data-relationship-deck]' ? deckStub : null; },
     querySelectorAll() { return []; },
     createElement() { return makeInteractive(); },
@@ -417,17 +421,28 @@ try {
   const windowStub = {
     matchMedia() { return motionPreference; },
     requestAnimationFrame(callback) { animationFrames.push(callback); },
+    setInterval(callback) { this.intervalCallback = callback; return 1; },
+    clearInterval() { this.intervalCallback = null; },
   };
   const flushAnimationFrames = () => {
     while (animationFrames.length) animationFrames.splice(0).forEach((callback) => callback());
   };
   runInNewContext(js, { document: documentStub, window: windowStub, Infinity });
 
-  if (mountStub.children.length !== 3) throw new Error('enhancement maakt niet twee knoppen en één status');
-  const [previous, next, status] = mountStub.children;
+  if (mountStub.children.length !== 4) throw new Error('enhancement maakt status en drie bedieningsknoppen');
+  const [status, previous, pause, next] = mountStub.children;
   if (status.attributes.get('aria-live') !== 'polite' || status.attributes.get('aria-atomic') !== 'true' ||
       status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('initiële live-status klopt niet');
+  }
+  if (typeof windowStub.intervalCallback !== 'function') throw new Error('autoplaytimer wordt niet gestart');
+  pause.listeners.get('click')?.({});
+  if (pause.attributes.get('aria-pressed') !== 'true' || windowStub.intervalCallback !== null) {
+    throw new Error('pauzeknop stopt autoplay niet');
+  }
+  pause.listeners.get('click')?.({});
+  if (pause.attributes.get('aria-pressed') !== 'false' || typeof windowStub.intervalCallback !== 'function') {
+    throw new Error('pauzeknop hervat autoplay niet');
   }
 
   linksStub[6].listeners.get('click')?.({ preventDefault() {} });

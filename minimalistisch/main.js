@@ -117,12 +117,11 @@
   }
 
   var motionIslands = document.querySelectorAll([
-    ".process-stage",
     ".client-proof",
     ".workflow-visual",
     ".layer-map",
-    ".security-demo",
-    ".contact"
+    ".trust-principles",
+    ".solar-system"
   ].join(","));
 
   motionIslands.forEach(function (island) {
@@ -142,6 +141,53 @@
 
     motionIslands.forEach(function (island) {
       motionObserver.observe(island);
+    });
+  }
+
+  var solarSystem = document.querySelector("[data-solar-system]");
+  if (solarSystem && window.gsap) {
+    var orbitMedia = window.gsap.matchMedia();
+
+    orbitMedia.add("(prefers-reduced-motion: no-preference)", function () {
+      var orbitTweens = [];
+      var orbitTracks = solarSystem.querySelectorAll("[data-orbit]");
+
+      orbitTracks.forEach(function (track) {
+        var start = Number(track.getAttribute("data-angle")) || 0;
+        var duration = Number(track.getAttribute("data-duration")) || 36;
+        var direction = track.getAttribute("data-direction") === "reverse" ? -1 : 1;
+        var end = start + (360 * direction);
+        var lock = track.querySelector(".planet__lock");
+
+        orbitTweens.push(window.gsap.fromTo(track,
+          { rotation: start },
+          { rotation: end, duration: duration, ease: "none", repeat: -1 }
+        ));
+
+        if (lock) {
+          orbitTweens.push(window.gsap.fromTo(lock,
+            { rotation: -start },
+            { rotation: -end, duration: duration, ease: "none", repeat: -1 }
+          ));
+        }
+      });
+
+      var orbitObserver;
+      if ("IntersectionObserver" in window) {
+        orbitObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            orbitTweens.forEach(function (tween) {
+              tween.paused(!entry.isIntersecting);
+            });
+          });
+        }, { rootMargin: "160px 0px", threshold: 0 });
+        orbitObserver.observe(solarSystem);
+      }
+
+      return function () {
+        if (orbitObserver) orbitObserver.disconnect();
+        orbitTweens.forEach(function (tween) { tween.kill(); });
+      };
     });
   }
 
