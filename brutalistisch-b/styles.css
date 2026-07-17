@@ -14,6 +14,7 @@
   --line: 3px;
   --shadow: 10px 10px 0 var(--navy);
   --font: Inter, Arial, "Helvetica Neue", sans-serif;
+  --header-offset: 170px;
 }
 
 * {
@@ -22,10 +23,12 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
+  overflow-x: clip;
   color: var(--navy);
   background-color: var(--yellow);
   font-family: var(--font);
@@ -123,10 +126,32 @@ h4 {
 }
 
 .brand-stage {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   color: var(--navy);
   background-color: var(--yellow);
   border-top: 12px solid var(--navy);
   border-bottom: var(--line) solid var(--navy);
+  transition: box-shadow 220ms ease, translate 220ms ease;
+}
+
+.brand-progress {
+  --brand-surface-role: decorative;
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  left: 0;
+  display: block;
+  height: 6px;
+  background-color: var(--blue);
+  transform: scaleX(var(--scroll-progress, 0));
+  transform-origin: 0 50%;
+  transition: transform 80ms linear;
+}
+
+.brand-stage.is-scrolled {
+  box-shadow: 0 10px 0 var(--navy);
 }
 
 .brand-stage__top {
@@ -182,13 +207,19 @@ h4 {
   background-color: var(--navy);
 }
 
+.topic-switcher a[aria-current="location"] {
+  color: var(--white);
+  background-color: var(--navy);
+  text-decoration-color: var(--yellow);
+}
+
 #intro,
 #bewijs,
 #visie,
 #platform,
 #organisatie,
 #contact {
-  scroll-margin-top: 24px;
+  scroll-margin-top: var(--header-offset);
 }
 
 .section-yellow {
@@ -205,10 +236,10 @@ h4 {
   position: relative;
   isolation: isolate;
   background-image:
-    radial-gradient(circle at 88% 12%, var(--light-blue) 0 8%, var(--yellow) 8% 18%, var(--navy) 18% 18.6%, var(--yellow) 18.6%),
+    radial-gradient(ellipse at 78% 12%, var(--light-blue) 0 8%, var(--yellow) 8% 34%),
     repeating-linear-gradient(135deg, var(--yellow) 0 38px, var(--light-blue) 38px 40px, var(--yellow) 40px 78px);
   background-size: 130% 130%, 140px 140px;
-  animation: shader-drift 14s steps(7, end) infinite alternate;
+  animation: shader-drift 18s steps(9, end) infinite alternate;
 }
 
 .shader-field--reverse {
@@ -251,6 +282,13 @@ h4 {
   box-shadow: 6px 6px 0 var(--navy);
 }
 
+.button:active,
+.deck-button:active {
+  translate: 2px 2px;
+  box-shadow: 0 0 0 var(--navy);
+  transition-duration: 90ms;
+}
+
 .button--navy {
   color: var(--white);
   background-color: var(--navy);
@@ -272,12 +310,54 @@ h4 {
 }
 
 .hero {
+  position: relative;
+  overflow: clip;
   padding: clamp(48px, 9vw, 120px) var(--edge) var(--space-6);
+}
+
+.shader-canvas {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.hero-orbit {
+  position: absolute;
+  z-index: 0;
+  top: clamp(-210px, -14vw, -120px);
+  right: clamp(-590px, -36vw, -245px);
+  width: clamp(640px, 70vw, 1040px);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+.hero-orbit span {
+  position: absolute;
+  inset: 0;
+  background-image: conic-gradient(var(--navy) 0 51%, var(--blue) 51% 55%, var(--navy) 55% 83%, var(--yellow) 83% 87%, var(--navy) 87% 100%);
+  mask: radial-gradient(farthest-side, transparent calc(100% - clamp(24px, 3.2vw, 48px)), var(--navy) 0);
+  animation: orbit-turn 32s linear infinite;
+}
+
+.hero-orbit::after {
+  --brand-surface-role: decorative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18%;
+  height: var(--line);
+  background-color: var(--navy);
+  content: "";
+  transform: translate(-50%, -50%) rotate(-16deg);
 }
 
 .hero__grid {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   max-width: 1400px;
   margin: 0 auto;
@@ -325,7 +405,7 @@ h4 {
 
 .relationship-deck {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   max-width: 1400px;
   margin: var(--space-6) auto 0;
   padding: clamp(18px, 3vw, 36px);
@@ -372,11 +452,13 @@ h4 {
 }
 
 .relationship-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(132px, 0.55fr) minmax(0, 1fr);
   min-width: min(82vw, 720px);
   min-height: clamp(210px, 31vw, 410px);
   flex: 0 0 min(82vw, 720px);
   align-items: flex-end;
+  gap: clamp(16px, 4vw, 44px);
   padding: clamp(20px, 5vw, 56px);
   color: var(--navy);
   background-color: var(--yellow);
@@ -387,6 +469,39 @@ h4 {
   font-weight: 950;
   letter-spacing: -0.06em;
   line-height: 0.9;
+}
+
+.relationship-card__media {
+  --brand-surface-role: decorative;
+  display: grid;
+  min-width: 132px;
+  min-height: 132px;
+  align-self: stretch;
+  place-items: center;
+  padding: clamp(14px, 2.5vw, 28px);
+  background-color: var(--white);
+  border: var(--line) solid var(--navy);
+  box-shadow: 8px 8px 0 var(--blue);
+  animation: logo-plate-drift 7s ease-in-out infinite alternate;
+}
+
+.client-logo {
+  display: block;
+  width: min(100%, 260px);
+  min-width: 120px;
+  height: auto;
+}
+
+.client-logo--fc-twente {
+  width: min(74%, 200px);
+}
+
+.client-logo--den-haag {
+  width: min(100%, 230px);
+}
+
+.relationship-card__name {
+  min-width: 0;
 }
 
 .relationship-card--slash {
@@ -401,7 +516,7 @@ h4 {
 }
 
 .relationship-card--fc {
-  display: grid;
+  grid-template-columns: minmax(148px, 0.5fr) minmax(0, 1fr);
   align-content: end;
   gap: var(--space-3);
   color: var(--navy);
@@ -412,7 +527,11 @@ h4 {
   line-height: 1.35;
 }
 
-.relationship-card--fc strong {
+.relationship-card--fc .relationship-card__media {
+  grid-row: span 2;
+}
+
+.relationship-card--fc .relationship-card__name {
   font-size: clamp(2.5rem, 7vw, 5.5rem);
   letter-spacing: -0.06em;
   line-height: 0.85;
@@ -461,6 +580,7 @@ h4 {
   font: inherit;
   font-weight: 900;
   cursor: pointer;
+  transition: translate 120ms ease, box-shadow 120ms ease;
 }
 
 .deck-status {
@@ -631,6 +751,8 @@ h4 {
   background-image:
     radial-gradient(circle at 10% 14%, var(--blue) 0 7%, var(--navy) 7.5% 100%),
     repeating-linear-gradient(45deg, var(--navy) 0 44px, var(--blue) 44px 47px, var(--navy) 47px 90px);
+  background-size: 130% 130%, 190px 190px;
+  animation: platform-drift 24s steps(12, end) infinite alternate;
 }
 
 .control-stack {
@@ -780,6 +902,8 @@ h4 {
 
 .organisation-zone {
   background-image: repeating-linear-gradient(0deg, var(--yellow) 0 70px, var(--light-blue) 70px 73px, var(--yellow) 73px 143px);
+  background-size: 100% 286px;
+  animation: organisation-drift 20s linear infinite;
 }
 
 .governance-mosaic {
@@ -875,6 +999,8 @@ h4 {
   align-items: center;
   gap: var(--space-4);
   background-image: conic-gradient(from 20deg at 80% 25%, var(--navy) 0 24%, var(--blue) 24% 49%, var(--navy) 49% 74%, var(--yellow) 74% 76%, var(--navy) 76%);
+  background-size: 125% 125%;
+  animation: contact-field-turn 28s steps(14, end) infinite alternate;
 }
 
 .contact-zone__copy {
@@ -901,6 +1027,33 @@ h4 {
   animation: burst-nudge 5s steps(2, end) infinite alternate;
 }
 
+.contact-zone__comma {
+  display: inline-block;
+  transform-origin: 50% 54%;
+}
+
+.motion-word {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+}
+
+.motion-word__inner {
+  display: inline-block;
+}
+
+.motion-ready [data-motion-text] .motion-word__inner {
+  transform-origin: 50% 100%;
+}
+
+.motion-ready [data-motion-surface] {
+  transform-origin: var(--motion-origin, 50% 50%);
+}
+
+.ambient-paused {
+  animation-play-state: paused !important;
+}
+
 .direct-contact {
   margin-top: var(--space-4);
   font-size: 1.1rem;
@@ -924,6 +1077,29 @@ h4 {
 @keyframes shader-drift {
   from { background-position: 0 0, 0 0; }
   to { background-position: 18px -12px, 28px 14px; }
+}
+
+@keyframes orbit-turn {
+  to { transform: rotate(1turn); }
+}
+
+@keyframes logo-plate-drift {
+  from { translate: 0 0; }
+  to { translate: 0 -8px; }
+}
+
+@keyframes platform-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: -46px 30px, 44px -28px; }
+}
+
+@keyframes organisation-drift {
+  to { background-position: 0 286px; }
+}
+
+@keyframes contact-field-turn {
+  from { background-position: 0 0; }
+  to { background-position: -80px 40px; }
 }
 
 @keyframes stamp-shift {
@@ -1006,6 +1182,10 @@ h4 {
   .contact-zone__burst {
     writing-mode: vertical-rl;
   }
+
+  .contact-zone__comma {
+    transform: rotate(90deg);
+  }
 }
 
 @media (min-width: 1080px) {
@@ -1020,16 +1200,16 @@ h4 {
   }
 
   .module-block--assistant {
-    grid-column: 1 / 6;
+    grid-column: 1 / 5;
   }
 
   .module-block--toolbox {
-    grid-column: 6 / 10;
+    grid-column: 5 / 9;
     margin-top: 64px;
   }
 
   .module-block--conversation {
-    grid-column: 10 / 13;
+    grid-column: 9 / 13;
     margin-top: 128px;
   }
 
@@ -1067,13 +1247,18 @@ h4 {
   }
 
   .topic-switcher__label {
-    width: 100%;
-    border-right: 0;
+    flex: 0 0 auto;
+  }
+
+  .topic-switcher {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
   }
 
   .topic-switcher a {
-    flex: 1 1 50%;
-    border-top: var(--line) solid var(--navy);
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .hero,
@@ -1095,8 +1280,17 @@ h4 {
   }
 
   .relationship-card {
+    grid-template-columns: 1fr;
     min-width: calc(100vw - 72px);
     flex-basis: calc(100vw - 72px);
+  }
+
+  .relationship-card--fc {
+    grid-template-columns: minmax(112px, 0.5fr) minmax(0, 1fr);
+  }
+
+  .relationship-card__media {
+    min-height: 112px;
   }
 
   .relationship-pagination a {
@@ -1124,5 +1318,15 @@ h4 {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .motion-ready [data-motion-text] .motion-word__inner,
+  .motion-ready [data-motion-surface] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .shader-canvas {
+    opacity: 0.22;
   }
 }

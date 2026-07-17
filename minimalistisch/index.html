@@ -3,323 +3,365 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Artific | Controleerbaar AI-platform voor organisaties</title>
-  <meta name="description" content="Artific is de operationele controlelaag voor AI: één veilig, EU-gehost platform waarmee organisaties AI-agents bouwen, uitrollen en beheren — veilig, voorspelbaar en transparant. Vraag een demo aan.">
+  <meta name="theme-color" content="#E5EDF8">
+  <title>Artific | AI die werkt en blijft werken</title>
+  <meta name="description" content="Artific is het veilige, gecontroleerde AI-platform voor organisaties. Bouw, beheer en schaal AI-assistenten en workflows vanuit één plek.">
   <link rel="stylesheet" href="styles.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script defer src="flow-field-shader.js"></script>
   <script defer src="main.js"></script>
 </head>
 <body>
   <a class="skiplink" href="#inhoud">Direct naar de inhoud</a>
 
-  <header class="site-header">
-    <div class="site-header__binnen">
-      <a class="site-header__logo" href="#inhoud" aria-label="Artific — naar het begin van de pagina">
-        <img class="brand-logo" src="../assets/brand/artific-logo-blauw.svg" data-brand-logo="logo-blauw" data-brand-background="wit" data-brand-surface=".site-header" data-brand-surface-tag="header" data-brand-logo-selector=".brand-logo" alt="Artific" width="160" height="42">
+  <header class="site-header" data-header>
+    <div class="site-header__inner">
+      <a class="site-header__brand" href="#intro" aria-label="Artific — naar het begin van de pagina">
+        <img class="brand-logo" src="../assets/brand/artific-logo-blauw.svg" data-brand-logo="logo-blauw" data-brand-background="wit" data-brand-surface=".site-header" data-brand-surface-tag="header" data-brand-logo-selector=".brand-logo" alt="Artific" width="136" height="35">
       </a>
-      <nav class="site-nav" aria-label="Secties op deze pagina">
-        <ul>
-          <li><a href="#visie">Visie</a></li>
-          <li><a href="#platform">Platform</a></li>
-          <li><a href="#controle">Controle</a></li>
-          <li><a href="#aanpak">Aanpak</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="hoofdnavigatie">
+        <span class="sr-only">Menu openen</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+
+      <nav class="site-nav" id="hoofdnavigatie" aria-label="Hoofdnavigatie">
+        <a href="#visie">Visie</a>
+        <a href="#platform">Platform</a>
+        <a href="#controle">Beveiliging</a>
+        <a href="#aanpak">Aanpak</a>
+        <a href="#bewijs">Klanten</a>
       </nav>
-      <a class="cta cta--klein" data-cta-id="vraag-een-demo-aan" href="https://artific.nl/contact-opnemen/">Vraag een demo aan</a>
+
+      <a class="button button--small button--navy header-cta" data-cta-id="vraag-een-demo-aan" href="https://artific.nl/contact-opnemen/">Vraag een demo aan</a>
     </div>
   </header>
 
   <main id="inhoud" tabindex="-1">
-
-    <section class="sectie hero" id="intro" aria-labelledby="hero-titel">
-      <div class="sectie__grid hero__grid">
-        <div class="hero__tekst">
-          <p class="eyebrow">Artific — AI-platform voor organisaties</p>
-          <h1 id="hero-titel" data-claim-id="pos-belofte">Wij maken AI die werkt en&nbsp;blijft&nbsp;werken.</h1>
-          <p class="hero__intro" data-claim-id="pos-agentic-platform">Artific is het veilige, gecontroleerde agentic AI-platform: één beheersbaar fundament waarop IT generatieve AI bouwt, uitrolt en beheert. Eén platform — geen dozijn losse tools.</p>
-          <p data-claim-id="pos-slimmer-werken pos-besparing-30">Werk slimmer, sneller en efficiënter: bespaar 30% van je tijd met één AI-platform.</p>
-          <div class="hero__acties">
-            <a class="cta cta--primair" data-cta-id="vraag-een-demo-aan" href="https://artific.nl/contact-opnemen/">Vraag een demo aan</a>
-            <a class="cta cta--secundair" data-cta-id="maak-een-afspraak" href="https://artific.nl/contact-opnemen/">Maak een afspraak</a>
+    <section class="section hero" id="intro" aria-labelledby="hero-title">
+      <canvas class="hero-shader" data-shader aria-hidden="true"></canvas>
+      <div class="section__inner sectie__grid hero__inner">
+        <div class="hero__copy" data-reveal="hero">
+          <div class="hero__signal" aria-hidden="true"><span></span></div>
+          <p class="eyebrow">Het AI-platform voor organisaties</p>
+          <h1 id="hero-title" data-claim-id="pos-belofte"><span class="title-line"><span>Wij maken AI die werkt.</span></span><span class="title-line"><span>En blijft werken.</span></span></h1>
+          <p class="hero__lead" data-claim-id="pos-agentic-platform">Eén veilig en gecontroleerd platform waarop je AI-assistenten en workflows bouwt, uitrolt en beheert. Geen dozijn losse tools.</p>
+          <div class="hero__actions">
+            <a class="button button--navy" data-cta-id="vraag-een-demo-aan" href="https://artific.nl/contact-opnemen/">Vraag een demo aan</a>
+            <a class="text-link" href="#platform">Ontdek het platform <span aria-hidden="true">↓</span></a>
           </div>
-        </div>
-        <div class="hero__zij">
-          <ul class="badges" data-claim-id="pos-badges" aria-label="Kenmerken van het platform">
+          <ul class="proof-pills" data-claim-id="pos-badges" aria-label="Platformkenmerken">
             <li>EU-gehost</li>
-            <li>ISO 27001 gecertificeerd</li>
+            <li>ISO 27001</li>
             <li>API-first</li>
             <li>Model-agnostisch</li>
           </ul>
-          <p class="hero__voetnoot" data-claim-id="pos-nederlands">Gebouwd door Nederlandse AI-professionals. NL-gehost, AVG-proof en snel inzetbaar.</p>
+          <p class="hero__note" data-claim-id="pos-nederlands pos-besparing-30">Gebouwd door Nederlandse AI-professionals. NL-gehost, AVG-proof en snel inzetbaar. Bespaar 30% van je tijd met één AI-platform.</p>
+        </div>
+
+        <div class="process-stage" data-reveal data-motion-stage aria-label="Artific-workflow die een klantvraag veilig afhandelt">
+          <div class="process-stage__bar">
+            <div>
+              <span class="live-badge"><i aria-hidden="true"></i> Workflow live</span>
+              <span class="process-stage__label">Act AI · Klantenservice</span>
+            </div>
+            <span class="process-stage__secure">✓ Alle safeguards actief</span>
+          </div>
+
+          <div class="process-stage__heading">
+            <div>
+              <span>Automatisering 04</span>
+              <h2>Van klantvraag naar gecontroleerd antwoord.</h2>
+            </div>
+            <p>Artific haalt de juiste context op, voert de taak uit en vraagt een mens om goedkeuring voordat het antwoord wordt verstuurd.</p>
+          </div>
+
+          <div class="process-workspace">
+            <div class="process-canvas" aria-label="Workflow met vijf verbonden stappen">
+              <svg class="process-connectors" viewBox="0 0 760 560" preserveAspectRatio="none" aria-hidden="true">
+                <path data-draw-path d="M262 92 H498" />
+                <path data-draw-path d="M608 138 C608 194 548 228 505 272" />
+                <path data-draw-path d="M380 320 C330 360 270 390 222 422" />
+                <path data-draw-path d="M262 468 H498" />
+              </svg>
+
+              <article class="process-node process-node--trigger">
+                <span class="node-icon" aria-hidden="true">↳</span>
+                <div><small>Trigger</small><strong>Nieuwe klantvraag</strong><p>E-mail ontvangen</p></div>
+                <i class="node-state">✓</i>
+              </article>
+
+              <article class="process-node process-node--knowledge">
+                <span class="node-icon" aria-hidden="true">▤</span>
+                <div><small>Kennis</small><strong>Bronnen ophalen</strong><p>3 goedgekeurde documenten</p></div>
+                <i class="node-state">✓</i>
+              </article>
+
+              <article class="process-node process-node--artific">
+                <span class="artific-node-mark" aria-hidden="true">A</span>
+                <div><small>Artific AI-assistent</small><strong>Antwoord opstellen</strong><p>Bedrijfscontext + tone of voice</p></div>
+                <i class="node-processing" aria-hidden="true"></i>
+              </article>
+
+              <article class="process-node process-node--human">
+                <span class="node-icon" aria-hidden="true">◎</span>
+                <div><small>Human in control</small><strong>Goedkeuring</strong><p>Controle door medewerker</p></div>
+                <i class="node-state node-state--waiting">2s</i>
+              </article>
+
+              <article class="process-node process-node--result">
+                <span class="node-icon" aria-hidden="true">↗</span>
+                <div><small>Resultaat</small><strong>Antwoord gereed</strong><p>Veilig om te versturen</p></div>
+                <i class="node-state">✓</i>
+              </article>
+            </div>
+
+            <aside class="execution-panel" aria-label="Live uitvoering van de workflow">
+              <header><div><span>Live uitvoering</span><strong>#AR-2048</strong></div><i>Nu</i></header>
+              <ol>
+                <li class="is-complete"><span>01</span><div><strong>Vraag herkend</strong><small>Retouraanvraag · NL</small></div><i>0,2s</i></li>
+                <li class="is-complete"><span>02</span><div><strong>Privacycontrole</strong><small>Geen gevoelige data</small></div><i>0,1s</i></li>
+                <li class="is-active"><span>03</span><div><strong>Concept genereren</strong><small>Service Assistent werkt</small></div><i class="execution-loader"></i></li>
+                <li><span>04</span><div><strong>Menselijke check</strong><small>Klaar voor review</small></div><i>—</i></li>
+              </ol>
+              <footer><span><i aria-hidden="true"></i> EU-gehost</span><span>Volledige audit trail</span></footer>
+            </aside>
+          </div>
+        </div>
+
+        <div class="client-proof" data-reveal aria-labelledby="client-proof-title">
+          <p id="client-proof-title">Vertrouwd door vooruitstrevende organisaties</p>
+          <div class="logo-rail brand-stepper" data-logo-rail aria-label="Klantmerken van Artific">
+            <div class="brand-slot" style="--slot: 0">
+              <div class="client-logo client-logo--a"><img data-client-logo src="assets/clients/basic-fit.png" alt="Basic-Fit" width="174" height="50"></div>
+              <div class="client-logo client-logo--b"><img data-client-logo src="assets/clients/tonys-chocolonely.svg" alt="Tony's Chocolonely" width="174" height="62"></div>
+            </div>
+            <div class="brand-slot" style="--slot: 1">
+              <div class="client-logo client-logo--a"><img data-client-logo src="assets/clients/eneco.jpg" alt="Eneco" width="174" height="45"></div>
+              <div class="client-logo client-logo--b"><img data-client-logo src="assets/clients/rtv-oost.png" alt="RTV Oost" width="120" height="62"></div>
+            </div>
+            <div class="brand-slot" style="--slot: 2">
+              <div class="client-logo client-logo--a"><img data-client-logo src="assets/clients/veiligheidsregio-zuid-limburg.png" alt="Veiligheidsregio Zuid-Limburg" width="174" height="70"></div>
+              <div class="client-logo client-logo--b"><img data-client-logo src="assets/clients/royal-de-ree-holland.jpg" alt="Royal De Ree Holland" width="174" height="49"></div>
+            </div>
+            <div class="brand-slot" style="--slot: 3">
+              <div class="client-logo client-logo--a"><img data-client-logo src="assets/clients/marktplaats.jpg" alt="Marktplaats" width="174" height="45"></div>
+              <div class="client-logo client-logo--b"><img data-client-logo src="assets/clients/previder.png" alt="Previder" width="148" height="74"></div>
+            </div>
+          </div>
+          <p class="brand-stepper__caption"><span aria-hidden="true"></span> 100+ organisaties bouwen met Artific</p>
         </div>
       </div>
     </section>
 
-    <section class="sectie" id="visie" aria-labelledby="visie-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow">Visie</p>
-      <h2 id="visie-titel" data-claim-id="dm-kop" data-reveal>Je volgende medewerker is digitaal. Veilig. Voorspelbaar. Transparant.</h2>
-      <p class="leestekst" data-claim-id="dm-potentieel-risico">Elke organisatie ziet het potentieel — lagere kosten, hogere productiviteit, snellere uitvoering. Maar hoe meer AI doet, hoe hoger de risico's.</p>
+    <section class="section story" id="visie" aria-labelledby="visie-title">
+      <div class="section__inner sectie__grid story__inner">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Van ambitie naar uitvoering</p>
+          <h2 id="visie-title" data-claim-id="dm-kop">Je volgende medewerker is digitaal. Veilig. Voorspelbaar. Transparant.</h2>
+        </div>
+        <div class="story-grid">
+          <div class="story-copy" data-reveal>
+            <span class="section-number">01</span>
+            <h3>Gebouwd voor echt werk</h3>
+            <p>Artific maakt van AI geen los experiment, maar een betrouwbare collega die je processen kent, je regels volgt en zichtbaar resultaat levert.</p>
+            <p data-claim-id="vvt-veilig vvt-voorspelbaar vvt-transparant">Data blijft veilig binnen goedgekeurde bronnen. Monitoring maakt gedrag voorspelbaar. Iedere prompt, tool-call en beslissing blijft transparant.</p>
+          </div>
+          <div class="workflow-visual" data-reveal aria-label="Een Artific-assistent verwerkt een klantvraag binnen veilige kaders">
+            <div class="workflow-top">
+              <span>Workflow</span><strong>Klantvraag afhandelen</strong><i>Actief</i>
+            </div>
+            <div class="workflow-line" aria-hidden="true"></div>
+            <div class="workflow-node workflow-node--one"><b>1</b><span><strong>Inkomend bericht</strong><small>E-mail · Nederlands</small></span><i>✓</i></div>
+            <div class="workflow-node workflow-node--two"><b>2</b><span><strong>Kennis ophalen</strong><small>3 geverifieerde bronnen</small></span><i>✓</i></div>
+            <div class="workflow-node workflow-node--three"><b>3</b><span><strong>Antwoord genereren</strong><small>Met privacy safeguard</small></span><i class="node-pulse"></i></div>
+            <div class="workflow-node workflow-node--four"><b>4</b><span><strong>Goedkeuring</strong><small>Human in control</small></span><i>○</i></div>
+          </div>
+        </div>
 
-      <div class="rijen" role="list">
-        <div class="rij" role="listitem">
-          <h3>Is het veilig?</h3>
-          <p data-claim-id="vvt-veilig">AI raakt gevoelige data: klantgegevens, financiële rapporten, interne documenten. Wie bepaalt waar het bij kan — en waar die data naartoe gaat?</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h3>Is het voorspelbaar?</h3>
-          <p data-claim-id="vvt-voorspelbaar">Zonder monitoring en audit trail weet niemand of AI-gedrag afwijkt, verandert of ontspoort.</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h3>Is het transparant?</h3>
-          <p data-claim-id="vvt-transparant">Prompt injection, hallucinaties, ongewenste acties: kun je zien wat AI doet, waarom — en aantonen dat het klopt?</p>
-        </div>
-      </div>
-      <p class="accentregel" data-claim-id="vvt-antwoord">Elke organisatie moet deze vragen beantwoorden. Artific lost ze op.</p>
-
-      <h3 class="tussenkop">Van assistent naar autonome collega</h3>
-      <p class="leestekst" data-claim-id="reis-overzicht">AI begint met ondersteunen, wordt onderdeel van je processen en opereert uiteindelijk zelfstandig. Elke fase levert meer waarde — en vraagt een sterker fundament.</p>
-      <ol class="fasen">
-        <li data-claim-id="reis-fase-1">
-          <h4>AI als assistent</h4>
-          <p>Ondersteunt je teams met interne kennis, contentgeneratie en dagelijkse taken. De mens beslist, AI helpt.</p>
-        </li>
-        <li data-claim-id="reis-fase-2">
-          <h4>AI in je processen</h4>
-          <p>Geïntegreerd in producten en workflows; context en regels bepalen de output. De mens keurt goed, AI voert uit.</p>
-        </li>
-        <li data-claim-id="reis-fase-3">
-          <h4>AI als autonome collega</h4>
-          <p>Voert taken zelfstandig uit en neemt beslissingen binnen kaders — de virtuele collega in je team.</p>
-        </li>
-      </ol>
-      <p class="leestekst" data-claim-id="reis-overtuiging reis-regisseur">Waarde is het doel, controle is het fundament. De transitie is die van gebruiker naar regisseur: niet alleen human-in-the-loop, maar human in control.</p>
+        <ol class="journey" aria-label="De ontwikkeling van AI binnen je organisatie">
+          <li data-claim-id="reis-fase-1"><span>Fase 01</span><strong>AI als assistent</strong><p>De mens beslist, AI helpt met kennis en dagelijkse taken.</p></li>
+          <li data-claim-id="reis-fase-2"><span>Fase 02</span><strong>AI in je processen</strong><p>De mens keurt goed, AI voert werk uit binnen context en regels.</p></li>
+          <li data-claim-id="reis-fase-3"><span>Fase 03</span><strong>AI als autonome collega</strong><p>AI handelt zelfstandig binnen duidelijke, controleerbare kaders.</p></li>
+        </ol>
       </div>
     </section>
 
-    <section class="sectie sectie--tint" id="controlelaag" aria-labelledby="controlelaag-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow">Positie</p>
-      <h2 id="controlelaag-titel" data-reveal>De operationele controlelaag voor AI</h2>
-      <p class="leestekst" data-claim-id="ctl-positie">OpenAI, Google en Anthropic leveren de intelligentie. Artific bouwt de motor die AI productief, gecontroleerd en schaalbaar maakt binnen jouw organisatie.</p>
-
-      <div class="flow" role="group" aria-label="Artific zit tussen de AI-modellen en jouw processen" data-claim-id="ctl-tussen-model-en-proces">
-        <div class="flow__blok">
-          <span class="flow__kop">AI-modellen</span>
-          <span class="flow__sub">GPT · Claude · Gemini</span>
+    <section class="section control-layer" id="controlelaag" aria-labelledby="controlelaag-title">
+      <div class="section__inner sectie__grid control-layer__inner">
+        <div class="control-copy" data-reveal>
+          <span class="section-number section-number--light">02</span>
+          <p class="eyebrow eyebrow--light">De operationele laag</p>
+          <h2 id="controlelaag-title" data-claim-id="ctl-positie">Van krachtige modellen naar betrouwbaar werk.</h2>
+          <p data-claim-id="ctl-tussen-model-en-proces">Artific zit tussen de AI-modellen en jouw processen. De intelligentie van GPT, Claude en Gemini wordt zo veilig, voorspelbaar en transparant inzetbaar.</p>
+          <a class="button button--yellow" data-cta-id="maak-een-afspraak" href="https://artific.nl/contact-opnemen/">Maak een afspraak</a>
         </div>
-        <div class="flow__pijl" aria-hidden="true">→</div>
-        <div class="flow__blok flow__blok--artific">
-          <span class="flow__kop">Artific</span>
-          <span class="flow__sub">veilig · voorspelbaar · transparant</span>
+        <div class="layer-map" data-reveal aria-label="Artific verbindt AI-modellen met bedrijfsprocessen">
+          <div class="layer-map__side">
+            <span>AI-modellen</span><b>GPT</b><b>Claude</b><b>Gemini</b>
+          </div>
+          <div class="layer-map__core">
+            <div class="core-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+            <strong>Artific</strong><span>Controlelaag</span>
+          </div>
+          <div class="layer-map__side layer-map__side--right">
+            <span>Jouw processen</span><b>CRM</b><b>E-mail</b><b>Workflows</b>
+          </div>
+          <div class="layer-map__labels"><span>Safeguards</span><span>Governance</span><span>Audit trail</span></div>
         </div>
-        <div class="flow__pijl" aria-hidden="true">→</div>
-        <div class="flow__blok">
-          <span class="flow__kop">Jouw processen</span>
-          <span class="flow__sub">CRM · e-mail · workflows</span>
-        </div>
-      </div>
-      <p class="voetnoot" data-claim-id="ctl-platformlagen">Channels, agents, toolbox, data, safeguards en runtime verbinden jouw processen met de modellen; kennisbanken en retrieval-pipelines geven agents de juiste context.</p>
-
-      <div class="tweeluik">
-        <div>
-          <h3>Wat we bouwen</h3>
-          <p data-claim-id="ctl-wat-we-bouwen">De operationele laag voor AI binnen organisaties: features, interacties, integraties en governance die AI omzetten in productieve, gecontroleerde medewerkers.</p>
-        </div>
-        <div>
-          <h3>Wat we niet bouwen</h3>
-          <p data-claim-id="ctl-wat-we-niet-bouwen">Algemene chatbots. Artific concurreert niet met ChatGPT, Claude of Gemini, maar bouwt infrastructuur voor specifieke, gecontroleerde, enterprise AI.</p>
-        </div>
-      </div>
-      <p class="accentregel" data-claim-id="ctl-chatgpt-gpt">ChatGPT is niet GPT. Via Artific gebruik je dezelfde foundationmodellen — maar als gecontroleerde agent die jouw regels volgt, alleen goedgekeurde data gebruikt en een volledige audit trail heeft.</p>
       </div>
     </section>
 
-    <section class="sectie" id="platform" aria-labelledby="platform-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow">Platform</p>
-      <h2 id="platform-titel" data-reveal>Drie modules, één platform</h2>
-      <p class="leestekst" data-claim-id="mod-overzicht">Drie losstaande modules die met elkaar samenwerken. Gebruik er één, twee of alle drie.</p>
-
-      <ol class="modules" data-reveal-group>
-        <li class="module" data-claim-id="mod-ai-assistant">
-          <span class="module__nummer" aria-hidden="true">01</span>
-          <div>
+    <section class="section modules-section" id="platform" aria-labelledby="platform-title">
+      <div class="section__inner sectie__grid modules-section__inner">
+        <div class="section-heading section-heading--center" data-reveal>
+          <p class="eyebrow">Eén platform. Drie manieren om te versnellen.</p>
+          <h2 id="platform-title" data-claim-id="mod-overzicht">Begin klein. Bouw door. Houd grip.</h2>
+          <p>Iedere module werkt zelfstandig en wordt sterker wanneer je ze combineert.</p>
+        </div>
+        <ol class="modules" data-reveal-group>
+          <li class="module" data-claim-id="mod-ai-assistant">
+            <span class="module__number">01</span>
+            <div class="module__icon" aria-hidden="true">✦</div>
             <h3>AI Assistant</h3>
-            <p>Je virtuele medewerker op maat: met een rol, persoonlijkheid en toegang tot je kennisbronnen en tools. Hij sluit aan bij een team en volgt je regels.</p>
-            <ul class="module__toepassingen">
-              <li>Interne kennisbank</li>
-              <li>Klantenservice-agent</li>
-              <li>Verkoopassistent</li>
-            </ul>
-          </div>
-        </li>
-        <li class="module" data-claim-id="mod-ai-toolbox">
-          <span class="module__nummer" aria-hidden="true">02</span>
-          <div>
+            <p>Een virtuele medewerker op maat, met een eigen rol en gecontroleerde toegang tot jouw kennis en tools.</p>
+            <ul><li>Interne kennisbank</li><li>Klantenservice</li><li>Verkoopassistent</li></ul>
+          </li>
+          <li class="module module--blue" data-claim-id="mod-ai-toolbox">
+            <span class="module__number">02</span>
+            <div class="module__icon" aria-hidden="true">⌁</div>
             <h3>AI ToolBox</h3>
-            <p>De self-service AI-laag: IT bouwt kleine workflows één keer, elke medewerker draait ze met één klik. Genereren, samenvatten en analyseren in seconden.</p>
-          </div>
-        </li>
-        <li class="module" data-claim-id="mod-conversation">
-          <span class="module__nummer" aria-hidden="true">03</span>
-          <div>
+            <p>Bouw herhaalbare workflows één keer en geef iedere medewerker veilige AI-tools voor dagelijks werk.</p>
+            <ul><li>Genereren</li><li>Samenvatten</li><li>Analyseren</li></ul>
+          </li>
+          <li class="module module--navy" data-claim-id="mod-conversation">
+            <span class="module__number">03</span>
+            <div class="module__icon" aria-hidden="true">↗</div>
             <h3>Conversation Module</h3>
-            <p>Eén centrale plek voor inkomende e-mail: koppel Gmail of Microsoft en laat agents berichten lezen, classificeren en conceptantwoorden klaarzetten. Een medewerker reviewt voordat het de deur uit gaat.</p>
+            <p>Laat agents inkomende e-mail lezen, classificeren en een conceptantwoord klaarzetten voor controle.</p>
+            <ul><li>Gmail &amp; Microsoft</li><li>Classificatie</li><li>Human in control</li></ul>
+          </li>
+        </ol>
+        <div class="platform-choice" data-reveal>
+          <div><span>Portal</span><h3>Snel naar productie</h3><p data-claim-id="ph-portal">Configureer agents, gebruikers en policies in een gebruiksvriendelijke web-app.</p></div>
+          <div class="choice-divider" aria-hidden="true">of</div>
+          <div><span>Headless</span><h3>Volledige controle</h3><p data-claim-id="ph-headless">Integreer dezelfde veilige AI-capaciteiten via API en SDK in je eigen product.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section security" id="controle" aria-labelledby="controle-title">
+      <div class="section__inner sectie__grid security__inner">
+        <div class="security-demo" data-reveal aria-label="Safeguards van een Artific-assistent">
+          <div class="security-demo__header"><span>Safeguards</span><i>Alle controles actief</i></div>
+          <div class="shield" aria-hidden="true"><span>✓</span></div>
+          <strong>Je data blijft van jou.</strong>
+          <div class="security-check"><span><i>✓</i> Dataverwerking</span><b>EU</b></div>
+          <div class="security-check"><span><i>✓</i> Persoonsgegevens</span><b>Beschermd</b></div>
+          <div class="security-check"><span><i>✓</i> Modeltoegang</span><b>Beheerd</b></div>
+          <div class="security-log"><span>Laatste controle</span><strong>Zojuist · geen afwijkingen</strong></div>
+        </div>
+        <div class="security-copy" data-reveal>
+          <span class="section-number">03</span>
+          <p class="eyebrow">Veilig vanaf de basis</p>
+          <h2 id="controle-title" data-claim-id="cc-een-plek sec-ontwerp">Centrale controle zonder innovatie af te remmen.</h2>
+          <p>IT bepaalt de kaders. Teams bouwen daarbinnen. Zo voorkom je AI-wildgroei en blijft iedere assistent controleerbaar.</p>
+          <ul class="security-list">
+            <li data-claim-id="sec-eu"><span>01</span><div><strong>EU-gehost</strong><p>Alle data, infrastructuur en processing binnen de EU.</p></div></li>
+            <li data-claim-id="sec-iso"><span>02</span><div><strong>ISO 27001</strong><p>Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.</p></div></li>
+            <li data-claim-id="sec-audit"><span>03</span><div><strong>Volledige audit trail</strong><p>Elke prompt, tool-call en beslissing wordt vastgelegd.</p></div></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section approach" id="aanpak" aria-labelledby="aanpak-title">
+      <div class="section__inner sectie__grid approach__inner">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Van idee naar impact</p>
+          <h2 id="aanpak-title" data-claim-id="bo-vijf-stappen">In vijf stappen volledig AI-ontzorgd.</h2>
+          <p data-claim-id="pm-markt">Artific is het veilige fundament. Samen met partners voegen we domeinkennis toe en bouwen we een oplossing die aansluit op jouw organisatie.</p>
+        </div>
+        <ol class="approach-steps">
+          <li data-reveal><span>01</span><div><strong>Introductie</strong><p>Intake en AI-strategie</p></div></li>
+          <li data-reveal><span>02</span><div><strong>Training</strong><p>Teams en kennis voorbereiden</p></div></li>
+          <li data-reveal><span>03</span><div><strong>Implementatie</strong><p>Assistenten en workflows bouwen</p></div></li>
+          <li data-reveal><span>04</span><div><strong>Aftercare</strong><p>Monitoren en optimaliseren</p></div></li>
+          <li data-reveal><span>05</span><div><strong>Support</strong><p>Doorlopende ondersteuning</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section reviews" id="bewijs" aria-labelledby="reviews-title">
+      <div class="section__inner sectie__grid reviews__inner">
+        <div class="reviews-heading" data-reveal>
+          <div>
+            <p class="eyebrow">Wat klanten zeggen</p>
+            <h2 id="reviews-title">Klantbeoordelingen</h2>
           </div>
-        </li>
-      </ol>
+          <p class="review-count"><strong>6</strong> klantbeoordelingen</p>
+        </div>
+        <p class="review-intro" data-claim-id="bw-100-klanten bw-klantnamen">Meer dan 100 klanten laten AI voor zich werken. Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.</p>
 
-      <h3 class="tussenkop" data-claim-id="ph-keuze">Portal of headless — twee manieren om te bouwen</h3>
-      <div class="tweeluik">
-        <div>
-          <h4>Artific Portal</h4>
-          <p data-claim-id="ph-portal">De snelste weg naar productie: een white-label web-app waarin je agents configureert, gebruikers en policies beheert en uitrolt — zonder een regel frontend-code.</p>
+        <div class="review-grid">
+          <article class="review-card" data-reveal>
+            <div class="quote-mark" aria-hidden="true">“</div>
+            <blockquote><p>Samen met Artific zijn we bezig de AI-Notaris Assistent te ontwikkelen. De eerste resultaten zijn veelbelovend en gaan wel wat in beweging zetten in het “notaris landschap”!</p></blockquote>
+            <footer><span class="review-avatar" aria-hidden="true">RL</span><div><strong>Rogier Lukas</strong><span>Notaris — Vechtstede Notarissen</span></div></footer>
+          </article>
+          <article class="review-card review-card--tint" data-reveal>
+            <div class="quote-mark" aria-hidden="true">“</div>
+            <blockquote><p>Artific heeft voor ons alle bestaande bedrijfsprocedures met AI uitgerust. Wat een geweldige resultaten en wat een top bedrijf om mee samen te werken!</p></blockquote>
+            <footer><span class="review-avatar" aria-hidden="true">MT</span><div><strong>Maarten ter Velde</strong><span>Co-founder</span></div></footer>
+          </article>
+          <article class="review-card" data-reveal>
+            <div class="quote-mark" aria-hidden="true">“</div>
+            <blockquote><p>De AI Roadmap van Artific heeft tot veel nieuwe inzichten binnen onze organisatie geleid. Binnen het hele bedrijf is gekeken naar de potentie van AI. Echt een aanrader dus.</p></blockquote>
+            <footer><span class="review-avatar" aria-hidden="true">JE</span><div><strong>Johan Evers</strong><span>CEO — Human Talent Group</span></div></footer>
+          </article>
+          <article class="review-card review-card--tint" data-reveal>
+            <div class="quote-mark" aria-hidden="true">“</div>
+            <blockquote><p>Binnen Webton werken we sinds september 2023 met de tooling van Artific. Op het gebied van online marketing heeft Artific ons geholpen nog efficiënter en effectiever te werken.</p></blockquote>
+            <footer><span class="review-avatar" aria-hidden="true">JK</span><div><strong>Joshua Kuipers</strong><span>Directeur — Webton</span></div></footer>
+          </article>
+          <article class="review-card" data-reveal>
+            <div class="quote-mark" aria-hidden="true">“</div>
+            <blockquote><p>De custom made AI-Assistent / Chatbot die voor onze klanten ontwikkeld is werkt uitstekend. Mooi om te zien hoe elke (Reseller) klant deze met open armen ontvangt.</p></blockquote>
+            <footer><span class="review-avatar" aria-hidden="true">SM</span><div><strong>Sander van der Meer</strong><span>Senior Online Marketeer — Harundo</span></div></footer>
+          </article>
+          <article class="review-card review-card--blue" data-reveal data-claim-id="bw-quote-leqqr">
+            <div class="quote-mark" aria-hidden="true">“</div>
+            <blockquote><p>De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.</p></blockquote>
+            <footer><span class="review-avatar" aria-hidden="true">AZ</span><div><strong>Arjan Zwarteveen</strong><span>Senior Marketeer — Leqqr</span></div></footer>
+          </article>
         </div>
-        <div>
-          <h4>Headless</h4>
-          <p data-claim-id="ph-headless">Volledige controle: roep de API aan, embed agents in je product en bouw je eigen frontend. Hetzelfde security-model, jouw merk en jouw UX.</p>
-        </div>
-      </div>
-      <p class="voetnoot" data-claim-id="ph-groeipad">De meeste klanten starten met de portal en gaan stapsgewijs headless voor delen van hun stack.</p>
-      </div>
-    </section>
-
-    <section class="sectie sectie--tint" id="controle" aria-labelledby="controle-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow">Controle &amp; governance</p>
-      <h2 id="controle-titel" data-reveal>Eén plek om AI te beheren</h2>
-      <p class="leestekst" data-claim-id="cc-een-plek">Stop de AI-wildgroei. IT definieert beleid, security en integraties; teams configureren en rollen agents uit — binnen je hele organisatie.</p>
-
-      <div class="tweeluik">
-        <div>
-          <h3>IT zet de kaders</h3>
-          <ul class="lijst" data-claim-id="cc-it-kaders">
-            <li>Modellen en data-toegang</li>
-            <li>Regio's en retentie</li>
-            <li>Toegestane tools en budgets</li>
-            <li>Eén keer instellen, overal geldig</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Teams bouwen erbinnen</h3>
-          <ul class="lijst" data-claim-id="cc-teams cc-adoptie">
-            <li>Geen shadow IT of ongecontroleerde integraties</li>
-            <li>Geen verrassingen</li>
-            <li>Hogere adoptie dankzij statistieken en inzichten</li>
-          </ul>
-        </div>
-      </div>
-      <p class="accentregel" data-claim-id="cc-balans">Geef je gebruikers een productiviteitsboost en houd zelf de controle over AI-governance.</p>
-
-      <h3 class="tussenkop">Security ingebouwd, privacy doordacht</h3>
-      <p class="leestekst" data-claim-id="sec-ontwerp">Ontworpen voor organisaties die controle niet kunnen inruilen voor snelheid; elke laag is gebouwd voor enterprise behoeften.</p>
-      <div class="rijen" role="list">
-        <div class="rij" role="listitem">
-          <h4>Gehost in de EU</h4>
-          <p data-claim-id="sec-eu">Alle data, alle infrastructuur, alle processing binnen de EU.</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h4>ISO 27001 gecertificeerd</h4>
-          <p data-claim-id="sec-iso">Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h4>Pseudonimisering</h4>
-          <p data-claim-id="sec-pseudo">Persoonlijk identificeerbare informatie wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h4>Model-agnostisch</h4>
-          <p data-claim-id="sec-model-agnostisch">Wissel GPT, Claude, Gemini of andere modellen per agent, per taak, per tenant — geen lock-in.</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h4>Access control</h4>
-          <p data-claim-id="sec-access">Fijnmazige rollen, scopes en tenant-isolatie; permissies per agent instelbaar.</p>
-        </div>
-        <div class="rij" role="listitem">
-          <h4>Audit logs</h4>
-          <p data-claim-id="sec-audit">Elke prompt, elke tool-call, elke beslissing wordt vastgelegd in het systeem.</p>
-        </div>
-      </div>
+        <p class="award" data-claim-id="pos-award">Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.</p>
       </div>
     </section>
 
-    <section class="sectie" id="aanpak" aria-labelledby="aanpak-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow">Aanpak</p>
-      <h2 id="aanpak-titel" data-reveal>Zo helpen we jouw organisatie</h2>
-      <p class="leestekst" data-claim-id="pm-markt">Artific is geen kant-en-klaar product, maar een fundament. Wij gaan niet zelf naar de markt — partners bouwen erop met domeinexpertise en branchespecifieke kennis.</p>
-
-      <ol class="fasen">
-        <li data-claim-id="pm-laag-artific">
-          <h3>Artific — fundament &amp; interactielaag</h3>
-          <p>Platform met agent-capaciteiten, integraties, kanalen, governance en runtime, plus de interfaces die AI toegankelijk maken.</p>
-        </li>
-        <li data-claim-id="pm-laag-partners">
-          <h3>Partners — branchespecifieke laag</h3>
-          <p>Partners voegen domeinkennis toe en configureren agents voor zorg, juridisch, finance, retail — elke sector.</p>
-        </li>
-        <li data-claim-id="pm-laag-klanten">
-          <h3>Klanten — bedrijfscontext</h3>
-          <p>Klanten werken de agent in met hun data, processen en systemen: een virtuele medewerker die hun bedrijf kent en binnen hun regels werkt.</p>
-        </li>
-      </ol>
-      <p class="voetnoot" data-claim-id="pm-zelfde-platform">Het platform is hetzelfde; wat verschilt is hoe partners het inzetten.</p>
-
-      <h3 class="tussenkop" data-claim-id="bo-vijf-stappen">In vijf stappen volledig AI ontzorgd</h3>
-      <ol class="stappen" data-claim-id="bo-vijf-stappen">
-        <li><strong>Introductie</strong> — intake en AI-strategie</li>
-        <li><strong>Training</strong></li>
-        <li><strong>Implementatie</strong></li>
-        <li><strong>Aftercare</strong></li>
-        <li><strong>Support</strong></li>
-      </ol>
-      <p class="leestekst" data-claim-id="bo-aftercare bo-support">Na livegang blijven we betrokken: monitoring, optimalisatie en minimaal één update-sync-meeting per kwartaal. Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.</p>
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <div class="contact-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="section__inner sectie__grid contact__inner" data-reveal>
+        <div class="contact-brand-surface">
+          <img class="brand-logo" src="../assets/brand/artific-logo-wit.svg" data-brand-logo="logo-wit" data-brand-background="artific-navy" data-brand-surface=".contact-brand-surface" data-brand-surface-tag="div" data-brand-logo-selector=".brand-logo" alt="Artific" width="136" height="35">
+        </div>
+        <p class="eyebrow eyebrow--light">Samen slimmer werken</p>
+        <h2 id="contact-title" data-claim-id="cv-versnellen">Klaar om AI-adoptie te versnellen?</h2>
+        <p>Ontdek in een persoonlijke demo hoe Artific jouw mensen, kennis en processen veilig met AI verbindt.</p>
+        <div class="contact__actions">
+          <a class="button button--yellow" data-cta-id="vraag-een-demo-aan" href="https://artific.nl/contact-opnemen/">Vraag een demo aan</a>
+          <a class="contact-link" href="mailto:info@artific.nl">info@artific.nl</a>
+        </div>
       </div>
     </section>
-
-    <section class="sectie sectie--tint" id="bewijs" aria-labelledby="bewijs-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow">Bewijs</p>
-      <h2 id="bewijs-titel" data-claim-id="bw-100-klanten" data-reveal>Meer dan 100 klanten laten AI voor zich werken</h2>
-      <p class="leestekst" data-claim-id="bw-100-klanten">Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.</p>
-      <p class="klantnamen" data-claim-id="bw-klantnamen">Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.</p>
-      <!-- Direct citaat: letterlijk overgenomen uit de bron (content/sources/artific.nl.md#h-quote-leqqr), inclusief de daar aanwezige formulering. -->
-      <blockquote class="quote" data-claim-id="bw-quote-leqqr">
-        <p>"De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden."</p>
-        <footer>— Arjan Zwarteveen, Senior Marketeer Leqqr</footer>
-      </blockquote>
-      <p class="accentregel" data-claim-id="pos-award">Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.</p>
-      </div>
-    </section>
-
-    <section class="sectie sectie--donker" id="contact" aria-labelledby="contact-titel">
-      <div class="sectie__grid">
-      <p class="eyebrow eyebrow--donker">Contact</p>
-      <h2 id="contact-titel" data-claim-id="cv-versnellen" data-reveal>Klaar om AI-adoptie te versnellen? Let's talk.</h2>
-      <p class="leestekst" data-claim-id="cv-demo cv-afspraak">Vraag een demo aan of maak direct een afspraak — we laten graag zien wat Artific voor jouw organisatie kan betekenen.</p>
-      <div class="hero__acties">
-        <a class="cta cta--licht" data-cta-id="vraag-een-demo-aan" href="https://artific.nl/contact-opnemen/">Vraag een demo aan</a>
-        <a class="cta cta--omlijnd" data-cta-id="maak-een-afspraak" href="https://artific.nl/contact-opnemen/">Maak een afspraak</a>
-      </div>
-      <p class="contactgegevens">
-        Liever direct contact? Mail <a href="mailto:info@artific.nl">info@artific.nl</a> of bel <a href="tel:053 203 0123">053-203 0123</a>.
-      </p>
-      </div>
-    </section>
-
   </main>
 
   <footer class="site-footer">
-    <div class="site-footer__binnen">
-      <img class="brand-logo" src="../assets/brand/artific-logo-wit.svg" data-brand-logo="logo-wit" data-brand-background="artific-navy" data-brand-surface=".site-footer" data-brand-surface-tag="footer" data-brand-logo-selector=".brand-logo" alt="Artific" width="152" height="40">
-      <ul class="site-footer__links">
-        <li><a href="https://artific.nl/contact-opnemen/">Contact opnemen</a></li>
-        <li><a href="mailto:info@artific.nl">info@artific.nl</a></li>
-        <li><a href="tel:053 203 0123">053-203 0123</a></li>
-      </ul>
-      <p class="site-footer__noot">Ontwerpvariant "Minimalistisch" — gebouwd op de officiële Artific-content en -huisstijl.</p>
+    <div class="site-footer__inner">
+      <img class="brand-logo" src="../assets/brand/artific-logo-wit.svg" data-brand-logo="logo-wit" data-brand-background="artific-navy" data-brand-surface=".site-footer" data-brand-surface-tag="footer" data-brand-logo-selector=".brand-logo" alt="Artific" width="120" height="31">
+      <p>AI die werkt en blijft werken.</p>
+      <nav aria-label="Voetnavigatie"><a href="#platform">Platform</a><a href="#bewijs">Klanten</a><a href="https://artific.nl/contact-opnemen/">Contact</a></nav>
+      <span>© 2026 Artific</span>
     </div>
   </footer>
 </body>

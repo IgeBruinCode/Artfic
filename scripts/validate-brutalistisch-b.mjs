@@ -83,6 +83,7 @@ const slides = tracks.length === 1
   ? directChildren(tracks[0], 'li').filter((node) => node.attributes.has('data-relation-id'))
   : [];
 const expectedRelations = [
+  ['fc-twente', 'FC Twente'],
   ['basic-fit', 'Basic-Fit'],
   ['eneco', 'Eneco'],
   ['marktplaats', 'Marktplaats'],
@@ -91,7 +92,6 @@ const expectedRelations = [
   ['rtv-oost', 'RTV Oost'],
   ['veiligheidsregio-zuid-limburg', 'Veiligheidsregio Zuid-Limburg'],
   ['vechtsteden-notarissen', 'Vechtsteden Notarissen'],
-  ['fc-twente', 'FC Twente'],
 ];
 if (slides.length !== expectedRelations.length) {
   fail(`index.html: relatiedeck bevat ${slides.length} in plaats van negen directe items`);
@@ -122,9 +122,10 @@ const fcScope = html.match(/<li\b[^>]*data-relation-id="fc-twente"[^>]*>([\s\S]*
 if (textContent(fcScope).includes(fcClaim) === false || !/data-claim-id="bw-fctwente"/.test(fcScope)) {
   fail('index.html: FC Twente-item bevat niet de exacte canonieke claim met bronhaak');
 }
-const customerImages = nodes.filter((node) => node.tagName === 'img' && !node.classes.has('brand-logo'));
-if (customerImages.length || /customer-logo|klantlogo|data:image|<svg\b/i.test(html)) {
-  fail('index.html: klantrelaties moeten tekst blijven; klantbeelden of getekende logo’s zijn niet toegestaan');
+const customerImages = nodes.filter((node) => node.tagName === 'img' && node.attributes.has('data-client-logo'));
+if (customerImages.length !== expectedRelations.length || slides.some((slide) =>
+  !directChildren(slide).some((child) => directChildren(child, 'img').some((image) => image.attributes.has('data-client-logo'))))) {
+  fail('index.html: iedere klantrelatie moet exact één lokaal, herkenbaar klantlogo bevatten');
 }
 if (html.indexOf('data-relationship-deck') > html.indexOf('id="bewijs"')) {
   fail('index.html: het relatiedeck moet bovenaan in intro vóór de bewijssectie staan');
@@ -327,9 +328,16 @@ if (!/@media \(prefers-reduced-motion: reduce\)/.test(css) || !/scroll-behavior:
     !/animation-duration:\s*0\.01ms/.test(css) || !/transition-duration:\s*0\.01ms/.test(css)) {
   fail('styles.css: volledige reduced-motion-afbouw ontbreekt');
 }
-if (/\b(?:opacity\s*:|visibility\s*:\s*hidden|display\s*:\s*none)\b/i.test(css) ||
+if (/\b(?:visibility\s*:\s*hidden|display\s*:\s*none)\b/i.test(css) ||
     /<[^>]+\s(?:hidden|inert)(?:\s|=|>)/i.test(html)) {
   fail('brutalistisch-b: kerninhoud mag niet standaard verborgen of inert zijn');
+}
+if (!/\.motion-ready \[data-motion-text\]/.test(css) || !/\.motion-ready \[data-motion-surface\]/.test(css) ||
+    !/motion-ready/.test(js) || !/IntersectionObserver/.test(js)) {
+  fail('brutalistisch-b: progressieve tekst- en oppervlakchoreografie ontbreekt');
+}
+if (!/data-shader-canvas/.test(html) || !/fragmentSource/.test(js) || !/getContext\("webgl"/.test(js)) {
+  fail('brutalistisch-b: lokale WebGL-shaderlaag ontbreekt');
 }
 
 const retiredRuntime = /\b(?:masthead|folio|hoofdstukregister|krantkolom|modulespread|grootboek|tabloid|registertaal)\b/i;
@@ -337,19 +345,24 @@ if (retiredRuntime.test(`${html}\n${css}\n${js}`)) fail('brutalistisch-b: een ou
 if (/\b(?:commandobar|sectiecode|blueprint-grid|trust-console|bewijsrail|boekdeel|dossierregel|evidence-index|assurance-ledger)\b/i.test(`${html}\n${css}\n${js}`)) {
   fail('brutalistisch-b: runtime bevat een herkenbare zustervariantsignatuur');
 }
-if (/https?:\/\//.test(js) || /<script(?![^>]*src="main\.js")[^>]*src=/i.test(html) || /fetch\s*\(|XMLHttpRequest|WebSocket/.test(js)) {
+const runtimeScripts = [...html.matchAll(/<script[^>]*\ssrc="([^"]+)"[^>]*>/gi)].map((match) => match[1]);
+const approvedRuntimeScripts = new Set(['assets/vendor/gsap-3.13.0.min.js', 'main.js']);
+if (/https?:\/\//.test(js) || runtimeScripts.some((source) => !approvedRuntimeScripts.has(source)) ||
+    /fetch\s*\(|XMLHttpRequest|WebSocket/.test(js)) {
   fail('brutalistisch-b: runtime moet lokaal en netwerk-onafhankelijk blijven');
+}
+if (runtimeScripts.join('|') !== 'assets/vendor/gsap-3.13.0.min.js|main.js' ||
+    !/gsap\.matchMedia\(\)/.test(js) || !/gsap\.timeline\(/.test(js) ||
+    !/willChange/.test(js) || !/ambient-paused/.test(`${js}\n${css}`)) {
+  fail('brutalistisch-b: lokale GSAP loading-, timeline- of performancechoreografie ontbreekt');
 }
 if (/21st\.dev|magic(?:-mcp)?|api[_-]?key|x-api-key/i.test(`${html}\n${css}\n${js}\n${design}`)) {
   fail('brutalistisch-b: externe provider-, configuratie- of secretmarker mag niet in route/documentatie staan');
 }
 
-// Progressieve deckbediening en transform-only motion.
+// Progressieve deckbediening; de slideshow blijft bewust handmatig.
 if (/setInterval|setTimeout|auto(?:play|advance)|\.click\(\)/i.test(js)) fail('main.js: relatiedeck mag niet automatisch doorlopen');
-if (/opacity|\b(?:width|height|top|right|bottom|left|margin|padding)\s*:/.test(js)) {
-  fail('main.js: Web Animations mogen alleen transforms animeren');
-}
-if (/classList\.(?:add|remove)\([^)]*(?:hidden|visible)|style\.(?:display|visibility|opacity)|setAttribute\(["']hidden/.test(js)) {
+if (/classList\.(?:add|remove)\([^)]*hidden|style\.(?:display|visibility)|setAttribute\(["']hidden/.test(js)) {
   fail('main.js: enhancement mag geen kerninhoud tonen of verbergen');
 }
 
@@ -396,11 +409,9 @@ try {
     matches: false,
     addEventListener(type, listener) { if (type === 'change') listeners.set(type, listener); },
   };
-  let cancelled = 0;
-  const motionCard = { animate() { return { cancel() { cancelled += 1; } }; } };
   const documentStub = {
     querySelector(selector) { return selector === '[data-relationship-deck]' ? deckStub : null; },
-    querySelectorAll(selector) { return selector === '[data-motion-card]' ? [motionCard] : []; },
+    querySelectorAll() { return []; },
     createElement() { return makeInteractive(); },
   };
   const windowStub = {
@@ -415,7 +426,7 @@ try {
   if (mountStub.children.length !== 3) throw new Error('enhancement maakt niet twee knoppen en één status');
   const [previous, next, status] = mountStub.children;
   if (status.attributes.get('aria-live') !== 'polite' || status.attributes.get('aria-atomic') !== 'true' ||
-      status.textContent !== 'Relatie 1 van 9: Basic-Fit') {
+      status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('initiële live-status klopt niet');
   }
 
@@ -425,45 +436,45 @@ try {
   }
   trackStub.scrollLeft = 300;
   trackStub.listeners.get('scroll')?.({});
-  if (status.textContent !== 'Relatie 1 van 9: Basic-Fit' || linksStub[0].attributes.get('aria-current') !== 'true') {
+  if (status.textContent !== 'Relatie 1 van 9: FC Twente' || linksStub[0].attributes.get('aria-current') !== 'true') {
     throw new Error('tussenliggende scroll overschrijft de actieve relatie tijdens programmatische navigatie');
   }
 
   next.listeners.get('click')?.({});
-  if (scrollCalls.at(-1)?.index !== 7 || status.textContent !== 'Relatie 1 van 9: Basic-Fit') {
+  if (scrollCalls.at(-1)?.index !== 7 || status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('snelle Volgende bouwt niet voort op de nog aangevraagde relatie');
   }
   flushAnimationFrames();
-  if (status.textContent !== 'Relatie 1 van 9: Basic-Fit') {
+  if (status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('verouderde scrollcallback commit een tussenliggende relatie');
   }
   trackStub.listeners.get('scrollend')?.({});
-  if (status.textContent !== 'Relatie 8 van 9: Vechtsteden Notarissen' || linksStub[7].attributes.get('aria-current') !== 'true') {
+  if (status.textContent !== 'Relatie 8 van 9: Veiligheidsregio Zuid-Limburg' || linksStub[7].attributes.get('aria-current') !== 'true') {
     throw new Error('programmatische beweging commit niet exact eenmaal op de laatst aangevraagde relatie');
   }
 
   trackStub.scrollLeft = 1200;
   trackStub.listeners.get('scroll')?.({});
   flushAnimationFrames();
-  if (status.textContent !== 'Relatie 5 van 9: Gemeente Den Haag') {
+  if (status.textContent !== 'Relatie 5 van 9: hollandsnieuwe') {
     throw new Error('handmatig scrollen commit niet vanuit de enige passieve scrollbron');
   }
 
   trackStub.listeners.get('keydown')?.({ key: 'End', preventDefault() {} });
-  if (status.textContent !== 'Relatie 5 van 9: Gemeente Den Haag') {
+  if (status.textContent !== 'Relatie 5 van 9: hollandsnieuwe') {
     throw new Error('End kondigt een relatie aan voordat smooth scroll is gesetteld');
   }
   trackStub.listeners.get('scrollend')?.({});
-  if (status.textContent !== 'Relatie 9 van 9: FC Twente') throw new Error('End commit de laatste relatie niet');
+  if (status.textContent !== 'Relatie 9 van 9: Vechtsteden Notarissen') throw new Error('End commit de laatste relatie niet');
 
   motionPreference.matches = true;
   listeners.get('change')?.({ matches: true });
   next.listeners.get('click')?.({});
-  if (scrollCalls.at(-1)?.options.behavior !== 'auto' || status.textContent !== 'Relatie 1 van 9: Basic-Fit' || cancelled !== 1) {
+  if (scrollCalls.at(-1)?.options.behavior !== 'auto' || status.textContent !== 'Relatie 1 van 9: FC Twente') {
     throw new Error('reduced motion stopt animatie, auto-scroll of directe statuscommit niet');
   }
   previous.listeners.get('click')?.({});
-  if (status.textContent !== 'Relatie 9 van 9: FC Twente') throw new Error('Vorige wrapt niet veilig bij reduced motion');
+  if (status.textContent !== 'Relatie 9 van 9: Vechtsteden Notarissen') throw new Error('Vorige wrapt niet veilig bij reduced motion');
 } catch (error) {
   fail(`main.js: dependency-vrije gedragscontrole faalt (${error.message})`);
 }

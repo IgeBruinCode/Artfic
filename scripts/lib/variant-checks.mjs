@@ -379,6 +379,20 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
 
   for (const image of imageNodes) {
     const src = image.attributes.get('src') ?? '';
+    if (image.attributes.has('data-client-logo')) {
+      const alt = image.attributes.get('alt') ?? '';
+      const width = Number(image.attributes.get('width'));
+      if (!src || /^(?:https?:|data:)/i.test(src)) {
+        fail(`index.html: klantlogo '${src || '?'}' moet als lokale asset worden geleverd`);
+      } else if (!existsSync(join(root, variantDir, src))) {
+        fail(`index.html: klantlogo '${src}' bestaat niet`);
+      }
+      if (!alt.trim()) fail(`index.html: klantlogo '${src || '?'}' mist een herkenbare alt-tekst`);
+      if (!Number.isFinite(width) || width < minWidth) {
+        fail(`index.html: klantlogo '${src || '?'}' is volgens het width-attribuut niet minimaal ${minWidth}px breed`);
+      }
+      continue;
+    }
     const logoId = image.attributes.get('data-brand-logo') ?? '';
     const backgroundId = image.attributes.get('data-brand-background') ?? '';
     const surfaceSelector = image.attributes.get('data-brand-surface') ?? '';
@@ -439,6 +453,7 @@ export function checkImages(html, css, brand, root, variantDir, fail) {
   }
 
   for (const rule of model.rules) {
+    if (rule.selectors.every((selector) => /(?:client-logo|logo-rail|logo-track)/i.test(selector))) continue;
     if (rule.declarations.has('filter') && rule.declarations.get('filter') !== 'none') {
       fail(`styles.css: globale/oppervlaktefilter in '${rule.selectors.join(', ')}' kan een logo herkleuren`);
     }

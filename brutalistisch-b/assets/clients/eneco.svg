@@ -1,0 +1,18 @@
+<svg id="ENECO-CMYK" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170.08 85.04">
+  <title>Eneco</title>
+  <defs>
+    <style>.cls-1{fill:none}.cls-2{fill:#d20f42}.cls-3{fill:url(#radial-gradient)}.cls-4{fill:url(#radial-gradient-2)}.cls-5{fill:url(#radial-gradient-3)}.cls-6{fill:url(#radial-gradient-4)}.cls-7{fill:url(#radial-gradient-5)}</style>
+    <radialGradient id="radial-gradient" cx="70.58" cy="41.35" r="15.01" gradientTransform="translate(-34 -1.44) scale(.92)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffe199"/><stop offset=".12" stop-color="#fdda8e"/><stop offset=".32" stop-color="#f8c771"/><stop offset=".59" stop-color="#f1a841"/><stop offset=".71" stop-color="#ed992a"/></radialGradient>
+    <radialGradient id="radial-gradient-2" cx="-110.06" cy=".59" r="13.76" gradientTransform="translate(178.37 41.45) scale(1.5)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fcda8a"/><stop offset=".08" stop-color="#f9cc83"/><stop offset=".23" stop-color="#f1a871"/><stop offset=".43" stop-color="#e46e53"/><stop offset=".67" stop-color="#d31e2a"/><stop offset=".75" stop-color="#cc001b"/></radialGradient>
+    <radialGradient id="radial-gradient-3" cx="107.39" cy="60.85" r="13.76" gradientTransform="translate(-53.48 13.41) scale(.83)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f8d9c4"/><stop offset=".71" stop-color="#cd0035"/></radialGradient>
+    <radialGradient id="radial-gradient-4" cx="97.39" cy="-3.83" r="8.26" gradientTransform="translate(-53.48 13.41) scale(.83)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fad59f"/><stop offset=".88" stop-color="#d43f4d"/></radialGradient>
+    <radialGradient id="radial-gradient-5" cx="167.98" cy="44.73" r="13.76" gradientTransform="translate(-95.44 -6.86) scale(.67)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f8cfa0"/><stop offset="1" stop-color="#dd6317"/></radialGradient>
+  </defs>
+  <rect class="cls-1" width="170.08" height="85.04"/>
+  <path class="cls-2" d="M101,32.83c-6.53,0-11,2.68-11,12s5.18,12.24,11.49,12.24A29.66,29.66,0,0,0,110,55.84l-1.42-6a39.61,39.61,0,0,1-6,.57c-2.68,0-4.12-.41-4.2-2.81h13.27C112.49,35.1,109,32.83,101,32.83ZM97.89,43.14c.14-2.58,1.32-4.55,3.55-4.55s3.77,1.08,3.81,4.22ZM76.69,32.83A41.75,41.75,0,0,0,64.27,35V56.46h8.17V40.37a13.53,13.53,0,0,1,2.45-.31c2.78,0,3.23,1.08,3.23,4.3v12.1h8.17V43.81C86.29,35.63,82.94,32.83,76.69,32.83Zm50.66,6.87a19.85,19.85,0,0,1,5.06.89l1.6-6.78a26.3,26.3,0,0,0-7.46-1c-6.76,0-11.58,2.67-11.58,12s4.78,12.25,11.58,12.25A24.05,24.05,0,0,0,134,56l-1.6-6.79a15.33,15.33,0,0,1-5.06,1c-2.72,0-4.2-.49-4.2-5.18C123.15,40,124.63,39.7,127.35,39.7ZM60.61,33.41,58.85,25.9H39.29V45.62c0,8,3.29,10.76,9.34,10.84H60.16V49H51c-2.06-.16-3.17-1.31-3.17-4.24h9.84V37.34H47.82V33.41Zm87-.58c-7.42,0-11.39,2.62-11.39,12s3.88,12.25,11.39,12.25,11.49-2.82,11.49-12.25S155.13,32.83,147.58,32.83Zm0,18c-2.55,0-3.22-.62-3.22-5.85,0-5.41.67-5.9,3.22-5.9s3.26.49,3.26,5.9C150.84,50.21,150.17,50.83,147.58,50.83Z"/>
+  <path class="cls-3" d="M42.72,40.87a8.08,8.08,0,1,1-8.08-8.08A8.08,8.08,0,0,1,42.72,40.87Z"/>
+  <path class="cls-4" d="M31.3,49A12.12,12.12,0,1,1,19.18,36.83,12.12,12.12,0,0,1,31.3,49Z"/>
+  <path class="cls-5" d="M46,67.8a6.74,6.74,0,1,1-6.73-6.73A6.73,6.73,0,0,1,46,67.8Z"/>
+  <path class="cls-6" d="M33.68,12.43a4,4,0,1,1-4-4A4,4,0,0,1,33.68,12.43Z"/>
+  <path class="cls-7" d="M24.57,25.9a5.39,5.39,0,1,1-5.39-5.39A5.38,5.38,0,0,1,24.57,25.9Z"/>
+</svg>

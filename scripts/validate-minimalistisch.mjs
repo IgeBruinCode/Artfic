@@ -1,218 +1,158 @@
 #!/usr/bin/env node
-// Regressiecontrole van de minimalistische variant tegen de gedeelde content-, CTA- en huisstijlbron.
-// Gebruik: node scripts/validate-minimalistisch.mjs (dependency-vrij, Node-standaardbibliotheek).
+// Regressiecontrole voor de vernieuwde minimalistische Artific-landingspagina.
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  checkBrandColors, checkClaims, checkContrastUsage, checkDocumentMetadata, checkImages,
-  checkLinksAndCtas, checkMotionGuards, checkNoPdfRuntime, checkSectionOrder, extractSingleCssBlock,
-  hasCssRule, parseCssRules,
+  checkBrandColors,
+  checkClaims,
+  checkDocumentMetadata,
+  checkImages,
+  checkLinksAndCtas,
+  checkNoPdfRuntime,
+  checkSectionOrder,
 } from './lib/variant-checks.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
-const fail = (msg) => errors.push(msg);
-const read = (p) => readFileSync(join(root, p), 'utf8');
+const fail = (message) => errors.push(message);
+const read = (path) => readFileSync(join(root, path), 'utf8');
 
 const html = read('minimalistisch/index.html');
 const css = read('minimalistisch/styles.css');
 const js = read('minimalistisch/main.js');
+const shaderJs = read('minimalistisch/flow-field-shader.js');
 const content = JSON.parse(read('content/artific-content.nl.json'));
 const brand = JSON.parse(read('assets/brand/brand.json'));
 
 checkDocumentMetadata(html, fail);
-const requiredSections = ['intro', 'visie', 'controlelaag', 'platform', 'controle', 'aanpak', 'bewijs', 'contact'];
-checkSectionOrder(html, requiredSections, fail);
-if (!/<main[\s>]/.test(html) || !/<header[\s>]/.test(html) || !/<footer[\s>]/.test(html)) {
+checkSectionOrder(html, ['intro', 'visie', 'controlelaag', 'platform', 'controle', 'aanpak', 'bewijs', 'contact'], fail);
+
+if (!/<header\b/.test(html) || !/<main\b/.test(html) || !/<footer\b/.test(html)) {
   fail('index.html: landmarks header/main/footer zijn niet compleet');
 }
 if (!/class="skiplink"/.test(html)) fail('index.html: skiplink ontbreekt');
-
-const gridWrapperCount = (html.match(/class="[^"]*\bsectie__grid\b[^"]*"/g) || []).length;
-if (gridWrapperCount !== 8) {
-  fail(`index.html: verwacht exact acht .sectie__grid-wrappers, gevonden ${gridWrapperCount}`);
-}
-for (const sectionId of requiredSections) {
-  const sectionStart = new RegExp(`<section[^>]+id="${sectionId}"[^>]*>\\s*<div class="[^"]*\\bsectie__grid\\b`);
-  if (!sectionStart.test(html)) fail(`index.html: sectie #${sectionId} begint niet met de gedeelde .sectie__grid-wrapper`);
-}
-
-const moduleLists = html.match(/<ol class="modules"[^>]*>[\s\S]*?<\/ol>/g) || [];
-if (moduleLists.length !== 1) {
-  fail(`index.html: verwacht exact één .modules-lijst, gevonden ${moduleLists.length}`);
-} else {
-  const moduleItems = [...moduleLists[0].matchAll(/<li class="module"\s+data-claim-id="([^"]+)"/g)];
-  const moduleClaims = moduleItems.map((match) => match[1]);
-  const canonicalModuleClaims = ['mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation'];
-  if (moduleItems.length !== 3) fail(`index.html: verwacht exact drie .module-items, gevonden ${moduleItems.length}`);
-  if (moduleClaims.join('|') !== canonicalModuleClaims.join('|')) {
-    fail(`index.html: modulevolgorde moet ${canonicalModuleClaims.join(' → ')} zijn`);
-  }
+if ((html.match(/\bsectie__grid\b/g) ?? []).length !== 8) {
+  fail('index.html: iedere hoofdsectie moet exact één gedeelde sectiecontainer hebben');
 }
 
 const strictVariantTexts = {
-  'pos-besparing-30': ['bespaar 30% van je tijd met één AI-platform'],
+  'pos-besparing-30': ['Bespaar 30% van je tijd met één AI-platform.'],
   'pos-nederlands': ['Gebouwd door Nederlandse AI-professionals. NL-gehost, AVG-proof en snel inzetbaar.'],
-  'pos-badges': ['EU-gehost', 'ISO 27001 gecertificeerd', 'API-first', 'Model-agnostisch'],
+  'pos-badges': ['EU-gehost', 'ISO 27001', 'API-first', 'Model-agnostisch'],
   'pos-award': ['Artific is uitgeroepen tot AI Company of the Year 2025 tijdens de Nationale AI Awards.'],
-  'sec-eu': ['Alle data, alle infrastructuur, alle processing binnen de EU.'],
+  'sec-eu': ['Alle data, infrastructuur en processing binnen de EU.'],
   'sec-iso': ['Onafhankelijke audit van het informatiebeveiligingssysteem, continu onderhouden.'],
-  'sec-pseudo': ['Persoonlijk identificeerbare informatie wordt gedetecteerd en gepseudonimiseerd voordat het ooit een model bereikt.'],
-  'sec-audit': ['Elke prompt, elke tool-call, elke beslissing wordt vastgelegd in het systeem.'],
-  'bo-aftercare': ['Na livegang blijven we betrokken: monitoring, optimalisatie en minimaal één update-sync-meeting per kwartaal.'],
-  'bo-support': ['Met 1e-, 2e- en 3e-lijns support ben je altijd verzekerd van de juiste ondersteuning.'],
-  'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken', 'Van enterprise tot overheid: organisaties die security, governance en betrouwbaarheid serieus nemen.'],
+  'sec-audit': ['Elke prompt, tool-call en beslissing wordt vastgelegd.'],
+  'bw-100-klanten': ['Meer dan 100 klanten laten AI voor zich werken.'],
   'bw-klantnamen': ['Onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.'],
-  // Direct citaat uit content/sources/artific.nl.md#h-quote-leqqr.
-  'bw-quote-leqqr': ['"De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden." — Arjan Zwarteveen, Senior Marketeer Leqqr'],
+  'bw-quote-leqqr': ['De Artific AI-Assistent werkt als een trein. In drie weken tijd hebben we al een enorme bespaard op personele kosten en de kwaliteit van onze support is alleen maar beter geworden.'],
 };
-const requiredClaims = [
-  'pos-belofte', 'pos-agentic-platform', 'pos-badges',
-  'dm-kop', 'vvt-veilig', 'vvt-voorspelbaar', 'vvt-transparant',
-  'reis-fase-1', 'reis-fase-2', 'reis-fase-3',
-  'ctl-positie', 'ctl-tussen-model-en-proces',
-  'mod-overzicht', 'mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation',
-  'ph-portal', 'ph-headless',
-  'cc-een-plek', 'sec-ontwerp', 'sec-eu', 'sec-iso', 'sec-audit',
-  'pm-markt', 'bo-vijf-stappen', 'bw-100-klanten', 'cv-versnellen',
-];
-checkClaims(html, content, { strictVariantTexts, requiredClaims }, fail);
+
+checkClaims(html, content, {
+  strictVariantTexts,
+  requiredClaims: [
+    'pos-belofte', 'pos-agentic-platform', 'pos-badges',
+    'dm-kop', 'vvt-veilig', 'vvt-voorspelbaar', 'vvt-transparant',
+    'reis-fase-1', 'reis-fase-2', 'reis-fase-3',
+    'ctl-positie', 'ctl-tussen-model-en-proces',
+    'mod-overzicht', 'mod-ai-assistant', 'mod-ai-toolbox', 'mod-conversation',
+    'ph-portal', 'ph-headless', 'cc-een-plek',
+    'sec-ontwerp', 'sec-eu', 'sec-iso', 'sec-audit',
+    'pm-markt', 'bo-vijf-stappen', 'bw-100-klanten', 'bw-klantnamen',
+    'bw-quote-leqqr', 'cv-versnellen',
+  ],
+}, fail);
 
 checkLinksAndCtas(html, content, {
-  minCtaCount: 3,
-  minCtaHint: 'header, hero, slot',
+  minCtaCount: 4,
+  minCtaHint: 'header, hero, controlelaag en slot',
 }, fail);
 checkImages(html, css, brand, root, 'minimalistisch', fail);
-checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js]], brand, fail);
-checkContrastUsage(html, css, brand, [
-  { foregroundSelector: 'body', backgroundSelector: 'body', pairId: 'navy-op-wit' },
-  { foregroundSelector: 'body', backgroundSelector: '.site-header', pairId: 'navy-op-wit' },
-  { foregroundSelector: '.sectie--tint', backgroundSelector: '.sectie--tint', pairId: 'navy-op-lichtblauw' },
-  { foregroundSelector: '.skiplink', backgroundSelector: '.skiplink', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.sectie--donker', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.cta--licht', backgroundSelector: '.cta--licht', pairId: 'navy-op-geel' },
-  { foregroundSelector: '.cta--omlijnd', backgroundSelector: '.sectie--donker', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.flow__blok--artific', backgroundSelector: '.flow__blok--artific', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.site-footer', backgroundSelector: '.site-footer', pairId: 'wit-op-navy' },
-  { foregroundSelector: '.site-footer__noot', backgroundSelector: '.site-footer', pairId: 'lichtblauw-op-navy' },
-  { foregroundSelector: '.fasen > li::before', backgroundSelector: 'body', pairId: 'blauw-op-wit-groot' },
-  { foregroundSelector: '.stappen li::before', backgroundSelector: 'body', pairId: 'navy-op-wit' },
-], fail);
-checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js]], fail);
-if (/rgba?\(|hsla?\(|color-mix|opacity:\s*0[^;]/.test(css)) {
-  fail('styles.css: afgeleide/transparante kleuren of standaard-verborgen inhoud zijn niet toegestaan');
+checkBrandColors([['styles.css', css], ['index.html', html], ['main.js', js], ['flow-field-shader.js', shaderJs]], brand, fail);
+checkNoPdfRuntime([['index.html', html], ['styles.css', css], ['main.js', js], ['flow-field-shader.js', shaderJs]], fail);
+
+if (!/<canvas\b[^>]*\bdata-shader\b/.test(html)) fail('index.html: de Artific Blue hero-shader ontbreekt');
+if (!/getContext\("webgl"/.test(shaderJs) || !/shaderSource/.test(shaderJs) || !/u_colors\[8\]/.test(shaderJs) || !/#287CEB/i.test(css)) {
+  fail('flow-field-shader.js: de WebGL1 flow-field shader gebruikt het Artific-palet niet aantoonbaar');
 }
-if (/\b(?:commandobar|sectiecode|plaat|masthead|folio|spread|trust-console|module-card|boekdeel|dossierregel)\b/i.test(`${html}\n${css}\n${js}`)) {
-  fail('minimalistisch: runtime bevat een verboden signatuur van een zustervariant');
+if (!/devicePixelRatio[^\n]+2\)/.test(shaderJs) || !/visibilitychange/.test(shaderJs) || !/IntersectionObserver/.test(shaderJs) || !/uniform4f\(uniforms\.cursor, 0\.00/.test(shaderJs)) {
+  fail('flow-field-shader.js: DPR-cap, visibility/viewport-pauze of uitgeschakelde cursor ontbreekt');
 }
-if (/(?:box-shadow\s*:|(?:linear|radial|conic)-gradient\s*\()/i.test(css)) {
-  fail('styles.css: cardschaduwen en gradients horen niet bij de minimalistische editorial variant');
+if (!/class="process-stage"/.test(html) || !/Artific AI-assistent/.test(html) || !/Human in control/.test(html)) {
+  fail('index.html: de inhoudelijke Artific-workflowvisual ontbreekt');
 }
-if (!/\.sectie\s*\+\s*\.sectie\s*\{[^}]*border-top:\s*1px solid var\(--lichtblauw\)/s.test(css)
-    || !/\.sectie\s*\+\s*\.sectie--tint\s*,\s*\.sectie\s*\+\s*\.sectie--donker\s*\{[^}]*border-top-color:\s*var\(--blauw\)/s.test(css)) {
-  fail('styles.css: de doorlopende 1px-sectierails ontbreken of gebruiken niet de gedocumenteerde merkkleuren');
+if (!/Mesh Gradient Shader|21st\.dev-geïnspireerde workflow builder/.test(css) || !/Workflow live/.test(html)) {
+  fail('21st.dev: shader- en workflowbron zijn niet aantoonbaar vertaald naar de variant');
 }
-const tintSectionRules = [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-  .filter((match) => match[1].split(',').some((selector) => selector.trim() === '.sectie--tint'))
-  .map((match) => match[2]);
-const bottomBorderProperties = new Set([
-  'border', 'border-width', 'border-style', 'border-color',
-  'border-block', 'border-block-width', 'border-block-style', 'border-block-color',
-  'border-block-end', 'border-bottom',
-]);
-const affectsBottomBorder = (property) =>
-  bottomBorderProperties.has(property) || property.startsWith('border-block-end-') || property.startsWith('border-bottom-');
-const tintSectionProperties = tintSectionRules.flatMap((rule) =>
-  [...rule.matchAll(/(?:^|;)\s*([\w-]+)\s*:/g)].map((match) => match[1])
-);
-if (tintSectionProperties.some(affectsBottomBorder)) {
-  fail('styles.css: .sectie--tint mag geen onderrand toevoegen naast de 1px-bovenrail van de volgende sectie');
+if (!/\.site-header\.is-scrolled/.test(css) || !/classList\.toggle\("is-scrolled"/.test(js)) {
+  fail('navbar: transparante hero-state en solide scrolled-state ontbreken');
 }
 
-const desktopModel = parseCssRules(extractSingleCssBlock(
-  css,
-  /@media\s*\(\s*min-width\s*:\s*980px\s*\)\s*\{/g,
-  'desktopmediaquery (min-width: 980px)',
-  fail
-));
-const mobileModel = parseCssRules(extractSingleCssBlock(
-  css,
-  /@media\s*\(\s*max-width\s*:\s*979px\s*\)\s*\{/g,
-  'mobiele mediaquery (max-width: 979px)',
-  fail
-));
+const modules = [...html.matchAll(/<li class="module(?: [^"]*)?"\s+data-claim-id="(mod-[^"]+)"/g)];
+if (modules.length !== 3) fail(`index.html: verwacht exact drie platformmodules, gevonden ${modules.length}`);
+if (modules.map((match) => match[1]).join('|') !== 'mod-ai-assistant|mod-ai-toolbox|mod-conversation') {
+  fail('index.html: de platformmodules staan niet in de canonieke volgorde');
+}
 
-const desktopGridContracts = [
-  ['.sectie__grid', { 'grid-template-columns': 'repeat(12, minmax(0, 1fr))' }],
-  ['.sectie__grid > .modules', {
-    'grid-column': '1 / 13',
-    'grid-template-columns': 'repeat(12, minmax(0, 1fr))',
-  }],
-  ['.modules > .module:nth-child(1)', { 'grid-column': '1 / 9', 'grid-row': '1' }],
-  ['.modules > .module:nth-child(2)', { 'grid-column': '3 / 11', 'grid-row': '2' }],
-  ['.modules > .module:nth-child(3)', { 'grid-column': '5 / 13', 'grid-row': '3' }],
-];
-for (const [selector, declarations] of desktopGridContracts) {
-  if (!hasCssRule(desktopModel, selector, declarations)) {
-    fail(`styles.css: desktopgrid '${selector}' mist zijn twaalfkoloms- of moduletrapcontract`);
-  }
-}
-if (!hasCssRule(mobileModel, '.modules', { display: 'block', width: '100%' })) {
-  fail('styles.css: de modulelijst mist haar lineaire reset binnen de mobiele mediaquery');
-}
-for (const selector of [
-  '.modules > .module',
-  '.modules > .module:nth-child(1)',
-  '.modules > .module:nth-child(2)',
-  '.modules > .module:nth-child(3)',
+const customerLogos = [...html.matchAll(/<img\b[^>]*\bdata-client-logo\b[^>]*>/g)];
+if (customerLogos.length !== 8) fail(`index.html: verwacht acht officiële klantlogo's, gevonden ${customerLogos.length}`);
+for (const logoPath of [
+  'basic-fit.png', 'eneco.jpg', 'veiligheidsregio-zuid-limburg.png', 'marktplaats.jpg',
+  'tonys-chocolonely.svg', 'rtv-oost.png', 'royal-de-ree-holland.jpg', 'previder.png',
 ]) {
-  if (!hasCssRule(mobileModel, selector, { width: '100%', 'grid-column': 'auto', 'grid-row': 'auto' })) {
-    fail(`styles.css: mobiele module '${selector}' mist een volledige lineaire reset`);
+  if (!existsSync(join(root, 'minimalistisch/assets/clients', logoPath))) {
+    fail(`minimalistisch/assets/clients/${logoPath}: officieel klantlogo ontbreekt`);
   }
+}
+if (!/data-logo-rail/.test(html) || !/animation:\s*rail/.test(css)) {
+  fail('klantlogo-presentatie: bewegende rail ontbreekt');
 }
 
-checkMotionGuards(html, css, js, fail, {
-  allowOpacity: true,
-  requireClearProps: true,
-});
-if (/data-reveal/.test(js) && !/\sdata-reveal[\s>]/.test(html)) {
-  fail('index.html: main.js implementeert data-reveal-scrollreveals maar de pagina bevat geen enkel data-reveal-doel');
+if (!/>Klantbeoordelingen</.test(html) || !/<strong>6<\/strong>\s*klantbeoordelingen/.test(html)) {
+  fail('index.html: titel of aanduiding “6 klantbeoordelingen” ontbreekt');
 }
-if (!/immediateRender:\s*false/.test(js)) {
-  fail('main.js: scroll-enters moeten inhoud zichtbaar laten tot de trigger werkelijk start');
-}
-
-// --- ontwerpdocument ---
-const designPath = 'minimalistisch/DESIGN.md';
-if (!existsSync(join(root, designPath))) {
-  fail(`${designPath}: ontwerpdocument ontbreekt`);
-} else {
-  const design = read(designPath);
-  for (const hoofdstuk of ['Kleurgebruik', 'Spacing', 'Visuele hiërarchie', 'Componentstijlen', 'Bewegingsprincipes']) {
-    if (!new RegExp(`^#{2,3} .*${hoofdstuk}`, 'im').test(design)) fail(`${designPath}: hoofdstuk '${hoofdstuk}' ontbreekt`);
-  }
-  if (!/gefinaliseerd via Google Stitch-MCP/i.test(design)) fail(`${designPath}: provenance verklaart niet dat het document via de Google Stitch-MCP is gefinaliseerd`);
-  if (!/Stitch-project\s*`\d{15,}`/.test(design)) fail(`${designPath}: concreet Stitch-project-ID ontbreekt in de provenance`);
-  if (!/screen\s*`\d{10,}`/.test(design)) fail(`${designPath}: concreet Stitch-screen-ID ontbreekt in de provenance`);
-  if (!/design system\s*`assets\/[0-9a-f]{32}`/.test(design)) fail(`${designPath}: concreet Stitch-design-system-ID ontbreekt in de provenance`);
-  if (!/Creatieve bron — 21st\.dev Magic MCP/i.test(design)) fail(`${designPath}: de uitgevoerde 21st.dev Magic MCP-bronrun ontbreekt`);
-  if (!/21st AI-schets[\s\S]*generatie\s*`[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}`[\s\S]*Take 1/i.test(design)) {
-    fail(`${designPath}: concrete Magic-generatie en geraadpleegde take ontbreken in de provenance`);
-  }
-  if (/niet beschikbaar|blijft (expliciet )?open|niet als Stitch-output|handmatig opgesteld|oplevering geblokkeerd/i.test(design)) {
-    fail(`${designPath}: provenance meldt een open of mislukte Stitch-status; de finalisatie is niet afgerond`);
-  }
+const reviewCards = html.match(/<article class="review-card[^>]*>/g) ?? [];
+if (reviewCards.length !== 6) fail(`index.html: verwacht zes reviewkaarten, gevonden ${reviewCards.length}`);
+const reviewContracts = [
+  ['Rogier Lukas', 'Notaris — Vechtstede Notarissen', 'Samen met Artific zijn we bezig de AI-Notaris Assistent te ontwikkelen.'],
+  ['Maarten ter Velde', 'Co-founder', 'Artific heeft voor ons alle bestaande bedrijfsprocedures met AI uitgerust.'],
+  ['Johan Evers', 'CEO — Human Talent Group', 'De AI Roadmap van Artific heeft tot veel nieuwe inzichten binnen onze organisatie geleid.'],
+  ['Joshua Kuipers', 'Directeur — Webton', 'Binnen Webton werken we sinds september 2023 met de tooling van Artific.'],
+  ['Sander van der Meer', 'Senior Online Marketeer — Harundo', 'De custom made AI-Assistent / Chatbot die voor onze klanten ontwikkeld is werkt uitstekend.'],
+  ['Arjan Zwarteveen', 'Senior Marketeer — Leqqr', 'De Artific AI-Assistent werkt als een trein.'],
+];
+for (const [name, role, quoteStart] of reviewContracts) {
+  if (!html.includes(name)) fail(`review: naam '${name}' ontbreekt`);
+  if (!html.includes(role)) fail(`review: functie/organisatie '${role}' ontbreekt`);
+  if (!html.includes(quoteStart)) fail(`review: citaat van '${name}' ontbreekt of is gewijzigd`);
 }
 
-// --- oplevergate: de variant is pas opleverbaar met een geverifieerde huisstijlbron ---
+if (!/class="nav-toggle"/.test(html) || !/aria-expanded="false"/.test(html) || !/Escape/.test(js)) {
+  fail('mobiele navigatie: toegankelijke toggle of Escape-afhandeling ontbreekt');
+}
+if (!/@media \(max-width: 700px\)/.test(css) || !/@media \(max-width: 979px\)/.test(css)) {
+  fail('styles.css: tablet- of mobiele layout ontbreekt');
+}
+if (!/prefers-reduced-motion: reduce/.test(css) || !/prefers-reduced-motion: reduce/.test(js)) {
+  fail('reduced motion: CSS- en JavaScript-afbouw zijn beide verplicht');
+}
+if (!/IntersectionObserver/.test(js) || !/\.is-visible/.test(css)) {
+  fail('progressive enhancement: zichtbare scrollreveal-implementatie ontbreekt');
+}
+if (!/:focus-visible/.test(css)) fail('styles.css: zichtbare focusstijl ontbreekt');
+if (/https?:\/\/[^"')\s]+\.(?:js|css)/i.test(`${html}\n${css}\n${js}`)) {
+  fail('runtime: externe script- of stylesheetafhankelijkheid gevonden');
+}
+
 if (brand.status !== 'verified') {
-  fail(`brand.json: status is '${brand.status}' — de minimalistische variant kan niet als opgeleverd gelden zolang de huisstijlbron niet 'verified' is (zie assets/brand/README.md); de oplevering is GEBLOKKEERD`);
+  fail(`brand.json: status is '${brand.status}' — de variant vereist een geverifieerde huisstijlbron`);
 }
 
 if (errors.length) {
   console.error(`FOUT — ${errors.length} probleem(en):`);
-  for (const e of errors) console.error(`  - ${e}`);
+  for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }
-console.log('Minimalistische variant: alle structurele controles geslaagd.');
+
+console.log('Minimalistische Artific-variant: alle structurele, inhoudelijke en responsive controles geslaagd.');

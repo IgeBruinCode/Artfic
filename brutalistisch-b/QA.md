@@ -1,41 +1,36 @@
-# QA-log — Brutalistisch B: geel/navy-relatiedeck
+# QA-log — Brutalistisch B: motion- en klantlogo-update
 
-Datum: 2026-07-17 · Route: `http://127.0.0.1:4277/brutalistisch-b/` · Server: `node scripts/serve.mjs 4277` (4173 was al bezet door een andere lokale werkboom). Layoutmetingen en screenshots zijn uitgevoerd met lokaal headless Chromium; semantiek is aanvullend via de lokale browser-sidecar gecontroleerd.
+Datum: 2026-07-17 · Route: `http://127.0.0.1:4388/brutalistisch-b/` · Server: `node scripts/serve.mjs 4388`. Layoutmetingen en screenshots zijn uitgevoerd met lokaal headless Chromium via het DevTools-protocol.
 
 ## Responsief en visueel
 
 | Viewport | Gemeten resultaat |
 | --- | --- |
-| 320 × 900 | `documentElement.scrollWidth = innerWidth = 320`; negen dia’s aanwezig. De relatietrack is 246px breed en heeft een eigen scrollWidth van 2360px. Screenshot bevestigt een leesbaar navy logo op geel, tweekoloms onderwerpknoppen en een volledig binnen de viewport vallende hero. |
-| 768 × 900 | Documentbreedte 753px bij `innerWidth = 768` (15px browser-scrollbar, dus geen horizontale uitloop). Track 624/5796px. Screenshot bevestigt de bredere onderwerpstrook, het gele hero-oppervlak en de navy controlekaart zonder afsnijding. |
-| 1440 × 900 | Documentbreedte 1425px bij `innerWidth = 1440` (15px browser-scrollbar, dus geen horizontale uitloop). Track 1203/6608px. Screenshot bevestigt het dominante gele canvas, groot navy logo/woordbeeldcontrast, asymmetrische hero en gelaagde shadercirkels. |
+| 320 × 1000 | Document- en viewportbreedte zijn beide 320px; geen horizontale pagina-uitloop. Onderwerpnavigatie en relatiedeck behouden hun eigen begrensde horizontale scroll. |
+| 405 × 1000 | Document- en viewportbreedte zijn beide 405px; de hero, dikke ring en cards blijven binnen het routecanvas. |
+| 768 × 1000 | Document- en clientbreedte zijn beide 753px naast de 15px browser-scrollbar; geen horizontale pagina-uitloop. |
+| 1440 × 1000 | Document- en clientbreedte zijn beide 1425px naast de 15px browser-scrollbar. De drie modulekaarten zijn elk circa 384px breed. |
 
-De Chromium-metingen gaven op alle breedtes exact de hoofdsecties `intro, bewijs, visie, platform, organisatie, contact`, één zichtbare Nederlandse H1 en negen tekstuele relaties. De lokale browser-snapshot las ook de lange namen en de volledige FC Twente-zin uit. Er zijn geen klantafbeeldingen geladen. Op 320px rapporteerden zowel `.control-stack__core` (18,4px/950) als `.module-block--conversation` (16px/400) computed wit `rgb(255, 255, 255)` op Deep Navy `rgb(4, 34, 68)`; Artific Blue wordt daar alleen voor rand en blokschaduw gebruikt.
+De relatievolgorde is gemeten als FC Twente, Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen. Alle negen lokale logo’s rapporteerden `complete: true` en een positieve `naturalWidth`. De eerste screenshot van het relatiedeck toont FC Twente volledig met logo, naam en relatiezin; de volgende kaart blijft als visuele uitnodiging gedeeltelijk in beeld.
 
-## Bediening, focus en links
+De Conversation Module-kaart is op desktop even breed als de twee andere modulekaarten. Kop en lopende tekst vallen binnen de kaart en de screenshot bevestigt dat de regelafbreking niet meer tegen de rechterrand botst. De contactapostrof heeft computed transform `matrix(0, 1, -1, 0, 0, 0)`, gelijk aan 90 graden rotatie.
 
-In een echte Chromium-CDP-sessie werkte de gegenereerde bediening als volgt:
+## Sticky navigatie, motion en shader
 
-- beginsituatie: `Relatie 1 van 9: Basic-Fit`, met alleen paginatie-index 0 als `aria-current`;
-- een niet-aangrenzende actie naar relatie 7, direct gevolgd door “Volgende”, hield tijdens smooth scroll status en `aria-current` stabiel op Basic-Fit;
-- tijdens dertig metingen om de 30ms kwamen alleen de beginstatus en de eindstatus voor, zonder tussenliggende relaties;
-- na settle was de enige nieuwe status `Relatie 8 van 9: Vechtsteden Notarissen` en stond alleen paginatie-index 7 actueel;
-- de track behield browserfocus; `End` hield de oude status tijdens de lange beweging en committe daarna alleen FC Twente, waarna `Home` op dezelfde manier terugkeerde naar Basic-Fit;
-- de VM-test controleerde aanvullend veilige wrap, handmatige scrollsettling en een scrollupdate vanaf de oude positie;
-- een gefocuste onderwerplink had computed `3px solid` outline.
+- De header rapporteert `position: sticky` en `top: 0px`; de actieve onderwerplink en blauwe leesvoortgang volgen de scrollpositie.
+- De browser rapporteert GSAP `3.13.0`, scripts in de volgorde `assets/vendor/gsap-3.13.0.min.js` en `main.js`, en na 2,2 seconden de rootstatus `motion-ready motion-loaded`.
+- De ring rapporteert animatienaam `orbit-turn`; zijn wrapper houdt de vaste hero-positie en de gesegmenteerde rand draait in 32 seconden rond.
+- Het hero-canvas is aanwezig en initialiseert een lokale WebGL-context. De shader is begrensd op 40 fps, gebruikt maximaal 1,25× pixelratio op mobiel en 1,5× op grotere schermen. Bij ontbreken van WebGL blijft de onderliggende CSS-compositie zichtbaar.
+- De GSAP-loadingtimeline liet na settle nul verborgen hero-items achter. Tekstwoorden en cards worden daarna één keer via `IntersectionObserver` onthuld.
+- De logo-platen en sectieachtergronden gebruiken afzonderlijke rustige lussen. In de bovenzijde van de pagina stonden 16 buitenbeeldanimaties gepauzeerd.
+- Het relatiedeck heeft geen timer of autoplay; bediening blijft handmatig via scroll, paginatie, knoppen en toetsenbord.
+- Bij een live omschakeling naar `prefers-reduced-motion: reduce` waren nul motion-items verborgen en nul `ambient-paused`-restklassen aanwezig; de shaderloop wordt uitgeschakeld.
 
-Alle zes onderwerpankers stonden in de gemeten volgorde en directe lokale opens van `#platform` en `#contact` behielden het juiste hashdoel. Alle vijf conversie-CTA’s hadden exact het canonieke label en `https://artific.nl/contact-opnemen/`. De mail- en telefoonlinks stonden in hoofdcontent en footer als `mailto:info@artific.nl` en `tel:053 203 0123`.
+## Bediening en fallback
 
-## Motion en fallback
+De dependency-vrije decktest controleert de beginstatus met FC Twente op positie 1, volgende/vorige, wrap, Home/End, toetsenbordbediening, veilige scrollsettling en `aria-current`. Zonder JavaScript blijven negen kaarten en negen ankerlinks aanwezig. De track is native horizontaal scrollbaar en de broninhoud wordt niet door motioncode vervangen.
 
-| Scenario | Gemeten resultaat |
-| --- | --- |
-| Normale Chromium-run | Twee deckknoppen en live-status werden toegevoegd. Alleen lokale CSS, logo en `main.js` werden geladen. Web Animations gebruikten uitsluitend transforms; alle inhoud was al zichtbaar. |
-| `prefers-reduced-motion: reduce` vóór laden | Mediaquery was `true`, `document.getAnimations().length` was 0, negen dia’s, vijf CTA’s en zes secties bleven aanwezig. |
-| JavaScript uit vóór laden | Negen dia’s, negen statische ankerlinks, vijf CTA’s, H1 en zes secties bleven aanwezig; gegenereerde deckknoppen waren terecht afwezig. De track bleef een native horizontaal scrolloppervlak. |
-| Ontbrekende optionele API’s / dynamische motionwijziging | Een echte CDP-omschakeling tijdens de sessie zette de mediaquery op `true`; de eerstvolgende deckactie gebruikte `behavior: auto` en bleef correct Eneco aankondigen. De dependency-vrije VM-test draaide daarnaast zonder `IntersectionObserver` en bevestigde dat de eigen Web Animations worden geannuleerd. |
-
-De Chromium resource-lijst bevatte uitsluitend `/brutalistisch-b/styles.css`, `/assets/brand/artific-logo-navy.png` en `/brutalistisch-b/main.js`: geen CDN, PDF, klantasset of runtime-netwerkcomponent.
+De browser laadt de Artific-asset, negen lokale klantlogo’s, de lokale stylesheet en `main.js`; de pagina heeft geen runtime-afhankelijkheid van een externe component- of animatiebibliotheek.
 
 ## Automatische controles
 
@@ -43,12 +38,9 @@ Geslaagd:
 
 - `node --check brutalistisch-b/main.js`
 - `node --check scripts/validate-brutalistisch-b.mjs`
-- `node --check scripts/validate-site.mjs`
-- `node scripts/validate-content.mjs`
-- alle vijf variantvalidators
-- `node scripts/validate-site.mjs`
-- `git diff --check`
+- `node scripts/validate-brutalistisch-b.mjs`
+- Chromium-layoutmetingen op 320, 405, 768 en 1440px
+- visuele screenshots van hero, relatiedeck, modulekaarten en contactslot
+- Chromium-runtimecheck op lokale GSAP-versie, loading-settle, buitenbeeldpauze en live reduced-motion-omschakeling
 
-Twee teruggedraaide contrastmutaties bevestigden de nieuwe gates: het verlagen van de control-stack-specificiteit naar de gele basisregel faalde op de cascadecheck; wit-op-Artific-Blue in Conversation Module faalde op zowel het merkcontrastpaar als de cascadecheck. De uitgebreide VM-test faalt wanneer een tussenliggende programmatic-scrollupdate de actuele relatie kan overschrijven.
-
-De browser-sidecar gebruikte Lightpanda en kon daarom geen eigen screenshots exporteren; de drie genoemde screenshots en exacte layoutmetingen zijn in lokaal headless Chromium uitgevoerd.
+De overkoepelende `node scripts/validate-site.mjs` wordt buiten deze variant alleen nog geblokkeerd doordat de twee in `brand.json` genoemde referentie-PDF-bestandsnamen lokaal niet bestaan. De variantchecks zelf zijn geslaagd; de PDF-bronnen zijn voor deze opdracht niet aangepast.

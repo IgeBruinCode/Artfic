@@ -6,12 +6,13 @@
   <title>Artific — AI die werkt en blijft werken | veilig en beheersbaar</title>
   <meta name="description" content="Ontdek het veilige en gecontroleerde agentic AI-platform van Artific: drie modules, centrale governance, security, begeleiding en bewezen klantrelaties.">
   <link rel="stylesheet" href="styles.css">
+  <script defer src="assets/vendor/gsap-3.13.0.min.js"></script>
   <script defer src="main.js"></script>
 </head>
 <body>
   <a class="skiplink" href="#inhoud">Direct naar de inhoud</a>
 
-  <header class="brand-stage">
+  <header class="brand-stage" data-sticky-header>
     <div class="brand-stage__top">
       <div class="brand-home">
         <img class="brand-logo" src="../assets/brand/artific-logo-navy.png" data-brand-logo="logo-navy" data-brand-background="artific-geel" data-brand-surface=".brand-stage" data-brand-surface-tag="header" data-brand-logo-selector=".brand-logo" alt="Artific" width="192" height="50">
@@ -27,10 +28,13 @@
       <a href="#organisatie">Voor organisaties</a>
       <a href="#contact">Contact</a>
     </nav>
+    <span class="brand-progress" aria-hidden="true"></span>
   </header>
 
   <main id="inhoud" tabindex="-1">
     <section class="hero section-yellow shader-field" id="intro" aria-labelledby="intro-titel">
+      <canvas class="shader-canvas" data-shader-canvas aria-hidden="true"></canvas>
+      <div class="hero-orbit" aria-hidden="true"><span></span></div>
       <div class="hero__grid">
         <div class="hero__copy">
           <p class="eyebrow">Eén platform. Mens in control.</p>
@@ -59,29 +63,30 @@
         </div>
         <p class="relationship-deck__names" data-claim-id="bw-klantnamen">Klanten zijn onder meer Basic-Fit, Eneco, Marktplaats, hollandsnieuwe, Gemeente Den Haag, RTV Oost, Veiligheidsregio Zuid-Limburg en Vechtsteden Notarissen.</p>
         <ol class="relationship-track" tabindex="0" aria-describedby="relaties-uitleg" aria-label="Klantrelaties">
-          <li class="relationship-card relationship-card--slash" id="relatie-basic-fit" data-relation-id="basic-fit" data-relation-name="Basic-Fit"><span>Basic-Fit</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-eneco" data-relation-id="eneco" data-relation-name="Eneco"><span>Eneco</span></li>
-          <li class="relationship-card relationship-card--slash" id="relatie-marktplaats" data-relation-id="marktplaats" data-relation-name="Marktplaats"><span>Marktplaats</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-hollandsnieuwe" data-relation-id="hollandsnieuwe" data-relation-name="hollandsnieuwe"><span>hollandsnieuwe</span></li>
-          <li class="relationship-card relationship-card--slash" id="relatie-den-haag" data-relation-id="gemeente-den-haag" data-relation-name="Gemeente Den Haag"><span>Gemeente Den Haag</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-rtv-oost" data-relation-id="rtv-oost" data-relation-name="RTV Oost"><span>RTV Oost</span></li>
-          <li class="relationship-card relationship-card--slash" id="relatie-vrzl" data-relation-id="veiligheidsregio-zuid-limburg" data-relation-name="Veiligheidsregio Zuid-Limburg"><span>Veiligheidsregio Zuid-Limburg</span></li>
-          <li class="relationship-card relationship-card--block" id="relatie-vechtsteden" data-relation-id="vechtsteden-notarissen" data-relation-name="Vechtsteden Notarissen"><span>Vechtsteden Notarissen</span></li>
           <li class="relationship-card relationship-card--fc" id="relatie-fc-twente" data-relation-id="fc-twente" data-relation-name="FC Twente">
-            <strong>FC Twente</strong>
+            <div class="relationship-card__media"><img class="client-logo client-logo--fc-twente" src="assets/clients/fc-twente.svg" data-client-logo alt="Logo van FC Twente" width="240"></div>
+            <strong class="relationship-card__name">FC Twente</strong>
             <span data-claim-id="bw-fctwente">FC Twente koos Artific en AI-SupportGroup voor drie seizoenen als officiële AI-partner van de club.</span>
           </li>
+          <li class="relationship-card relationship-card--slash" id="relatie-basic-fit" data-relation-id="basic-fit" data-relation-name="Basic-Fit"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/basic-fit.svg" data-client-logo alt="Logo van Basic-Fit" width="240"></div><span class="relationship-card__name">Basic-Fit</span></li>
+          <li class="relationship-card relationship-card--block" id="relatie-eneco" data-relation-id="eneco" data-relation-name="Eneco"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/eneco.svg" data-client-logo alt="Logo van Eneco" width="240"></div><span class="relationship-card__name">Eneco</span></li>
+          <li class="relationship-card relationship-card--slash" id="relatie-marktplaats" data-relation-id="marktplaats" data-relation-name="Marktplaats"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/marktplaats.svg" data-client-logo alt="Logo van Marktplaats" width="240"></div><span class="relationship-card__name">Marktplaats</span></li>
+          <li class="relationship-card relationship-card--block" id="relatie-hollandsnieuwe" data-relation-id="hollandsnieuwe" data-relation-name="hollandsnieuwe"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/hollandsnieuwe.svg" data-client-logo alt="Logo van hollandsnieuwe" width="240"></div><span class="relationship-card__name">hollandsnieuwe</span></li>
+          <li class="relationship-card relationship-card--slash" id="relatie-den-haag" data-relation-id="gemeente-den-haag" data-relation-name="Gemeente Den Haag"><div class="relationship-card__media"><img class="client-logo client-logo--den-haag" src="assets/clients/gemeente-den-haag.jpg" data-client-logo alt="Logo van Gemeente Den Haag" width="240"></div><span class="relationship-card__name">Gemeente Den Haag</span></li>
+          <li class="relationship-card relationship-card--block" id="relatie-rtv-oost" data-relation-id="rtv-oost" data-relation-name="RTV Oost"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/rtv-oost.svg" data-client-logo alt="Logo van RTV Oost" width="240"></div><span class="relationship-card__name">RTV Oost</span></li>
+          <li class="relationship-card relationship-card--slash" id="relatie-vrzl" data-relation-id="veiligheidsregio-zuid-limburg" data-relation-name="Veiligheidsregio Zuid-Limburg"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/vrzl.svg" data-client-logo alt="Logo van Veiligheidsregio Zuid-Limburg" width="240"></div><span class="relationship-card__name">Veiligheidsregio Zuid-Limburg</span></li>
+          <li class="relationship-card relationship-card--block" id="relatie-vechtsteden" data-relation-id="vechtsteden-notarissen" data-relation-name="Vechtsteden Notarissen"><div class="relationship-card__media"><img class="client-logo" src="assets/clients/vechtstede.svg" data-client-logo alt="Logo van Vechtstede Notarissen" width="240"></div><span class="relationship-card__name">Vechtsteden Notarissen</span></li>
         </ol>
         <div class="relationship-pagination" aria-label="Kies een klantrelatie">
-          <a href="#relatie-basic-fit" aria-label="Toon relatie 1: Basic-Fit">01</a>
-          <a href="#relatie-eneco" aria-label="Toon relatie 2: Eneco">02</a>
-          <a href="#relatie-marktplaats" aria-label="Toon relatie 3: Marktplaats">03</a>
-          <a href="#relatie-hollandsnieuwe" aria-label="Toon relatie 4: hollandsnieuwe">04</a>
-          <a href="#relatie-den-haag" aria-label="Toon relatie 5: Gemeente Den Haag">05</a>
-          <a href="#relatie-rtv-oost" aria-label="Toon relatie 6: RTV Oost">06</a>
-          <a href="#relatie-vrzl" aria-label="Toon relatie 7: Veiligheidsregio Zuid-Limburg">07</a>
-          <a href="#relatie-vechtsteden" aria-label="Toon relatie 8: Vechtsteden Notarissen">08</a>
-          <a href="#relatie-fc-twente" aria-label="Toon relatie 9: FC Twente">09</a>
+          <a href="#relatie-fc-twente" aria-label="Toon relatie 1: FC Twente">01</a>
+          <a href="#relatie-basic-fit" aria-label="Toon relatie 2: Basic-Fit">02</a>
+          <a href="#relatie-eneco" aria-label="Toon relatie 3: Eneco">03</a>
+          <a href="#relatie-marktplaats" aria-label="Toon relatie 4: Marktplaats">04</a>
+          <a href="#relatie-hollandsnieuwe" aria-label="Toon relatie 5: hollandsnieuwe">05</a>
+          <a href="#relatie-den-haag" aria-label="Toon relatie 6: Gemeente Den Haag">06</a>
+          <a href="#relatie-rtv-oost" aria-label="Toon relatie 7: RTV Oost">07</a>
+          <a href="#relatie-vrzl" aria-label="Toon relatie 8: Veiligheidsregio Zuid-Limburg">08</a>
+          <a href="#relatie-vechtsteden" aria-label="Toon relatie 9: Vechtsteden Notarissen">09</a>
         </div>
         <div class="relationship-enhancement" data-deck-enhancement aria-label="Slideshowbediening"></div>
       </div>
@@ -235,7 +240,7 @@
     </section>
 
     <section class="contact-zone section-navy" id="contact" aria-labelledby="contact-titel">
-      <div class="contact-zone__burst" aria-hidden="true">LET’S<br>TALK</div>
+      <div class="contact-zone__burst" aria-hidden="true">LET<span class="contact-zone__comma">’</span>S<br>TALK</div>
       <div class="contact-zone__copy">
         <p class="eyebrow">Klaar voor controle?</p>
         <h2 id="contact-titel" data-claim-id="cv-versnellen">Klaar om AI-adoptie te versnellen? Let's talk.</h2>
