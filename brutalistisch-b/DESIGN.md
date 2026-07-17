@@ -31,7 +31,7 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 - De H1 gebruikt een zware systeem-sans, compacte regelafstand en maximaal 11ch.
 - Kleine uppercase eyebrows benoemen de functie van elk veld zonder hoofdstuknummering.
 - Het relatiedeck volgt direct op de hero; FC Twente staat als eerste relatie en de acht overige organisaties volgen daarna.
-- Bewijs staat vóór de visie. De technische kern volgt op een wit/lichtblauw veld: een gespiegeld wit vlak loopt van boven naar beneden en een navy diagonaal markeert de overgang. Geel blijft als gericht accent in de controlelaag en kaarten aanwezig.
+- Bewijs staat vóór de visie. Twee tegengestelde driehoeken verbinden het gele visieveld met het wit/lichtblauwe platformveld; navy tekent de gezamenlijke punt en lichtblauw loopt achter beide vormen door. Geel blijft als gericht accent in de controlelaag en kaarten aanwezig.
 - Het navy contactslot sluit af met een groot decoratief verticaal `LET’S TALK`-veld. De apostrof is in die stand 90 graden gedraaid.
 
 ## Componentstijl
@@ -40,7 +40,7 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 - **Hero:** het lokale WebGL-kleurveld en de CSS-fallback vormen zonder extra cirkelobject de zichtbare geanimeerde achtergrond. De lokale AI Company of the Year-badge staat groot in de vrijgekomen rechterkolom boven de platformkenmerken.
 - **Relatiedeck:** begrensde horizontale snap-track met negen rustige lichtblauwe kaarten, lokale logo’s op witte vlakken en directe klantnamen. FC Twente opent het deck. Pauzeerbare autoplay, handmatige knoppen, paginatie en toetsenbordbediening vullen native horizontaal scrollen aan.
 - **Klantbeoordelingen:** zes volledige, canonieke beoordelingen staan met hun lokale portretten in het bewijsdeel.
-- **Platformveld:** een rustig lichtblauw circuitveld met blauwe lijnen en knooppunten sluit via een witte wig en een navy diagonale scheidslijn aan op het visieveld.
+- **Platformveld:** een rustig lichtblauw circuitveld met blauwe lijnen en knooppunten sluit via twee in elkaar grijpende driehoeken, een witte wig en een navy diagonale scheidslijn aan op het visieveld.
 - **Vraagkaarten:** grote witte en navy vlakken met hoekmarkering en blokschaduw.
 - **Controlelaag:** drie volle gestapelde banden tonen proces, Artific en modellen in één object.
 - **Moduleblokken:** drie even brede vierkolomsblokken op desktop. Daardoor heeft Conversation Module voldoende tekstbreedte; verticale offsets bewaren het asymmetrische ritme.

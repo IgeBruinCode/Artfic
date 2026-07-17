@@ -696,7 +696,7 @@ h4 {
 }
 
 .vision-zone {
-  border-bottom: 12px solid var(--navy);
+  border-bottom: 0;
 }
 
 .question-bursts {
@@ -783,6 +783,44 @@ h4 {
   padding: var(--space-2);
   color: var(--navy);
   background-color: var(--yellow);
+}
+
+.vision-platform-bridge {
+  position: relative;
+  height: clamp(120px, 12vw, 220px);
+  overflow: clip;
+  background-color: var(--light-blue);
+}
+
+.vision-platform-bridge__vision,
+.vision-platform-bridge__platform,
+.vision-platform-bridge__vision::after,
+.vision-platform-bridge__platform::after {
+  position: absolute;
+  inset: 0;
+  display: block;
+  content: "";
+  pointer-events: none;
+}
+
+.vision-platform-bridge__vision {
+  background-color: var(--navy);
+  clip-path: polygon(0 0, 20.5% 0, 43% 52%);
+}
+
+.vision-platform-bridge__vision::after {
+  background-color: var(--yellow);
+  clip-path: polygon(0 0, 18% 0, 42% 48%);
+}
+
+.vision-platform-bridge__platform {
+  background-color: var(--navy);
+  clip-path: polygon(42% 48%, 72.5% 100%, 0 100%);
+}
+
+.vision-platform-bridge__platform::after {
+  background-color: var(--white);
+  clip-path: polygon(43% 52%, 70% 100%, 0 100%);
 }
 
 .platform-zone {
@@ -1369,6 +1407,18 @@ h4 {
 
   .platform-zone::after {
     clip-path: polygon(90% 0, 93% 0, 99% 100%, 96% 100%);
+  }
+
+  .vision-platform-bridge {
+    height: 88px;
+  }
+
+  .vision-platform-bridge__platform {
+    clip-path: polygon(58% 48%, 93% 100%, 0 100%);
+  }
+
+  .vision-platform-bridge__platform::after {
+    clip-path: polygon(59% 52%, 90% 100%, 0 100%);
   }
 
   .hero__copy,
