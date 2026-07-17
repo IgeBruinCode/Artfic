@@ -281,7 +281,7 @@ const criticalContrastChains = [
     chain: [
       { tagName: 'div', classes: new Set(['control-stack__core']), childIndex: 2 },
       { tagName: 'div', classes: new Set(['control-stack']) },
-      { tagName: 'section', classes: new Set(['platform-zone', 'section-navy']) },
+      { tagName: 'section', classes: new Set(['platform-zone', 'section-yellow']) },
       { tagName: 'main', classes: new Set() },
       { tagName: 'body', classes: new Set() },
     ],
@@ -291,7 +291,7 @@ const criticalContrastChains = [
     chain: [
       { tagName: 'article', classes: new Set(['module-block', 'module-block--conversation']) },
       { tagName: 'div', classes: new Set(['module-blocks']) },
-      { tagName: 'section', classes: new Set(['platform-zone', 'section-navy']) },
+      { tagName: 'section', classes: new Set(['platform-zone', 'section-yellow']) },
       { tagName: 'main', classes: new Set() },
       { tagName: 'body', classes: new Set() },
     ],

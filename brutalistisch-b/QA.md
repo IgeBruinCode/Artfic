@@ -18,8 +18,9 @@ De Conversation Module-kaart is op desktop even breed als de twee andere modulek
 ## Sticky navigatie, motion en shader
 
 - De header rapporteert `position: sticky` en `top: 0px`; de actieve onderwerplink en blauwe leesvoortgang volgen de scrollpositie.
+- De compacte merk- en onderwerpstroken vormen samen een duidelijk lagere sticky header; alle interactieve doelen blijven minimaal 38–44px hoog.
 - De browser rapporteert GSAP `3.13.0`, scripts in de volgorde `assets/vendor/gsap-3.13.0.min.js` en `main.js`, en na 2,2 seconden de rootstatus `motion-ready motion-loaded`.
-- De hero toont de WebGL-shader en CSS-fallback zonder een extra cirkelobject.
+- De hero toont de WebGL-shader op een effen gele fallback, zonder cirkelobject of diagonaal lijnpatroon.
 - De AI Company of the Year-badge staat in de vrijgekomen rechterkolom van de hero en niet langer in de onderwerpnavigatie.
 - Het hero-canvas is aanwezig en initialiseert een lokale WebGL-context. De shader is begrensd op 40 fps, gebruikt maximaal 1,25× pixelratio op mobiel en 1,5× op grotere schermen. Bij ontbreken van WebGL blijft de onderliggende CSS-compositie zichtbaar.
 - De GSAP-loadingtimeline liet na settle nul verborgen hero-items achter. Tekstwoorden en cards worden daarna één keer via `IntersectionObserver` onthuld.

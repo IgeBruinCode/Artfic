@@ -6,7 +6,7 @@ Stijlgids voor `/brutalistisch-b/`. De pagina is een direct, hard en gelaagd Art
 
 De compositie gebruikt een sticky merkpodium, een horizontaal relatiedeck, scherpe vraagkaarten, een gestapelde controlelaag, asymmetrische moduleblokken, een governance-mozaïek, partnerrelay en massieve begeleidingsstappen. De inhoudsvolgorde is `intro → bewijs → visie → platform → organisatie → contact`.
 
-Geel is het dominante route-oppervlak. Navy bouwt de platform- en contactvelden en geeft alle kritieke contrasten. Een lokale WebGL-mesh beweegt achter de hero; CSS-gradients blijven beschikbaar als zelfstandige fallback. Tekstcontrast is nooit afhankelijk van een decoratief effect.
+Geel is het dominante route-oppervlak. Navy bouwt het contactveld en geeft alle kritieke contrasten. Een lokale WebGL-mesh beweegt achter de hero; bij ontbreken daarvan blijft een rustig effen geel vlak staan. Tekstcontrast is nooit afhankelijk van een decoratief effect.
 
 ## Kleurgebruik
 
@@ -31,7 +31,7 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 - De H1 gebruikt een zware systeem-sans, compacte regelafstand en maximaal 11ch.
 - Kleine uppercase eyebrows benoemen de functie van elk veld zonder hoofdstuknummering.
 - Het relatiedeck volgt direct op de hero; FC Twente staat als eerste relatie en de acht overige organisaties volgen daarna.
-- Bewijs staat vóór de visie. Daarna verschuift de pagina naar de navy technische kern en keert terug naar geel voor governance, security, partners en begeleiding.
+- Bewijs staat vóór de visie. De technische kern blijft daarna op een licht Artific-geel circuitveld; navy markeert alleen de controlekern en specifieke kaarten.
 - Het navy contactslot sluit af met een groot decoratief verticaal `LET’S TALK`-veld. De apostrof is in die stand 90 graden gedraaid.
 
 ## Componentstijl
@@ -40,7 +40,7 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 - **Hero:** het lokale WebGL-kleurveld en de CSS-fallback vormen zonder extra cirkelobject de zichtbare geanimeerde achtergrond. De lokale AI Company of the Year-badge staat groot in de vrijgekomen rechterkolom boven de platformkenmerken.
 - **Relatiedeck:** begrensde horizontale snap-track met negen rustige lichtblauwe kaarten, lokale logo’s op witte vlakken en directe klantnamen. FC Twente opent het deck. Pauzeerbare autoplay, handmatige knoppen, paginatie en toetsenbordbediening vullen native horizontaal scrollen aan.
 - **Klantbeoordelingen:** zes volledige, canonieke beoordelingen staan met hun lokale portretten in het bewijsdeel.
-- **Platformveld:** een schuin bewegend signal-grid en een langzame lichtscan vervangen de eerdere radiale bol zonder de leesvlakken te verstoren.
+- **Platformveld:** een rustig geel circuitveld met blauwe lijnen en knooppunten sluit aan op het lijnwerk van de award; een zachte lichtscan beweegt zonder de leesvlakken te verstoren.
 - **Vraagkaarten:** grote witte en navy vlakken met hoekmarkering en blokschaduw.
 - **Controlelaag:** drie volle gestapelde banden tonen proces, Artific en modellen in één object.
 - **Moduleblokken:** drie even brede vierkolomsblokken op desktop. Daardoor heeft Conversation Module voldoende tekstbreedte; verticale offsets bewaren het asymmetrische ritme.
@@ -51,7 +51,7 @@ De schaal is 8, 16, 24, 40, 64 en 96px. De routegutters lopen via `clamp(16px, 5
 
 Alle inhoud staat in de serverresponse en blijft zonder JavaScript zichtbaar. De lokale GSAP Core-runtime wordt met `defer` parallel aan `main.js` geladen. Een korte GSAP-timeline choreografeert bij laden eerst merk, H1 en hero-details. Daarna activeert één gedeelde `IntersectionObserver` de gemaskeerde kopwoorden en kaartposes uitsluitend wanneer ze in beeld komen. De tweens gebruiken alleen GSAP-transformaliases en opacity; `will-change` wordt bij aanvang gezet en na voltooiing gewist. De layout zelf verspringt niet.
 
-Achtergrondvelden en kleine stempels hebben rustige lussen, maar een tweede observer pauzeert ze buiten beeld. De WebGL-mesh reageert subtiel op de aanwijzer, tekent maximaal 40 frames per seconde, gebruikt op mobiel een lagere pixelratio en pauzeert buiten beeld of in een verborgen tab. Het platform-grid en de lichtscan bewegen uitsluitend via compositorvriendelijke transforms.
+Achtergrondvelden en kleine stempels hebben rustige lussen, maar een tweede observer pauzeert ze buiten beeld. De WebGL-mesh reageert subtiel op de aanwijzer, tekent maximaal 40 frames per seconde, gebruikt op mobiel een lagere pixelratio en pauzeert buiten beeld of in een verborgen tab. Het platformcircuit en de lichtscan bewegen uitsluitend via compositorvriendelijke transforms.
 
 Het relatiedeck wisselt in beeld rustig om de 4,2 seconden en biedt een expliciete pauze-/afspeelknop naast vorige/volgende, actieve status, pijl/Home/End-bediening en een beleefde live-aankondiging. De beweging gebruikt uitsluitend de horizontale scrollpositie van de track en kan daardoor nooit de documentpositie veranderen. Buiten beeld en bij reduced motion stopt autoplay. `gsap.matchMedia()` ruimt de normale timelines op en zet alle elementen direct in hun zichtbare eindstaat. De CSS-mediaquery stopt daarnaast decoratieve animaties en transities; de shaderloop schakelt zichzelf uit.
 

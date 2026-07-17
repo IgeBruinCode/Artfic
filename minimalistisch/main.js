@@ -120,6 +120,7 @@
     ".client-proof",
     ".workflow-visual",
     ".layer-map",
+    ".modules-section",
     ".trust-principles",
     ".solar-system"
   ].join(","));
@@ -141,6 +142,192 @@
 
     motionIslands.forEach(function (island) {
       motionObserver.observe(island);
+    });
+  }
+
+  function prepareKineticHeading(heading) {
+    var textNodes = [];
+    var walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+    var node;
+
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue.trim()) textNodes.push(node);
+    }
+
+    textNodes.forEach(function (textNode) {
+      var parts = textNode.nodeValue.split(/(\s+)/);
+      var fragment = document.createDocumentFragment();
+
+      parts.forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          fragment.appendChild(document.createTextNode(part));
+          return;
+        }
+
+        var word = document.createElement("span");
+        var inner = document.createElement("span");
+        word.className = "text-word";
+        inner.className = "text-word__inner";
+        inner.textContent = part;
+        word.appendChild(inner);
+        fragment.appendChild(word);
+      });
+
+      textNode.parentNode.replaceChild(fragment, textNode);
+    });
+  }
+
+  var kineticHeadings = document.querySelectorAll("[data-kinetic-heading]");
+  if (kineticHeadings.length && window.gsap) {
+    var textMedia = window.gsap.matchMedia();
+
+    textMedia.add("(prefers-reduced-motion: no-preference)", function () {
+      var textObserver;
+
+      kineticHeadings.forEach(function (heading) {
+        prepareKineticHeading(heading);
+        heading.classList.add("is-animating-heading");
+        window.gsap.set(heading.querySelectorAll(".text-word__inner"), { yPercent: 112 });
+      });
+
+      function animateHeading(heading) {
+        var words = heading.querySelectorAll(".text-word__inner");
+        window.gsap.to(words, {
+          yPercent: 0,
+          duration: 0.78,
+          ease: "power3.out",
+          stagger: { each: 0.045, from: "start" },
+          clearProps: "transform",
+          onComplete: function () {
+            heading.classList.remove("is-animating-heading");
+          }
+        });
+      }
+
+      if ("IntersectionObserver" in window) {
+        textObserver = new IntersectionObserver(function (entries, observer) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            animateHeading(entry.target);
+            observer.unobserve(entry.target);
+          });
+        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.18 });
+
+        kineticHeadings.forEach(function (heading) { textObserver.observe(heading); });
+      } else {
+        kineticHeadings.forEach(animateHeading);
+      }
+
+      return function () {
+        if (textObserver) textObserver.disconnect();
+      };
+    });
+  }
+
+  function ambientMarkup(type) {
+    if (type === "grid") {
+      return '<svg viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true"><path class="ambient-grid-line" d="M0 100H1440 M0 260H1440 M0 420H1440 M0 580H1440 M0 740H1440 M180 0V900 M420 0V900 M660 0V900 M900 0V900 M1140 0V900 M1380 0V900" /></svg><span class="ambient-node ambient-node--one"></span><span class="ambient-node ambient-node--two"></span><span class="ambient-node ambient-node--three"></span>';
+    }
+
+    if (type === "orbits") {
+      return '<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="ambient-orbit"><ellipse cx="1110" cy="210" rx="310" ry="170" /><circle cx="1395" cy="165" r="7" /></g><g class="ambient-orbit"><ellipse cx="250" cy="720" rx="360" ry="210" /><circle cx="42" cy="550" r="6" /></g><g class="ambient-orbit"><ellipse cx="800" cy="470" rx="610" ry="350" /></g></svg><span class="ambient-node ambient-node--one"></span><span class="ambient-node ambient-node--two"></span><span class="ambient-node ambient-node--three"></span>';
+    }
+
+    return '<svg viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true"><path class="ambient-path" d="M-120 190C240 20 430 360 760 170S1260 40 1560 250" /><path class="ambient-path" d="M-180 610C180 390 480 760 820 530S1280 400 1580 650" /><path class="ambient-path" d="M120 980C340 670 650 770 890 620S1210 470 1500 700" /></svg><span class="ambient-node ambient-node--one"></span><span class="ambient-node ambient-node--two"></span><span class="ambient-node ambient-node--three"></span>';
+  }
+
+  var ambientSections = document.querySelectorAll("[data-ambient]");
+  ambientSections.forEach(function (section) {
+    var type = section.getAttribute("data-ambient") || "paths";
+    var scene = document.createElement("div");
+    scene.className = "ambient-scene ambient-scene--" + type;
+    scene.setAttribute("aria-hidden", "true");
+    scene.innerHTML = ambientMarkup(type);
+    section.insertBefore(scene, section.firstChild);
+  });
+
+  if (ambientSections.length && window.gsap) {
+    var ambientMedia = window.gsap.matchMedia();
+
+    ambientMedia.add("(prefers-reduced-motion: no-preference)", function () {
+      var ambientObservers = [];
+      var ambientTweens = [];
+
+      ambientSections.forEach(function (section) {
+        var scene = section.querySelector(".ambient-scene");
+        var sceneTweens = [];
+        var paths = scene.querySelectorAll(".ambient-path");
+        var grid = scene.querySelectorAll(".ambient-grid-line");
+        var orbits = scene.querySelectorAll(".ambient-orbit");
+        var nodes = scene.querySelectorAll(".ambient-node");
+
+        if (paths.length) {
+          sceneTweens.push(window.gsap.to(paths, {
+            x: function (index) { return index % 2 ? -34 : 38; },
+            y: function (index) { return 18 + (index * 7); },
+            duration: 12,
+            ease: "sine.inOut",
+            stagger: 0.7,
+            repeat: -1,
+            yoyo: true,
+            paused: true
+          }));
+        }
+
+        if (grid.length) {
+          sceneTweens.push(window.gsap.to(grid, {
+            x: 24,
+            y: 14,
+            duration: 16,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+            paused: true
+          }));
+        }
+
+        if (orbits.length) {
+          sceneTweens.push(window.gsap.to(orbits, {
+            rotation: function (index) { return index % 2 ? -8 : 8; },
+            duration: function (index) { return 15 + (index * 4); },
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+            paused: true
+          }));
+        }
+
+        sceneTweens.push(window.gsap.to(nodes, {
+          x: function (index) { return 18 + (index * 9); },
+          y: function (index) { return index % 2 ? -24 : 28; },
+          duration: 9,
+          ease: "sine.inOut",
+          stagger: 0.8,
+          repeat: -1,
+          yoyo: true,
+          paused: true
+        }));
+
+        ambientTweens.push.apply(ambientTweens, sceneTweens);
+
+        if ("IntersectionObserver" in window) {
+          var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              sceneTweens.forEach(function (tween) { tween.paused(!entry.isIntersecting); });
+            });
+          }, { rootMargin: "180px 0px", threshold: 0 });
+          observer.observe(section);
+          ambientObservers.push(observer);
+        } else {
+          sceneTweens.forEach(function (tween) { tween.play(); });
+        }
+      });
+
+      return function () {
+        ambientObservers.forEach(function (observer) { observer.disconnect(); });
+        ambientTweens.forEach(function (tween) { tween.kill(); });
+      };
     });
   }
 
